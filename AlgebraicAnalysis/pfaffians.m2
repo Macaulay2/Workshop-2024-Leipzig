@@ -1,6 +1,8 @@
 needs "holonomic.m2"
 importFrom_Core { "concatRows", "concatCols" }
 
+checkSystem = (W, A) -> apply(toSequence \ subsets(numgens W // 2, 2), (i,j) -> A_i * A_j - A_j * A_i)
+
 -- Given a D-ideal, compute its Pfaffian system
 -- c.f. [Theorem 1.4.22, SST]
 pfaffians Ideal := List => I -> (
@@ -18,9 +20,9 @@ pfaffians Ideal := List => I -> (
     A := apply(W.dpairVars#1,
 	dt -> concatCols apply(flatten entries B,
 	    s -> last coefficients(
-		sub(dt, R) * s % G, Monomials => B))))
-
-checkSystem = (W, A) -> apply(toSequence \ subsets(numgens W // 2, 2), (i,j) -> A_i * A_j - A_j * A_i)
+		sub(dt, R) * s % G, Monomials => B)));
+    assert all(checkSystem(W, A), zero);
+    A)
 
 end--
 restart
@@ -41,7 +43,6 @@ W = makeWA(QQ[a,b,c,c', DegreeRank => 0][x,y])
 I = ideal(
     dx*(x*dx + c  - 1) - (x*dx + y*dy + a)*(x*dx + y*dy + b),
     dy*(y*dy + c' - 1) - (x*dx + y*dy + a)*(x*dx + y*dy + b))
--- FIXME: why zero?
 A = pfaffians I;
 netList apply(A, mat -> sub(mat, {a => 10, b => 4/5, c => -2, c' => 3/2}))
 gens gb sub(I, {a => 10, b => 4/5, c => -2, c' => 3/2})
@@ -69,6 +70,10 @@ I = ideal(
 --WeylClosure I
 netList(A = pfaffians I)
 
+-- example
+R = (frac extractVarsAlgebra W)(monoid[W.dpairVars#1])
+G = gb sub(I, R);
+B = sub((comodule I).cache#"basis", R)
 dt = last W.dpairVars#1
 s = last flatten entries B
 last coefficients(sub(dt, R) * s % G, Monomials => B)
