@@ -23,7 +23,7 @@ newPackage(
      Date => "November, 2020",
      Authors => {
           {Name=> "Carlos Amendola", 
-	   Email=> "carlos.amendola@tum.de",
+	   Email=> "amendola@math.tu-berlin.de",
 	   HomePage=>"http://www.carlos-amendola.com/"},
        
 	  {Name => "Luis David Garcia Puente",
