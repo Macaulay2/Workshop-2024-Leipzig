@@ -1,5 +1,5 @@
 needs "holonomic.m2"
-importFrom_Core "concatRows"
+importFrom_Core { "concatRows", "concatCols" }
 
 -- Given a D-ideal, compute its Pfaffian system
 -- c.f. [Theorem 1.4.22, SST]
@@ -14,9 +14,10 @@ pfaffians Ideal := List => I -> (
     r := holonomicRank(M := comodule I);
     if r === infinity then error "system is not finite dimensional";
     B := sub(M.cache#"basis", R);
+    --error 0;
     A := apply(W.dpairVars#1,
-	dt -> concatRows apply(flatten entries B,
-	    s -> transpose last coefficients(
+	dt -> concatCols apply(flatten entries B,
+	    s -> last coefficients(
 		sub(dt, R) * s % G, Monomials => B))))
 
 checkSystem = (W, A) -> apply(toSequence \ subsets(numgens W // 2, 2), (i,j) -> A_i * A_j - A_j * A_i)
@@ -64,13 +65,16 @@ I = ideal(
     x_1*dx_1 - x_4*dx_4 + 1 - c,
     x_2*dx_2 + x_4*dx_4 + a,
     x_3*dx_3 + x_4*dx_4 + b)
-I = sub(I, {a => 1/2, b => 1/2, c => 1})
-WeylClosure I
+--I = sub(I, {a => 1/2, b => 1/2, c => 1})
+--WeylClosure I
 netList(A = pfaffians I)
+
+dt = last W.dpairVars#1
+s = last flatten entries B
+last coefficients(sub(dt, R) * s % G, Monomials => B)
+
 << texMath A_1
+checkSystem(W, A)
 
 -- Example 1.4.23 in SST, pp. 39
 netList apply(A, mat -> sub(mat, {a => 1/2, b => 1/2, c => 1}))
-
-apply(toSequence \ subsets(numgens W // 2,2),
-    (i,j) -> A_i * A_j - A_j * A_i)
