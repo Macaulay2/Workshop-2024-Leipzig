@@ -52,8 +52,3 @@ isMatrix (List) := Boolean => M ->(
 )
 
 
-polyIntegral = method()
-polyIntegral (RingElement, ZZ ) := RingElement => (f, n) ->{
-    
-}
-
