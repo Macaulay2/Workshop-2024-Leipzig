@@ -1,32 +1,7 @@
 loadPackage "GraphicalModels";
 
-G = digraph{{1, {2}}, {2, {3, 4}}, {3, {4, 6}}, {5, {6}}};
-G = digraph{{1, {2}}, {2, {3, 4}}, {3, {4}}}; 
-
-
-allTreks = (G, i, j) -> {
-    fG= digraphTranspose(G);
-    k=#vertices(G);
-    pathsi = flatten for n from 0 to k list findPaths(fG, i, n);
-    pathsj = flatten for n from 0 to k list findPaths(fG, j, n);
-    treks = flatten for p1 in pathsi list for p2 in pathsj list(
-	q = if last p1==last p2 then {reverse p1, reverse p2} else continue
-	)
-}
-
-allTreks = (G, i, j) -> {
-    fG= digraphTranspose(G);
-    k=#vertices(G);
-    pathsi = findallPaths(fG, i);
-    pathsj = findallPaths(fG, j);
-    treks = flatten for p1 in pathsi list for p2 in pathsj list(
-	q = if last p1==last p2 then {reverse p1, reverse p2} else continue
-	)
-}
-
-
-
-findallPaths = (G,v) -> (
+findallPaths = method()
+findallPaths (Digraph, Thing) := List => (G,v) -> (
     nbors := toList children (G,v);
     l = #nbors;
     if l == 0 then {{v}}
@@ -36,8 +11,37 @@ findallPaths = (G,v) -> (
     )
 )
 
-ed = toList apply(1..5, i -> {i, {6, 7}})
-G = digraph{ed};
+allTreks = method()
+allTreks (Digraph, Thing, Thing):= List => (G, u, v) -> (
+    fG= digraphTranspose(G);
+    k = #vertices(G);
+    pathsu = findallPaths(fG, u);
+    pathsv = findallPaths(fG, v);
+    treks = flatten for p1 in pathsu list for p2 in pathsv list(
+	q = if last p1==last p2 then {reverse p1, reverse p2} else continue
+	)
+)
 
-findallPaths(G, 1)
-allTreks(G, 4, 5)
+TEST ///
+G = digraph{{1, 3}, {2, 3}};
+tr = allTreks(G, 1, 2);
+assert(tr == {})
+///
+
+TEST ///
+G = digraph{{3, {1, 2}}};
+tr = allTreks(G, 1, 2);
+assert(tr == {{{3, 1}, {3, 2}}})
+///
+
+TEST ///
+G = digraph{{1, {2}}, {2, {3}}};
+tr = allTreks(G, 1, 3);
+assert(tr == {{{1}, {1, 2, 3}}}
+///
+
+TEST///
+G = digraph{{2, {4, 6}}, {3, {6}}, {5, {3, 4}}, {6, {1}}};
+tr = allTreks(G, 6, 4);
+assert(tr == {{{2, 6}, {2, 4}}, {{5, 3, 6}, {5, 4}}})
+///
