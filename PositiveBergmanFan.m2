@@ -3,7 +3,7 @@ newPackage(
     Version => "0.1",
     Date => "November 2024",
     Headline => "Methods for computing positive Bergman fans",
-    Authors => {{ Name => "", Email => "", HomePage => ""}},
+    Authors => {{ Name => "Renata Picciotto", Email => "", HomePage => ""}},
     AuxiliaryFiles => false,
     DebuggingMode => false,
     PackageExports => {"Matroids", "Tropical"}
