@@ -22,7 +22,8 @@ export {
    "randomTensor",
    "indexset",
    "correlatedEquilibria",
-   "enumerateTensorIndices"
+   "enumerateTensorIndices",
+   "intersectCImodel"
 }
 
 
