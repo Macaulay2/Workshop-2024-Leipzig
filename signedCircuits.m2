@@ -1,5 +1,5 @@
+needsPackage "Matroids"
 signedCircuits=N -> (
-    needsPackage "Matroids";
     K:=transpose gens ker N;
     M:=matroid K;
     C:=circuits M;
