@@ -4,3 +4,6 @@
 - Erin
 - Felix
 - Angelo
+- Mahrud
+- Ollie
+- Anna-Laura
