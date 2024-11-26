@@ -10,11 +10,5 @@ Alheydis
 - Ollie
 - Anna-Laura
 - Chenyang Zhao
-
-
-
-:3
-
-:3
 - Nicolas
-
+-Julian
