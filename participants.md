@@ -21,3 +21,6 @@
 :3
 - Nataliia
 - Hendrik
+- Erin
+- Manes
+
