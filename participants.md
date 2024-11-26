@@ -1,4 +1,4 @@
-Alheydis
+- Alheydis
 - Mahrud
 - Ollie
 - Daniele Tramontano 
@@ -11,4 +11,4 @@ Alheydis
 - Anna-Laura
 - Chenyang Zhao
 - Nicolas
--Julian
+- Julian
