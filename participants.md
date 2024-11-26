@@ -3,4 +3,4 @@
 - Daniele
 - Erin
 - Felix
--Angelo
+- Angelo
