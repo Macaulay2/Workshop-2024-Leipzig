@@ -13,8 +13,8 @@ linsig (List, List) := QQ => (u, w)-> (
 --Signature of a piecewise linear path
 --Build calling recursively linsig
 -----------------------------------------
-pwlsig = method()
-pwlsig (List, List) := QQ => (M, w)-> (
+pwlsigw = method()
+pwlsigw (List, List) := QQ => (M, w)-> (
     h := length (w); 
     m := length(M);
 
@@ -32,11 +32,9 @@ pwlsig (List, List) := QQ => (M, w)-> (
     Mlast := M#(m-1);
 
     sum(h+1, i -> (
-        pwlsig(Mrec, w_{0..i-1})*linsig(Mlast,w_{i..h-1}))
+        pwlsigw(Mrec, w_{0..i-1})*linsig(Mlast,w_{i..h-1}))
     )
 );
-
-pwlsig({{1,2},{3,4}},{1,2})
 
 
 ----------------------------------------
@@ -51,4 +49,27 @@ isMatrix (List) := Boolean => M ->(
     return true
 )
 
+----------------------------------------
+--Trying things with NC polys
+----------------------------------------
+needsPackage "NCAlgebra"
+R = QQ{l_1..l_5};
+f = 1/2*(l_1*l_2 - l_2*l_1);
 
+ncMonToList = method()
+
+ncMonToList (NCRingElement) := List => f -> (
+    fmons = keys f.terms;
+    monKey = (keys fmons#0)#1;
+    (fmons#0)#(monKey) / ( i -> last baseName i)
+);
+
+pwlsig = method();
+
+pwlsig (List, NCRingElement) := QQ => (M, w)-> (
+    lot := apply(terms f, i -> {leadCoefficient i, ncMonToList(i)});
+    sum(length(lot),i->(lot#i)#0 * pwlsigw(M,(lot#i)#1))
+);
+
+A = {{2,0},{0,2},{-2,0},{0,-2}}
+pwlsig(A, f)
