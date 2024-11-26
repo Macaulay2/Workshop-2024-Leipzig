@@ -1,5 +1,7 @@
+- Alheydis
+- Mahrud
 - Ollie
-- Daniele
+- Daniele Tramontano 
 - Renata
 - Erin
 - Felix
@@ -8,6 +10,9 @@
 - Ollie
 - Anna-Laura
 
-
-
 :3c
+
+- Chenyang Zhao
+- Nicolas
+- Julian
+- Hannah
