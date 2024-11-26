@@ -1,4 +1,3 @@
-- Mahrud
 - Ollie
 - Daniele
 - Erin
