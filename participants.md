@@ -1,7 +1,7 @@
 Alheydis
 - Mahrud
 - Ollie
-- Daniele
+- Daniele Tramontano 
 - Renata
 - Erin
 - Felix
