@@ -12,7 +12,7 @@ newPackage(
    },
    Headline => "This is the only package you will ever need.",
    Keywords => {"Game Theory"},
-   PackageExports => {"Polyhedra"},
+   PackageExports => {"Polyhedra","GraphicalModels"},
    PackageImports => {"Polyhedra"}
    )
 
