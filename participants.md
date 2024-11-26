@@ -15,4 +15,9 @@
 - Chenyang Zhao
 - Nicolas
 - Julian
+- Luca
 - Hannah
+- Giacomo
+:3
+- Nataliia
+- Hendrik
