@@ -44,6 +44,12 @@ elapsedTime tally apply(10,c->(
 	I=ideal(sum(4,i->x_i^2),sum(4,i->random(kk)*x_i^2));
 	degree chowForm I))
 
+I=ideal(sum(4,i->x_i^2),sum(4,i->random(kk)*x_i^2));
+M=P3^1/I
+F=sheaf M
+cohomologyTable(F,-3,3)
+TM=tateResolution(presentation M,E,-3,3)
+TM.dd_4
 elapsedTime tally apply(1,c->(
 	I=ideal random(P3^1,P3^{2,-2});
 	degree chowForm I)
