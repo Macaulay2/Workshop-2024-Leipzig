@@ -9,7 +9,7 @@ newPackage(
     PackageExports => {"Matroids", "Tropical"}
     )
 
-export {"signedCircuits"}
+export {"signedCircuits","isPositive"}
 
 -* Code section *-
 signedCircuits = method();
