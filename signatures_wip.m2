@@ -1,3 +1,5 @@
+needsPackage "NCAlgebra"
+
 -----------------------------------------
 --Signature of a linear path
 -----------------------------------------
@@ -49,27 +51,26 @@ isMatrix (List) := Boolean => M ->(
     return true
 )
 
-----------------------------------------
---Trying things with NC polys
-----------------------------------------
-needsPackage "NCAlgebra"
-R = QQ{l_1..l_5};
-f = 1/2*(l_1*l_2 - l_2*l_1);
-
 ncMonToList = method()
-
 ncMonToList (NCRingElement) := List => f -> (
     fmons = keys f.terms;
     monKey = (keys fmons#0)#1;
     (fmons#0)#(monKey) / ( i -> last baseName i)
 );
 
-pwlsig = method();
-
-pwlsig (List, NCRingElement) := QQ => (M, w)-> (
+linExt = method();
+linExt(FunctionClosure, NCRingElement) := RingElement => (fun, w) -> (
     lot := apply(terms f, i -> {leadCoefficient i, ncMonToList(i)});
-    sum(length(lot),i->(lot#i)#0 * pwlsigw(M,(lot#i)#1))
+    sum(length(lot),i->(lot#i)#0 * fun((lot#i)#1))
+)
+
+pwlsig = method();
+pwlsig (Matrix, NCRingElement) := QQ => (M, w)-> (
+    Mentries = entries M;
+    linExt(i->pwlsigw(Mentries,i),w)
 );
 
+R = QQ{l_1..l_5};
+f = 1/2*(l_1*l_2 - l_2*l_1);
 A = {{2,0},{0,2},{-2,0},{0,-2}}
 pwlsig(A, f)
