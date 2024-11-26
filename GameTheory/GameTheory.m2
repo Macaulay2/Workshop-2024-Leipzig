@@ -147,7 +147,7 @@ correlatedEquilibria List := X -> (
 
 intersectCImodel = method()
 intersectCImodel (Graph,Ideal,List) := (G,V,Di) -> (
-markovR = markovRing (toSequence(Di));
+markovR := markovRing (toSequence(Di));
 R := ring (V);
 Finv := map(R,markovR,R_*);
 S := globalMarkov G;
@@ -166,7 +166,7 @@ J=saturate(J,R_k,Strategy=>Bayer);
 print k;
 );
 J=saturate(J,sum(R_*),Strategy=>Bayer);
-result=J;
+result := J;
 result
 )
 
