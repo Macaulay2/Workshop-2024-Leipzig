@@ -85,3 +85,62 @@ checkSystem(W, A)
 
 -- Example 1.4.23 in SST, pp. 39
 netList apply(A, mat -> sub(mat, {a => 1/2, b => 1/2, c => 1}))
+
+
+--examples from 25/11
+W = makeWA(QQ[a,DegreeRank=>0][x])
+pfaffians ideal (x^5*dx - a)
+
+
+W = makeWA(QQ[a,b,DegreeRank=>0][x,y])
+pfaffians(I=ideal (x^5*dx^2 - a,y^4*dy^3-b*dx))
+holonomicRank I
+
+f=symbol f
+g=symbol g
+h=symbol h
+W = makeWA(QQ[f,g,h,DegreeRank=>0][x,y])
+I=ideal(f*dx+g*dy+h,dx^2-dx^3+dy^3)
+characteristicIdeal I
+pfaffians I
+
+W = makeWA(QQ[x,y])
+g=x*y
+f=x^2+y^2
+h=x+y
+I=ideal(f*dx+g*dy+h,dx^2+dy^3)
+holonomicRank I
+pfaffians I
+
+
+
+W = QQ[x,y,dx,dy, WeylAlgebra =>{x=>dx,y=>dy}, Weights=>{0,0,2,1}]
+P=x*dx^2-y*dy^2+dx-dy
+Q=x*dx+y*dy+1
+I=ideal(P,Q)
+pfaffians I
+gens gb I
+leadTerm I
+
+W' = QQ[x,y,dx,dy, WeylAlgebra =>{x=>dx,y=>dy}]
+P=x*dx^2-y*dy^2+dx-dy
+Q=x*dx+y*dy+1
+I'=ideal(P,Q)
+gens gb I'
+leadTerm I'
+pfaffians(I')
+M'=comodule I'
+holonomicRank M'
+peek(M'.cache)
+
+
+
+
+W = QQ[x,y,dx,dy, WeylAlgebra =>{x=>dx,y=>dy}]
+P=x*dx^2-y*dy^2+2*dx-2*dy
+Q=x*dx+y*dy+1
+I=ideal(P,Q)
+pfaffians I
+M=comodule I
+holonomicRank M
+peek(M.cache)
