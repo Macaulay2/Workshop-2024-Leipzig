@@ -3,7 +3,7 @@ newPackage(
     Version => "0.1",
     Date => "November 2024",
     Headline => "Methods for computing positive Bergman fans",
-    Authors => {{ Name => "Renata Picciotto, Julian Weigert, Alheydis Geiger", Email => "", HomePage => ""}},
+    Authors => {{ Name => "Renata Picciotto, Julian Weigert, Alheydis Geiger, Chamir Ngandjia", Email => "", HomePage => ""}},
     AuxiliaryFiles => false,
     DebuggingMode => false,
     PackageExports => {"Matroids", "Tropical","Polyhedra"}
