@@ -28,7 +28,9 @@ end--
 restart
 needs "./pfaffians.m2"
 
-W = makeWA(QQ[x,y])
+-- GKZ system of matrix {{1,2,3}}
+-- gkz(matrix{{1,2}}, )
+W = makeWeylAlgebra(QQ[x,y])
 pfaffians ideal (x*dx+2*y*dy-3, dx^2-dy)
 pfaffians ideal (x*dx+2*y*dy-1, dx^2-dy)
 -- permutation matrices?
