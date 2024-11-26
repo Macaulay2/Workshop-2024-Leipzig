@@ -3,7 +3,7 @@ newPackage(
     Version => "0.1",
     Date => "November 2024",
     Headline => "Methods for computing positive Bergman fans",
-    Authors => {{ Name => "Renata Picciotto", Email => "", HomePage => ""}},
+    Authors => {{ Name => "Renata Picciotto, Julian Weigert", Email => "", HomePage => ""}},
     AuxiliaryFiles => false,
     DebuggingMode => false,
     PackageExports => {"Matroids", "Tropical"}
@@ -12,7 +12,7 @@ newPackage(
 export {"signedCircuits"}
 
 -* Code section *-
-signedCircuits = method()
+signedCircuits = method();
 signedCircuits Matrix := N -> (
     K:=transpose gens ker N;
     M:=matroid K;
