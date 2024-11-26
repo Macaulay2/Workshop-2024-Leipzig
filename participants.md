@@ -1,3 +1,15 @@
+- Alheydis
 - Mahrud
 - Ollie
+- Daniele Tramontano 
+- Renata
+- Erin
+- Felix
+- Angelo
+- Mahrud
+- Ollie
+- Anna-Laura
+- Chenyang Zhao
+- Nicolas
+- Julian
 - Luca
