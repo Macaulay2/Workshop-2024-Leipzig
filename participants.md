@@ -12,3 +12,5 @@
 - Chenyang Zhao
 - Nicolas
 - Julian
+- Oriol
+
