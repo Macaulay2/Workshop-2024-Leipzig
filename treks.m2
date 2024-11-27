@@ -49,7 +49,7 @@ pathsEndingInSet(Digraph, Thing, Set) := (G, i, commonParents) -> (
 )
 
 -- could be faster with two hashes and table(#i,#i) for each i
-
+G = digraph {{1, {2,3}}, {2, {3,4}}, {3,{4,5}}}
 
 
 treks2 = method()
@@ -66,7 +66,7 @@ treks2 (Digraph, Thing, Thing) := (G, i, j) -> (
     if isMember(i, commonParents) then pathset1##pathset1 = {i};
     if isMember(j, commonParents) then pathset1##pathset2 = {j};    
     ListingParents = toList(commonParents);
-    hashingPaths = new MutableHashTable from toList(#ListingParents: (ListingParents#(i-1), new MutableList));
+    hashingPaths = new MutableHashTable from apply(#ListingParents, i -> (ListingParents#(i), new MutableList));
     for p in pathset1 do (
 	endpoint = p#-1;
 	(hashingPaths#endpoint)##(hashingPaths#endpoint) = p;
@@ -82,3 +82,5 @@ treks2 (Digraph, Thing, Thing) := (G, i, j) -> (
 	);
     return listofresults; 				    -- Mutablelist of treks
  )
+
+
