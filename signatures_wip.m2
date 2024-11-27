@@ -167,3 +167,20 @@ A = QQ[a_1,a_2,a_3]
 r =polysig({{0,a_1},{0,a_2,a_3}},f, BaseRing => A)
 assert(r == 1/6*a_1*a_3) 
 ///
+
+
+
+
+matrixAction = method()
+matrixAction (Matrix,  NCRingElement, NCRing) := NCRingElement => (M,  p, B) -> (
+    --if #(gens B) != 
+
+    m= #entries M;
+    N=entries transpose M;
+    h=#entries transpose(M);
+    print(apply(N, j->sum(length(j)-1, i->j#i*(gens B)#i)));
+
+    f = ncMap(B, p.ring , apply(N, j->sum(length(j), i->j#i*(gens B)#i)));
+    f(p)
+
+)
