@@ -50,7 +50,7 @@ isMatrix = method()
 isMatrix (List) := Boolean => M ->(
     lens := for i from 0 to length(M)-1 list length(M_i); 
     if(#(set(lens))>1) then(
-        return false
+        return false 
     );
     return true
 )
@@ -163,6 +163,7 @@ R = QQ{l_1..l_5};
 f = 1/2*(l_1*l_2 - l_2*l_1);
 A = QQ[a_1,a_2,a_3]
 
+<<<<<<< HEAD
 r =polysig({{0,a_1},{0,a_2,a_3}},f, BaseRing => A)
 assert(r == 1/6*a_1*a_3) 
 ///
