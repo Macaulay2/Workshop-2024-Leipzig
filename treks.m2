@@ -7,7 +7,8 @@ treks(Digraph, Thing, Thing) := (G, i, j) -> (
     pathset2 = pathsEndingInSet(G, j, commonParents);
     if #pathset1 == 0 then return pathset2;		    -- trivial cases
     if #pathset2 == 0 then return pathset1;
-    if isMember(i, 
+    if isMember(i, commonParents) then pathset1##pathset1 = {i};
+    if isMember(j, commonParents) then pathset1##pathset2 = {j};    
     hashingPaths = new MutableHashTable;		    -- hash paths i<-CP according to CP-point
     for p in pathset1 do (
 	endpoint = p#-1;
