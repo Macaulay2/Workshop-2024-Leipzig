@@ -44,8 +44,20 @@ uMatrix(ZZ,ZZ,RingElement,Matrix) := (p,q,f,m) -> (
     -- Output: the morphism Lamba^p U -> Lambda^q U induced by f
     --       in other words a binomial(k,p)xbinomial(k,q) matrix with entries
     --       certain txt a sum of certain txt minors of m
+    
+    multOnSummand := (I,J,K) -> (
+        if not(#I == #J + #K) then return 0;
+        if not(isSubset(J,I)) then return 0;
+        
+        IminusJPos := select(apply(#I,n -> (n+1,I_n)),(n,i) -> not isMember(i,J));
+        IminusJ := apply(IminusJPos,last);
+        
+        -- TODO: sign which uses the first entries of IminusJPos
+        
+        return det stm^K_IminusJ;
     )
-
+)
+    
 TEST /// -- Hint
 kk=ZZ/2
 k=4,n=6
@@ -60,6 +72,14 @@ basis(t,E)
 L1=subsets(toList(0..k-1),p)
 L2=subsets(toList(0..k-1),q)
 L3=subsets(toList(0..n),t)
+
+I = L1_2
+J = L2_3
+K = L3_2
+
+
+
+
 mons=apply(L3,K->product(K,l->e_l))
 ns=L3_10
 f=product(ns,l->e_l)
