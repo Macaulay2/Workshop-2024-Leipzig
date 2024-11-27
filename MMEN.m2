@@ -41,6 +41,7 @@ centralPosition(List,Function):= (L,f)->(
 --Main method to compute Eulerian numbers given a matroid M and a sequence a
 --Strategy "Last" picks the last non-zero entry of a as a reference
 --Strategy "Central" picks the most central non-zero entry of a as a reference
+--If no Strategy is provided, then "Central" will be used
 MMEN=method(Options=>{Strategy=>"Last",Strategy=>"Central"});
 MMEN(Matroid,List):=opts->(M,a)->(
     n:=#M.groundSet-1;
@@ -83,5 +84,11 @@ MMEN(Matroid,List):=opts->(M,a)->(
     return S;
 );
 
+
+---Example
+M=specificMatroid("R10");
+a={0, 0, 2, 0, 1, 0, 0, 1, 0};
+time MMEN(M,a,Strategy=>"Central");
+time MMEN(M,a,Strategy=>"Last");
 
 
