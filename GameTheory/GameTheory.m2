@@ -23,7 +23,11 @@ export {
    "indexset",
    "correlatedEquilibria",
    "enumerateTensorIndices",
-   "intersectCImodel"
+   "slice",
+   "getVariableToIndexset",
+   "assemblePolynomial",
+   "assemblePlayeriPolynomials",
+   "correlatedEquilibria"
 }
 
 
