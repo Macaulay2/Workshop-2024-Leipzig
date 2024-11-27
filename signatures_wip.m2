@@ -68,8 +68,18 @@ ncMonToVar (NCRingElement) := List => f -> (
     (fmons#0)#(monKey)
 );
 
--- for later use (maybe)
 
+------------------------------------
+--coefficientHTable returns a Hash table associating the monomials in a nc polynomial to their coefficients
+--this is not the same as f.terms, which associated the NCMonomials (an inaccessible type) in f to their coefficients
+-------------------------------------
+coefficientHTable = method()
+coefficientHTable (NCRingElement) := HashTable => f -> (
+        fterms = terms f;
+        hashTable(apply(fterms, i -> {leadMonomial i, leadCoefficient i}))
+);
+
+-- for later use (maybe)
 varIndex = method()
 varIndex(NCRingElement) := List => (var) -> (
     tbl = hashTable toList(apply(pairs var.ring.generators, (i,j)->(j,i)));
@@ -82,6 +92,22 @@ ncMonToList (NCRingElement) := List => f -> (
     monKey = (keys fmons#0)#1;
     (fmons#0)#(monKey) / ( i -> last baseName i)
 );
+
+--------------------------------
+--wordRingAndValues takes an nc polynomial f and returns a ring wR and a list vals of elements in the base ring of f
+-- For every monomial m in f, it creates a new variable v_m. The ring wR is the free commutative QQ-algebra in the variables v_m.
+-- The coefficients of these monomials in f are stored in vals, in such a way that the index of v_m in R agrees with the position of the coefficient of m in vals
+-- (TODO: add option for different variable name in wR.)
+--------------------------------
+wordRingAndValues = method()
+wordRingAndValues(NCRingElement) := (Ring,List) => f -> (
+        htable = coefficientHTable(f);
+        whtable = applyKeys(htable, ncMonToList);
+        vs = new Array from apply(keys whtable, i-> v_i);
+        wR = QQ vs;
+        vals = values whtable;
+       return((wR,vals))
+)
 
 --This is used to extend functions on words to the whole non commutative polynomial algebra
 linExt = method();
@@ -182,15 +208,9 @@ assert(r == 1/6*a_1*a_3)
 matrixAction = method()
 matrixAction (Matrix,  NCRingElement, NCRing) := NCRingElement => (M,  p, B) -> (
     --if #(gens B) != 
-
-    m= #entries M;
     N=entries transpose M;
-    h=#entries transpose(M);
-    print(apply(N, j->sum(length(j)-1, i->j#i*(gens B)#i)));
-
     f = ncMap(B, p.ring , apply(N, j->sum(length(j), i->j#i*(gens B)#i)));
     f(p)
-
 )
 
 ----------------------------------------------------------------------------
@@ -235,11 +255,35 @@ CMonTensor(ZZ, NCPolynomialRing) := NCRingElement => (k,r) -> (
     sum(apply((entries basis(k,r))#0, i-> CMonComponent(i) * i))
 )
 
+
+-----------------------------------------------------------------------
+--createMapFromCoreTensor takes a core tensor f and a target ambient dimension ambd and constructs the associated map of varieties
+-----------------------------------------------------------------------
+
+createMapFromCoreTensor = method();
+createMapFromCoreTensor(NCRingElement, ZZ) := NCRingElement => (f,ambd) -> (
+    ctd := #gens f.ring; -- if core tensor is element of (R^d)^{tensor k}, this is d
+    mR := QQ[a_(1,1)..a_(ctd,ambd)]; -- create coordinate ring of matrix space
+    A := genericMatrix(mR,ambd,ctd); -- create generic matrix
+    lamb := getSymbol "lamb";
+    ncR2 := mR{(lamb)_1..(lamb)_ambd}; -- create tensor algebra over ambient vector space
+    genTensor := matrixAction(A, f, ncR2); -- create generic tensor
+    (wR,rmap) := wordRingAndValues(genTensor); -- get target ring and components of ring map
+    map(mR, wR, rmap) -- create the map from matrix ring to word ring via rmap
+)
+
+ncR1 = QQ{l_1,l_2,l_3};
+ourmap = createMapFromCoreTensor(CAxisTensor(2,ncR1),4)
+kernel ourmap
+
+
+end
+restart
+load("signatures_wip.m2");
+
+
+
 TEST ///
 QQ{a_1..a_3}
 CAxisComponent(a_1^4);
 ///
-
-
-restart
-load("signatures_wip.m2");
