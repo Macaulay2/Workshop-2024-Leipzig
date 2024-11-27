@@ -12,6 +12,59 @@ newPackage(
 export {"signedCircuits","isPositive","positiveBergmanFan","MaxConesOnly","interiorVector"}
 
 -* Code section *-
+--------------------
+--Bergman fan code
+--------------------
+
+
+-- BergmanconeC returns the matrix of generators of the cones
+-- corresponding to the chain of flats C. It does not check whether C
+-- is a chain of flats or not.
+
+BergmanconeC  = (M, C) -> (
+    groundSetM:=#M.groundSet;
+    L := {};
+    for F in C do(
+    	  vect:={};
+    	  scan(groundSetM, i->(
+	    if member(i,F) then vect =  append(vect,1) else vect = append(vect,0);
+	  ));
+	L = append(L, vect)
+	);
+   transpose  matrix L
+)
+
+-- BergmanFan returns the fan of a loopless well-defined matroid
+-- ground set must be [n]
+-- depends on functions above
+BergmanFan = (M) -> (
+    if ( loops(M) != {} ) then
+	    error("The current method only works for loopless matroids");
+    E := toList M.groundSet;
+    L := {};
+    LM := latticeOfFlats M;
+    redLM := dropElements(LM, {{}, E});
+    if (redLM != {}) then (   
+        redOrdcplx := maximalChains redLM;
+        allOnes := apply(E,i->1);
+        for C in redOrdcplx do(
+        	L = append(L, coneFromVData(BergmanconeC(M,C),transpose matrix {allOnes}));
+    	);
+        F:= fan L;
+        mults:=apply(#(maxCones F),i->1);
+        tropicalCycle(F,mults)    
+    );
+    else (
+        n := length E;
+        LS := transpose matrix{apply(n,i->1)};
+        Sigma := coneFromVData(map(ZZ^(n),ZZ^0,0), LS);
+        tropicalCycle(fan(Sigma), {1});
+    )
+)
+
+------------------------------------
+--  Code for positive Bermgan Fan --
+------------------------------------
 signedCircuits = method();
 signedCircuits Matrix := N -> (
     K:=transpose gens ker N;
