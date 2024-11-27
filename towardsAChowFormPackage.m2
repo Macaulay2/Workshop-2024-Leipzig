@@ -10,7 +10,9 @@ sitefelComplex(ChainComplex,Matrix) := (T,m) -> (
     -- Input: T , a Tate resolution of E in n+1 varibles
     --        m the kx(n+1) matrix in the over St=kk[a_(0,0)..a_(k-1,n)]
     -- Output: U'(T) a complex of garded free St-modules.
-    )
+
+    
+)
 
 TEST /// --example case 
 
@@ -34,6 +36,9 @@ ds={d0=TM.dd_0,d1=TM.dd_1, d2=TM.dd_2,d3=TM.dd_3};
 netList ds
 apply(ds,d->betti d)
 
+needsPackage "Complexes"
+T = complex TM
+
 ///
 
 uMatrix = method()
@@ -56,7 +61,7 @@ uMatrix(ZZ,ZZ,RingElement,Matrix) := (p,q,f,m) -> (
         IminusJ := apply(IminusJPos,last);
         
         -- TODO: Double check the sign!        
-        return (-1)^(sum apply(IminusJPos,first)) * det stm^K_IminusJ;
+        return (-1)^(sum apply(IminusJPos,first)) * det m^K_IminusJ;
     );
     
     exteriorPolyToList := poly -> apply(exponents poly,L -> positions(L,odd));
