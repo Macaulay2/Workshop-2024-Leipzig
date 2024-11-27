@@ -60,6 +60,14 @@ isMatrix (List) := Boolean => M ->(
 --f is a monomial in an NCring
 --The output is a list representing the word, as in linsig
 -------------------------------------
+
+ncMonToVar = method()
+ncMonToVar (NCRingElement) := List => f -> (
+    fmons = keys f.terms;
+    monKey = (keys fmons#0)#1;
+    (fmons#0)#(monKey)
+);
+
 ncMonToList = method()
 ncMonToList (NCRingElement) := List => f -> (
     fmons = keys f.terms;
@@ -149,13 +157,12 @@ end
 restart
 load("signatures_wip.m2")
 
+
+TEST ///
 R = QQ{l_1..l_5};
 f = 1/2*(l_1*l_2 - l_2*l_1);
-A = {{2,0},{0,2},{-2,0},{0,-2}}
-pwlsig(A, f)
-
 A = QQ[a_1,a_2,a_3]
 
-polysig({{0,a_1},{0,a_2,a_3}},l_1+l_2)
-
-polySigGen({{1,2,3},{1,1}},{1,2})
+r =polysig({{0,a_1},{0,a_2,a_3}},f, BaseRing => A)
+assert(r == 1/6*a_1*a_3) 
+///
