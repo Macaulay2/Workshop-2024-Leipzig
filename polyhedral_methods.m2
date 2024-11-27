@@ -21,11 +21,17 @@ addVector(Cone, Matrix) := (C, v) -> (
     -- rays and linealitySpace:
     R := rays C;
     L := linealitySpace C;
+
+
     -- TASK --
     -- create a polyhedral complex with one
     -- polyhedron (use convexHull) that has a
     -- vertex v, rays R, and linealitySpace L
     -- test the result with addVector(C1, v1)x
+
+
+    newPolyhedron = convexHull(v, R, L);
+    polyhedralComplex newPolyhedron
     )
 
 
@@ -37,25 +43,35 @@ addVector(Fan, Matrix) := (F, v) -> (
     C := maxCones F;
     -- maxCones is a list of maximal cones, just like maxPolhedra, of
     -- indices of rays that form the cone
-    
+
+
     -- TASK --
     -- create a polyhedral complex with one
     -- polyhedron (use convexHull) for each maximal cone
     -- (i.e., for inds in C list)
     -- with a vertex v, rays R_inds, and linealitySpace L
     -- test the result with addVector(F, v1)
+
+
+    newPolyhedra = for inds in C list (
+        convexHull(v, R_inds, L)
+        );
+    polyhedralComplex newPolyhedra
     )
 
 
 addVector(Polyhedron, Matrix) := (P, v) -> (
     -- hint: a polyhedron has vertices, rays, and linealitySpace
-    
+
+
     -- TASK --
     -- create a polyhedral complex with one polyhedron
     -- the vertices should be translated by v
-
-    -- TASK --
     -- test the function with addVector(P1, v')
+
+
+    newPolyhedron = convexHull(vertices P, rays P, linealitySpace P);
+    polyhedralComplex newPolyhedron
     )
 
 
@@ -65,17 +81,21 @@ addVector(Polyhedron, Matrix) := (P, v) -> (
 -- change 'PolyhedralComplex' below to 'PolyhedralObject'
 -- You should then be able to use '+' with Polyhedron, Cone, Fan,
 -- and PolyhedralComplex objects. Test it with the examples below.
-Matrix + PolyhedralComplex := (v, PC) -> (
+
+
+
+Matrix + PolyhedralObject := (v, PC) -> (
     addVector(PC, v)
 )
 
-PolyhedralComplex + Matrix := (PC, v) -> (
+PolyhedralObject + Matrix := (PC, v) -> (
     addVector(PC, v)
 )
 
 
 
 -- examples:
+
 P = polyhedralComplex crossPolytope 3;
 v = transpose matrix {{1,0,0}}
 Q = P+v
@@ -98,14 +118,18 @@ C1 = coneFromVData(
 -- to see this, use halfspaces C1
 
 v1 = transpose matrix {{1,0,0}}
+
+
 -- TASK --
 -- show that C1+v1 is the affine half-space {x : x_1 >= 1}
+
+halfspaces(C1 + v1) -- This produces an error message (because even though C1 is a cone, C1 + v1 is not a cone, but a polyhedral complex). My question is : How do I transform a polyhedral complex into a cone? Also, how do I transform a polyhedral complex into a fan.
 
 F = normalFan crossPolytope 3
 -- TASK --
 -- understand what this looks like
 
--- TASK --
+-- TASK -- 
 -- check that F+v1 is what you expect 
 
 
