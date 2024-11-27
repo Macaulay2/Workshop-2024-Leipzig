@@ -1,4 +1,4 @@
-needs "pfaffians.m2"
+debug needsPackage "Dmodules"
 
 -- fraction field K(x) of a Weyl algebra K[x,dx]/(...)
 fractionField = memoize(D -> frac extractVarsAlgebra D)
