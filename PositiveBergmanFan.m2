@@ -9,7 +9,7 @@ newPackage(
     PackageExports => {"Matroids", "Tropical","Polyhedra"}
     )
 
-export {"signedCircuits","isPositive","positiveBergmanFan","interiorVector","BergmanFan"}
+export {"signedCircuits","isPositive","positiveBergmanFan","interiorVector"} --add BergmanFan ?
 
 -* Code section *-
 --------------------
@@ -18,7 +18,7 @@ export {"signedCircuits","isPositive","positiveBergmanFan","interiorVector","Ber
 -- BergmanconeC returns the matrix of generators of the cones
 -- corresponding to the chain of flats C. It does not check whether C
 -- is a chain of flats or not.
-
+-* Currently commented out, because we can't overload the function and this gives an error...
 BergmanconeC  = (M, C) -> (
     groundSetM:=#M.groundSet;
     L := {};
@@ -59,7 +59,7 @@ BergmanFan = (M) -> (
         tropicalCycle(fan(Sigma), {1});
     );
 )
-
+*-
 ------------------------------------
 --  Code for positive Bermgan Fan --
 ------------------------------------
@@ -71,10 +71,9 @@ interiorVector Cone := C -> (
                  -- Take the sum of the rays
                  iv := Rm * ones;
                  transpose matrix apply(entries transpose iv, w -> (g := abs gcd w; apply(w, e -> e//g)))));
-                 
+
 signedCircuits = method();
-signedCircuits Matrix := N -> (
-    K:=transpose gens ker N;
+signedCircuits Matrix := K -> (
     M:=matroid K;
     C:=circuits M;
     for support in C list(
@@ -88,12 +87,12 @@ signedCircuits Matrix := N -> (
 				Pos=append(Pos,support#i)
 			else Neg=append(Neg,support#i)
 		);
-		{Pos,Neg}
+		{toList Pos,toList Neg}
 	)
-)
+);
 
 --take maximal cone S and test if it is positive with the given list of signed circuits C
-isPositive = (S,C) -> (
+isPositive := (S,C) -> (
     P := entries interiorVector S;
     boo := true;
     for c in C do (
@@ -110,18 +109,14 @@ isPositive = (S,C) -> (
 
 
 positiveBergmanFan = method();
-positiveBergmanFan Matrix := N ->(
-    C := signedCircuits(N);
-    K := transpose gens ker N;
+positiveBergmanFan Matrix := K ->(
+    C := signedCircuits(K);
     M := matroid K;
     T := BergmanFan M;
     Rays := rays T;
     S := maxCones T;
-    print S;
-
     L := new MutableList;
     Sigma := coneFromVData (linealitySpace T);
-
     for s in S do (
         Sigma = coneFromVData(Rays_s,linealitySpace T);
         print(Sigma);
@@ -143,6 +138,24 @@ doc ///
 ///
 
 
+doc ///
+	Key
+		positiveBergmanFan
+	Headline
+		Compute the positive part of the Bergman fan given a matrix
+	Usage
+		positiveBergmanFan(matr)
+	Inputs
+		matr: Matrix
+		    realization of matroid as column matrix
+	Description
+	    Text
+	        This function computes the positive part of the Bergman Fan in the sense of Ardila-Klivans-Williams 2004
+	    Example
+    	        K = matrix {{0,1,1,0,0},{-1,1,0,0,-2},{0,0,0,1,1}}
+                P = positiveBergmanFan K
+                maxCones P
+///
 
 -* Test section *-
 TEST /// -* [insert short title for this test] *-
