@@ -10,7 +10,7 @@ treks(Digraph, Thing, Thing) := (G, i, j) -> (
     hashingPaths = new MutableHashTable;		    -- hash paths i<-CP according to CP-point 
     for p in pathset1 do (
 	endpoint = p#-1;
-	if hashingPaths#?endpoint == false then(
+	if not hashingPaths#?endpoint then(
 	    hashingPaths#endpoint = new MutableList from {p};
 	    ) else (hashingPaths#endpoint)##(hashingPaths#endpoint) = p;
         );
