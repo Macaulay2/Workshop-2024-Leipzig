@@ -26,8 +26,7 @@ export {
    "slice",
    "getVariableToIndexset",
    "assemblePolynomial",
-   "assemblePlayeriPolynomials",
-   "correlatedEquilibria"
+   "assemblePlayeriPolynomials"
 }
 
 
