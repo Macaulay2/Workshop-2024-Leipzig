@@ -70,6 +70,7 @@ ncMonToVar (NCRingElement) := List => f -> (
 
 ncMonToList = method()
 ncMonToList (NCRingElement) := List => f -> (
+    R = ring f
     fmons = keys f.terms;
     monKey = (keys fmons#0)#1;
     (fmons#0)#(monKey) / ( i -> last baseName i)
@@ -153,7 +154,7 @@ polysig (List, NCRingElement) := QQ => opts -> (l, w) -> (
 
 errorDepth = 0;
 
-end
+
 restart
 load("signatures_wip.m2")
 
@@ -169,7 +170,11 @@ assert(r == 1/6*a_1*a_3)
 ///
 
 
-
+----------------------------------------------------------------------------
+-- Draft of equivariance action
+-- Consider outputing the NCringmap instead of computing it on 
+-- an element
+----------------------------------------------------------------------------
 
 matrixAction = method()
 matrixAction (Matrix,  NCRingElement, NCRing) := NCRingElement => (M,  p, B) -> (
@@ -184,3 +189,24 @@ matrixAction (Matrix,  NCRingElement, NCRing) := NCRingElement => (M,  p, B) -> 
     f(p)
 
 )
+
+----------------------------------------------------------------------------
+-- Hard coded canonical axis path tensor simple compoents as in 
+-- Example 2.1 of "varieties of signature tensors" 
+-- C. Amendola et al, 2018
+--Inputs: 
+--  w, a word in a NCpolynomial ring 
+----------------------------------------------------------------------------
+
+CAxisComponent= method();
+
+CAxisComponent (NCRingElement) := QQ => w -> (
+    L := ncMonToList (w);
+    distinctPermutations := (#L)!/(product( apply(values tally L, i-> i !)));
+    distinctPermutations/((#L))!
+);
+
+TEST ///
+QQ{a_1..a_3}
+CAxisComponent(a_1^4);
+///
