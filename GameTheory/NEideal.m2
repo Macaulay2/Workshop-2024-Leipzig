@@ -111,6 +111,6 @@ NEideal TotalTestTensors
 --example to generate a list of random tensors and compute the ideal from it
 nofplayers = 4
 dimGameTensor = {3,2,3,4}
-randomTensorList = apply(nofplayers, i->randomTensor dimGameTensor)
+randomTensorList = apply(nofplayers, i->randomTensor (QQ,dimGameTensor))
 NEideal randomTensorList
 --4-player-game, where players have {3,2,3,4} choices
