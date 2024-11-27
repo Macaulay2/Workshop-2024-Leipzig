@@ -68,9 +68,16 @@ ncMonToVar (NCRingElement) := List => f -> (
     (fmons#0)#(monKey)
 );
 
+-- for later use (maybe)
+
+varIndex = method()
+varIndex(NCRingElement) := List => (var) -> (
+    tbl = hashTable toList(apply(pairs var.ring.generators, (i,j)->(j,i)));
+    return tbl#var
+)
+
 ncMonToList = method()
 ncMonToList (NCRingElement) := List => f -> (
-    R = ring f
     fmons = keys f.terms;
     monKey = (keys fmons#0)#1;
     (fmons#0)#(monKey) / ( i -> last baseName i)
@@ -155,10 +162,6 @@ polysig (List, NCRingElement) := QQ => opts -> (l, w) -> (
 errorDepth = 0;
 
 
-restart
-load("signatures_wip.m2")
-
-
 TEST ///
 R = QQ{l_1..l_5};
 f = 1/2*(l_1*l_2 - l_2*l_1);
@@ -202,11 +205,41 @@ CAxisComponent= method();
 
 CAxisComponent (NCRingElement) := QQ => w -> (
     L := ncMonToList (w);
+    if(L!=sort(L)) then return 0;
     distinctPermutations := (#L)!/(product( apply(values tally L, i-> i !)));
     distinctPermutations/((#L))!
 );
+
+----------------------------------------------------------------------------
+-- Hard coded canonical moment path tensor simple components as in 
+-- Example 2.3 of "varieties of signature tensors" 
+-- C. Amendola et al, 2018
+--Inputs: 
+--  w, a word in a NCpolynomial ring
+----------------------------------------------------------------------------
+
+CMonComponent= method();
+
+CMonComponent (NCRingElement) := QQ => w -> (
+    L := ncMonToList (w);
+    product(L_{1..length(L)-1})/product(accumulate(plus,L))
+);
+
+CAxisTensor = method();
+CAxisTensor(ZZ, NCPolynomialRing) := NCRingElement => (k,r) -> (
+    sum(apply((entries basis(k,r))#0, i-> CAxisComponent(i) * i))
+)
+
+CMonTensor = method();
+CMonTensor(ZZ, NCPolynomialRing) := NCRingElement => (k,r) -> (
+    sum(apply((entries basis(k,r))#0, i-> CMonComponent(i) * i))
+)
 
 TEST ///
 QQ{a_1..a_3}
 CAxisComponent(a_1^4);
 ///
+
+
+restart
+load("signatures_wip.m2");
