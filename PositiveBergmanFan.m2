@@ -3,20 +3,18 @@ newPackage(
     Version => "0.1",
     Date => "November 2024",
     Headline => "Methods for computing positive Bergman fans",
-    Authors => {{ Name => "Renata Picciotto, Julian Weigert, Alheydis Geiger, Chamir Ngandjia", Email => "", HomePage => ""}},
+    Authors => {{ Name => "Renata Picciotto, Julian Weigert, Alheydis Geiger, Chamir Ngandjia, Mate Telek", Email => "", HomePage => ""}},
     AuxiliaryFiles => false,
     DebuggingMode => false,
     PackageExports => {"Matroids", "Tropical","Polyhedra"}
     )
 
-export {"signedCircuits","isPositive","positiveBergmanFan","interiorVector"}
+export {"signedCircuits","isPositive","positiveBergmanFan","interiorVector","BergmanFan"}
 
 -* Code section *-
 --------------------
 --Bergman fan code
 --------------------
-
-
 -- BergmanconeC returns the matrix of generators of the cones
 -- corresponding to the chain of flats C. It does not check whether C
 -- is a chain of flats or not.
@@ -52,19 +50,28 @@ BergmanFan = (M) -> (
     	);
         F:= fan L;
         mults:=apply(#(maxCones F),i->1);
-        tropicalCycle(F,mults)    
-    );
+        tropicalCycle(F,mults);    
+    )
     else (
         n := length E;
         LS := transpose matrix{apply(n,i->1)};
         Sigma := coneFromVData(map(ZZ^(n),ZZ^0,0), LS);
         tropicalCycle(fan(Sigma), {1});
-    )
+    );
 )
 
 ------------------------------------
 --  Code for positive Bermgan Fan --
 ------------------------------------
+interiorVector Cone := C -> (
+            if numColumns rays C == 0 then map(ZZ^(ambDim C),ZZ^1,0)
+            else (
+                 Rm := rays C;
+                 ones := matrix toList(numColumns Rm:{1});
+                 -- Take the sum of the rays
+                 iv := Rm * ones;
+                 transpose matrix apply(entries transpose iv, w -> (g := abs gcd w; apply(w, e -> e//g)))));
+                 
 signedCircuits = method();
 signedCircuits Matrix := N -> (
     K:=transpose gens ker N;
