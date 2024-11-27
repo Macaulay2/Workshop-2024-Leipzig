@@ -5,13 +5,34 @@ randomUlrichLineBundle(Ideal) := I -> (
     )
 
 --------------------------------------
-stiefelComplex=method()
-sitefelComplex(ChainComplex,Matrix) := (T,m) -> (
+stiefelComplex = method()
+stiefelComplex(Complex,Matrix) := (T,stm) -> (
     -- Input: T , a Tate resolution of E in n+1 varibles
-    --        m the kx(n+1) matrix in the over St=kk[a_(0,0)..a_(k-1,n)]
+    --        stm the kx(n+1) matrix in the over St=kk[a_(0,0)..a_(k-1,n)]
     -- Output: U'(T) a complex of garded free St-modules.
 
+    (lo,hi) := concentration T;
+    k := numColumns stm;
+    n := (numRows stm)-1;
     
+    matrixEtoMatrixSt := D -> (
+        degsSource := flatten degrees source D;
+        degsTarget := flatten degrees target D;
+        
+        return matrix apply(#degsTarget, i -> apply(#degsSource, j -> (
+            p := k + degsSource_j;
+            q := k + degsTarget_i;
+            f := D_(i,j);
+    
+            uMatrix(p,q,f,stm)
+        )));
+    );
+    
+    newdiffs := apply(toList(lo+1..hi),d -> matrixEtoMatrixSt T.dd_d);
+    d0 := first newdiffs;
+    newdiffscorr := toList apply(1..#newdiffs-1, d -> d0 = map(source d0,,newdiffs#d));
+    
+    return complex(newdiffscorr, Base => lo);
 )
 
 TEST /// --example case 
@@ -36,22 +57,61 @@ ds={d0=TM.dd_0,d1=TM.dd_1, d2=TM.dd_2,d3=TM.dd_3};
 netList ds
 apply(ds,d->betti d)
 
+
+------------------------------------------------
+restart
 needsPackage "Complexes"
+needsPackage "BGG"
+
+kk=ZZ/101
+k=4,n=6
+E=kk[e_0..e_n,SkewCommutative=>true]
+St=kk[a_(0,0)..a_(k-1,n)]
+stm= genericMatrix(St,a_(0,0),n+1,k)
+
+Pn=kk[x_0..x_n]
+E=kk[e_0..e_n,SkewCommutative=>true]
+b=2
+m=matrix apply(b,i->apply(n+2-b,j->x_(i+j)))
+m2=presentation prune symmetricPower(2,coker m)
+
+TM=(tateResolution(m2,E,-3,3))**E^{0}[3]
 T = complex TM
+
+stiefelComplex(T,stm)
+
+D = T.dd_0
+g = D_{3}^{1}
+
+degsSource = flatten degrees source D
+degsTarget = flatten degrees target D
+
+apply(#degsTarget, i -> apply(#degsSource, j -> (
+    p := k + degsSource_j;
+    q := k + degsTarget_i;
+    f := D_(i,j);
+    
+    uMatrix(p,q,f,stm)
+)))
 
 ///
 
 uMatrix = method()
-uMatrix(ZZ,ZZ,RingElement,Matrix) := (p,q,f,m) -> (
+uMatrix(ZZ,ZZ,RingElement,Matrix) := (p,q,f,stm) -> (
     -- Input: p,q, non-negativ integers p>q
     --       f, an element of degree t=p-q in the an exterior
-    --       m the kx(n+1) matrix in the over St=kk[a_(0,0)..a_(k-1,n)]
+    --       stm the kx(n+1) matrix in the over St=kk[a_(0,0)..a_(k-1,n)]
     -- Output: the morphism Lamba^p U -> Lambda^q U induced by f
     --       in other words a binomial(k,p)xbinomial(k,q) matrix with entries
     --       certain txt a sum of certain txt minors of m
     
-    k := numColumns m;
-    n := (numRows m)-1;
+    k := numColumns stm;
+    n := (numRows stm)-1;
+    
+    if (p < q or q < 0 or p > k or f == 0) then (
+        St := ring stm;
+        return map(St^(binomial(k,q)),St^(binomial(k,p)),0);
+    );
     
     multOnSummand := (I,J,K) -> (
         if not(#I == #J + #K) then return 0;
@@ -61,7 +121,7 @@ uMatrix(ZZ,ZZ,RingElement,Matrix) := (p,q,f,m) -> (
         IminusJ := apply(IminusJPos,last);
         
         -- TODO: Double check the sign!        
-        return (-1)^(sum apply(IminusJPos,first)) * det m^K_IminusJ;
+        return (-1)^(sum apply(IminusJPos,first)) * det stm^K_IminusJ;
     );
     
     exteriorPolyToList := poly -> apply(exponents poly,L -> positions(L,odd));
@@ -70,14 +130,14 @@ uMatrix(ZZ,ZZ,RingElement,Matrix) := (p,q,f,m) -> (
     Ltarget := subsets(toList(0..k-1),q);
     
     multFromK := K -> (
-        return matrix apply(Lsource, I -> apply(Ltarget,J -> (
+        return matrix apply(Ltarget,J -> apply(Lsource, I -> (
             multOnSummand(I,J,K)
         )));
     );
     
     return sum(exteriorPolyToList f,multFromK);
 )
-    
+   
 TEST /// -- Hint
 kk=ZZ/2
 k=4,n=6
