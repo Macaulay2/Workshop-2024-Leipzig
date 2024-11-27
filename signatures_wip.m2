@@ -55,11 +55,6 @@ isMatrix (List) := Boolean => M ->(
     return true
 )
 
-------------------------------------
---This function converts a NC monomial to a list representing the corresponding word
---f is a monomial in an NCring
---The output is a list representing the word, as in linsig
--------------------------------------
 
 ncMonToVar = method()
 ncMonToVar (NCRingElement) := List => f -> (
@@ -67,7 +62,6 @@ ncMonToVar (NCRingElement) := List => f -> (
     monKey = (keys fmons#0)#1;
     (fmons#0)#(monKey)
 );
-
 
 ------------------------------------
 --coefficientHTable returns a Hash table associating the monomials in a nc polynomial to their coefficients
@@ -86,6 +80,12 @@ varIndex(NCRingElement) := List => (var) -> (
     return tbl#var
 )
 
+------------------------------------
+--This function converts a NC monomial to a list representing the corresponding word
+--f is a monomial in an NCring
+--The output is a list representing the word, as in linsig
+-------------------------------------
+
 ncMonToList = method()
 ncMonToList (NCRingElement) := List => f -> (
     fmons = keys f.terms;
@@ -99,13 +99,13 @@ ncMonToList (NCRingElement) := List => f -> (
 -- The coefficients of these monomials in f are stored in vals, in such a way that the index of v_m in R agrees with the position of the coefficient of m in vals
 -- (TODO: add option for different variable name in wR.)
 --------------------------------
-wordRingAndValues = method()
-wordRingAndValues(NCRingElement) := (Ring,List) => f -> (
-        htable = coefficientHTable(f);
-        whtable = applyKeys(htable, ncMonToList);
-        vs = new Array from apply(keys whtable, i-> v_i);
-        wR = QQ vs;
-        vals = values whtable;
+wordRingAndValues = method(Options => {GroundField => QQ})
+wordRingAndValues(NCRingElement) := (Ring,List) => opts -> f -> (
+        htable := coefficientHTable(f);
+        whtable := applyKeys(htable, ncMonToList);
+        vs := new Array from apply(keys whtable, i-> v_(toSequence(i)));
+        wR := opts.GroundField vs;
+        vals := values whtable;
        return((wR,vals))
 )
 
@@ -154,7 +154,7 @@ polySigGen = method()
 
 polySigGen (List, List, Ring) := RingElement => (l, w, bR) ->(
     k:= length w;
-    x := getSymbol "t";
+    x := getSymbol "x";
     R := bR[x_1..x_k];
     S := bR[s];
     X := apply(l, i-> sum(1..length(i)-1, j -> (i#j)_S * s^j));
@@ -260,28 +260,50 @@ CMonTensor(ZZ, NCPolynomialRing) := NCRingElement => (k,r) -> (
 --createMapFromCoreTensor takes a core tensor f and a target ambient dimension ambd and constructs the associated map of varieties
 -----------------------------------------------------------------------
 
-createMapFromCoreTensor = method();
-createMapFromCoreTensor(NCRingElement, ZZ) := NCRingElement => (f,ambd) -> (
-    ctd := #gens f.ring; -- if core tensor is element of (R^d)^{tensor k}, this is d
-    mR := QQ[a_(1,1)..a_(ctd,ambd)]; -- create coordinate ring of matrix space
-    A := genericMatrix(mR,ambd,ctd); -- create generic matrix
+createMapFromCoreTensor = method(Options=>{GroundField => QQ});
+createMapFromCoreTensor(NCRingElement, ZZ) := NCRingElement => opts -> (f,ambd) -> (
+    a = getSymbol "a";
     lamb := getSymbol "lamb";
+    ctd := #gens f.ring; -- if core tensor is element of (R^d)^{tensor k}, this is d
+    mR := (opts.GroundField)[a_(1,1)..a_(ctd,ambd)]; -- create coordinate ring of matrix space
+    A := genericMatrix(mR,ambd,ctd); -- create generic matrix
     ncR2 := mR{(lamb)_1..(lamb)_ambd}; -- create tensor algebra over ambient vector space
     genTensor := matrixAction(A, f, ncR2); -- create generic tensor
-    (wR,rmap) := wordRingAndValues(genTensor); -- get target ring and components of ring map
-    map(mR, wR, rmap) -- create the map from matrix ring to word ring via rmap
+    (wR,rmap) := wordRingAndValues(genTensor,GroundField=>opts.GroundField); -- get target ring and components of ring map
+    map(mR, wR, rmap) -- create the map from word ring to matrix ring via rmap
 )
-
-ncR1 = QQ{l_1,l_2,l_3};
-ourmap = createMapFromCoreTensor(CAxisTensor(2,ncR1),4)
-kernel ourmap
-
 
 end
 restart
 load("signatures_wip.m2");
 
+ncR1 = QQ{l_1,l_2,l_3};
+ourmap = createMapFromCoreTensor(CAxisTensor(2,ncR1),2,GroundField=>RR)
+kernel ourmap
 
+needsPackage "NumericalImplicitization"
+numericalImageDim(ourmap,ideal 0_(ourmap.target))
+
+-----------------------------------
+-- Bugs in MultigradedImplicitization/gfanInterface
+----------------------------------
+-- Bug 1: can not use variable name x when defining map inline
+-- needsPackage "MultigradedImplicitization"
+-- R1 = QQ[x1,x2]
+-- R2 = QQ[s1,s2]
+-- m = {x1,x1*x2}
+-- componentsOfKernel(2,map(R1,R2,m))
+-- componentsOfKernel(2,map(R1,R2,m)) -- works fine
+-- componentsOfKernel(2,map(R1,R2,{x1,x1*x2})) -- works fine once
+-- componentsOfKernel(2,map(R1,R2,{x1,x1*x2})) -- error
+---------------
+-- Bug 2: conflict with NCAlgebra
+-- needsPackage "MultigradedImplicitization"
+-- needsPackage "NCAlgebra"
+-- R1 = QQ[a,b]
+-- R2 = QQ[c,d]
+-- m = {a*b,a*b + b}
+-- componentsOfKernel(2,map(R1,R2,m))
 
 TEST ///
 QQ{a_1..a_3}
