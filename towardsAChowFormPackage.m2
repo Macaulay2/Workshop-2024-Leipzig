@@ -36,7 +36,7 @@ apply(ds,d->betti d)
 
 ///
 
-uMatrix=method()
+uMatrix = method()
 uMatrix(ZZ,ZZ,RingElement,Matrix) := (p,q,f,m) -> (
     -- Input: p,q, non-negativ integers p>q
     --       f, an element of degree t=p-q in the an exterior
@@ -45,6 +45,9 @@ uMatrix(ZZ,ZZ,RingElement,Matrix) := (p,q,f,m) -> (
     --       in other words a binomial(k,p)xbinomial(k,q) matrix with entries
     --       certain txt a sum of certain txt minors of m
     
+    k := numColumns m;
+    n := (numRows m)-1;
+    
     multOnSummand := (I,J,K) -> (
         if not(#I == #J + #K) then return 0;
         if not(isSubset(J,I)) then return 0;
@@ -52,20 +55,35 @@ uMatrix(ZZ,ZZ,RingElement,Matrix) := (p,q,f,m) -> (
         IminusJPos := select(apply(#I,n -> (n+1,I_n)),(n,i) -> not isMember(i,J));
         IminusJ := apply(IminusJPos,last);
         
-        -- TODO: sign which uses the first entries of IminusJPos
-        
-        return det stm^K_IminusJ;
-    )
+        -- TODO: Double check the sign!        
+        return (-1)^(sum apply(IminusJPos,first)) * det stm^K_IminusJ;
+    );
+    
+    exteriorPolyToList := poly -> apply(exponents poly,L -> positions(L,odd));
+    
+    Lsource := subsets(toList(0..k-1),p);
+    Ltarget := subsets(toList(0..k-1),q);
+    
+    multFromK := K -> (
+        return matrix apply(Lsource, I -> apply(Ltarget,J -> (
+            multOnSummand(I,J,K)
+        )));
+    );
+    
+    return sum(exteriorPolyToList f,multFromK);
 )
     
 TEST /// -- Hint
 kk=ZZ/2
 k=4,n=6
-Pn=kk[x_0..x_n]
 E=kk[e_0..e_n,SkewCommutative=>true]
 St=kk[a_(0,0)..a_(k-1,n)]
-stm= genericMatrix(St,a_(0,0),n+1,k)
+m= genericMatrix(St,a_(0,0),n+1,k)
+p=3,q=1, t=p-q
+f = e_1*e_3 + e_5*e_2
+uMatrix(p,q,f,m)
 
+stm = m
 p=3,q=1, t=p-q
 basis(t,E)
 
@@ -76,9 +94,6 @@ L3=subsets(toList(0..n),t)
 I = L1_2
 J = L2_3
 K = L3_2
-
-
-
 
 mons=apply(L3,K->product(K,l->e_l))
 ns=L3_10
