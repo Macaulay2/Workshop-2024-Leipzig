@@ -2,12 +2,13 @@ treks = method()
 treks(Digraph, Thing, Thing) := (G, i, j) -> (
     Parents1 = forefathers(G, i);
     Parents2 = forefathers(G, j);
-    CommonParents = intersect(Parents1, Parents2);	    -- middle points of tracks
-    pathset1 = pathsEndingInSet(G, i, CommonParents);
-    pathset2 = pathsEndingInSet(G, j, CommonParents);
+    commonParents = intersect(Parents1, Parents2);	    -- middle points of tracks
+    pathset1 = pathsEndingInSet(G, i, commonParents);
+    pathset2 = pathsEndingInSet(G, j, commonParents);
     if #pathset1 == 0 then return pathset2;		    -- trivial cases
     if #pathset2 == 0 then return pathset1;
-    hashingPaths = new MutableHashTable;		    -- hash paths i<-CP according to CP-point 
+    if isMember(i, 
+    hashingPaths = new MutableHashTable;		    -- hash paths i<-CP according to CP-point
     for p in pathset1 do (
 	endpoint = p#-1;
 	if not hashingPaths#?endpoint then(
@@ -26,7 +27,7 @@ treks(Digraph, Thing, Thing) := (G, i, j) -> (
  )
     
 pathsEndingInSet = method()
-pathsEndingInSet(Digraph, Thing, Set) := (G, i, CommonParents) -> (
+pathsEndingInSet(Digraph, Thing, Set) := (G, i, commonParents) -> (
     listOfPaths = new MutableList;
     queue = new MutableList from {{i}};
     while #queue != 0 do(				    -- kind of bfs for all paths CP->i 
@@ -37,14 +38,14 @@ pathsEndingInSet(Digraph, Thing, Set) := (G, i, CommonParents) -> (
 		extPath = new MutableList from p;
 		extPath##extPath = endpoint;
 		queue##queue = toList(extPath);
-		if isMember(endpoint, CommonParents) == true then (
+		if isMember(endpoint, commonParents) == true then (
 		    listOfPaths##listOfPaths = queue#-1;
 		    );
 		);
 	    );
 	);
     return listOfPaths;
- )
+)
 
 -- could be faster with two hashes and table(#i,#i) for each i
 
