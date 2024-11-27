@@ -1,39 +1,8 @@
 loadPackage "Matroids";
 
+--Preliminary functions
 
-
-
-MMEN=method(Options=>{Strategy=>"Last",Strategy=>"Central"});
-MMEN(Matroid,List):=opts->(M,a)->(
-    n:=#M.groundSet-1;
-    if not (sum(a)==rank(M)-1) or not (#a==n) then (
-        print("Invalid sequence");
-        print(M,a);
-        break;
-    );
-    if sum(a)==0 then return 1;
-    if opts#Strategy=="Last" then (
-        j:=position(a,i->(not (i==0)),Reverse=>true);
-    ) else if opts#Strategy=="Central" then (
-        j:=centralPosition(a,k->(not k==0));
-    ); 
-    b:=apply(#a,k-> if k==j then (a#k)-1 else a#k);
-    FlatList:=suitableFlats(M,b);
-    S:=0;
-    for F in FlatList do(
-        m:=min(j+1,n+1-#F)*(n+1-max(j+1,n+1-#F))/(n+1);
-        M1:=M/F;
-        a1:=apply(n-#F,k->b#k);
-        M2:=M|F;
-        a2:=apply(#F-1,k->b#(k+n+1-#F));
-        factor1:=MMEN(M1,a1, Strategy=>opts#Strategy);
-        factor2:=MMEN(M2,a2, Strategy=>opts#Strategy);
-        S=S+m*factor1*factor2;
-    );
-    return S;
-);
-
-
+--Finds what are the flats that satisfy the mixed matroid eulerian conditions w.r.t. a
 suitableFlats=method();
 suitableFlats(Matroid,List):=(M,a)->(
     allFlats:=flats(M);
@@ -47,6 +16,7 @@ suitableFlats(Matroid,List):=(M,a)->(
     return goodFlats;
 );
 
+--Finds the more central element on a list for which f(i) == true
 centralPosition=method();
 centralPosition(List,Function):= (L,f)->(
     n:=#L;
@@ -67,6 +37,51 @@ centralPosition(List,Function):= (L,f)->(
 );
 
 
+
+--Main method to compute Eulerian numbers given a matroid M and a sequence a
+--Strategy "Last" picks the last non-zero entry of a as a reference
+--Strategy "Central" picks the most central non-zero entry of a as a reference
+MMEN=method(Options=>{Strategy=>"Last",Strategy=>"Central"});
+MMEN(Matroid,List):=opts->(M,a)->(
+    n:=#M.groundSet-1;
+
+    --Checks if a is compatible with M
+    if not (sum(a)==rank(M)-1) or not (#a==n) then (
+        print("Invalid sequence");
+        print(M,a);
+        break;
+    );
+
+    --Base case for recursion computation
+    if sum(a)==0 then return 1;
+
+    --Choice of j according to the strategy
+    if opts#Strategy=="Last" then (
+        j:=position(a,i->(not (i==0)),Reverse=>true);
+    ) else if opts#Strategy=="Central" then (
+        j:=centralPosition(a,k->(not k==0));
+    ); 
+
+    --Finds suitable flats of M
+    b:=apply(#a,k-> if k==j then (a#k)-1 else a#k);
+    FlatList:=suitableFlats(M,b);
+
+    --Recursion
+    S:=0;
+    for F in FlatList do(
+        m:=min(j+1,n+1-#F)*(n+1-max(j+1,n+1-#F))/(n+1);
+        M1:=M/F;
+        a1:=apply(n-#F,k->b#k);
+        M2:=M|F;
+        a2:=apply(#F-1,k->b#(k+n+1-#F));
+        factor1:=MMEN(M1,a1, Strategy=>opts#Strategy);
+        factor2:=MMEN(M2,a2, Strategy=>opts#Strategy);
+        S=S+m*factor1*factor2;
+    );
+
+
+    return S;
+);
 
 
 
