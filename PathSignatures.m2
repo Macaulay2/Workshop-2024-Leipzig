@@ -257,7 +257,8 @@ CMonTensor(ZZ, NCPolynomialRing) := NCRingElement => (k,r) -> (
 
 
 -----------------------------------------------------------------------
---createMapFromCoreTensor takes a core tensor f and a target ambient dimension ambd and constructs the associated map of varieties
+--createMapFromCoreTensor takes a core tensor f and a target ambient 
+--dimension and constructs the associated map of varieties
 -----------------------------------------------------------------------
 
 createMapFromCoreTensor = method(Options=>{GroundField => QQ});
