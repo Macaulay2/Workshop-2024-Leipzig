@@ -132,8 +132,7 @@ isPositive := (S,C) -> (
 
 --This function computes the positive part of the Bergman fan. 
 --Input: Matrix (the column matrix of the matroid), Output: a fan, OR error message if positive part emtpy
---TO DO: The error message
---TO DO: Special care needs ot be taken if the fan has no maximal cones! Test this and fix.
+--TO DO: Special care needs ot be taken if the fan has no maximal cones! Test this and fix. Appears probably only for rank 1 matroids.
 positiveBergmanFan = method();
 positiveBergmanFan Matrix := K ->(
     C := signedCircuits(K);
@@ -149,6 +148,9 @@ positiveBergmanFan Matrix := K ->(
         if isPositive(Sigma,C) then (
             L=append(L,Sigma); 
         );
+    );
+    if toList L == {} then (
+        error("The Bergman fan has no positive maximal cones. Check independently whether the lineality space is positive.");
     );
     return fan toList(L);
 )
