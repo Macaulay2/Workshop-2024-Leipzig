@@ -11,16 +11,16 @@ result
 );
 for k from 0 to length(R_*)-1 do (
 I=saturate(I,R_k,Strategy=>Bayer);
-if Verbose then print k;
+if Verbose then (print k;);
 V=saturate(V,R_k,Strategy=>Bayer);
-if Verbose then print k;
+if Verbose then (print k;);
 );
 I=saturate(I,sum(R_*),Strategy=>Bayer);
 V=saturate(V,sum(R_*),Strategy=>Bayer);
 J:=I+V;
 for k from 0 to length(R_*)-1 do (
 J=saturate(J,R_k,Strategy=>Bayer);
-if Verbose then print k;
+if Verbose then (print k;);
 );
 J=saturate(J,sum(R_*),Strategy=>Bayer);
 result=J;
