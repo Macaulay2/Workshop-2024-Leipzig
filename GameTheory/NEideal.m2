@@ -1,4 +1,4 @@
-loadPackage "GameTheory"
+needsPackage "GameTheory"
 
 --random integer valued tensors (instead of real valued) for testing purposes
 randomTensorInteger = method()
