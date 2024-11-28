@@ -93,7 +93,7 @@ KonstanzMatrix = konstanzMatrix(PPR, X)
 
 
 ---CONDITIONAL EQUILIBRIA
-
+--- 2x2 game
 FF = ZZ/32003
 d = {2,2}
 X = randomGame(d, CoefficientRing => FF)
@@ -106,6 +106,7 @@ G2 = graph ({}, Singletons => {1,2})
 I1 = intersectCImodel(G1, V, d)
 I2 = intersectCImodel(G2, V, d)
 
+--- 2x2x2 game
 d = {2,2,2}
 X = randomGame(d, CoefficientRing => FF)
 PR = probabilityRing(d, CoefficientRing => FF)
@@ -121,6 +122,7 @@ I2 = intersectCImodel(G2, V, d)
 I3 = intersectCImodel(G3, V, d)
 I4 = intersectCImodel(G4, V, d)
 
+--- 2x3x2 game
 d = {2,3,2}
 X = randomGame(d, CoefficientRing => FF)
 PR = probabilityRing(d, CoefficientRing => FF)
