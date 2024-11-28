@@ -199,14 +199,31 @@ degree grass
 degree coker phi
 ///
 
+--Input: F a ChainComplex of free graded S-module
+--Output: an element of Q(S), whose divisor measures the homology in codim 1
+--        according to Cayley
 determinantOfAComplex=method()
 determinantOfAComplex(ChainComplex) := F -> (
-    --Input: F a ChainComplex of free graded S-module
-    --Output: an element of Q(S), whose divisor measures the homology in codim 1
-    --        according to Cayley
-    )
+
+    numDet := 1;
+    denDet := 1;
+    p := id_(F_0);
+    T := F_0;
+for i from 1 to length(F) do(
+    S1 :=  S^(-(degrees F_i)_{0..(numrows(p)-1)});
+    j := random( F_i, S1 );
+    D  := p * (F.dd_i) * j;
+        if( i%2 == 0 ) then(
+            numDet = numDet * det(D);
+        ) else (denDet = denDet * det(D)); 
+    p = transpose syz transpose j;
+    T = coker p;
+);
+    numDet/denDet
+)
 
 TEST /// -- an example
+
 kk=ZZ/101
 S=kk[y_0..y_14]
 m=genericSkewMatrix(S,y_0,5)
