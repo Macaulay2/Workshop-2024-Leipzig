@@ -19,8 +19,7 @@ b=2
 m=matrix apply(b,i->apply(n+2-b,j->x_(i+j)))
 m2=presentation prune symmetricPower(2,coker m)
 
-TM=(tateResolution(m2,E,-3,3))**E^{1}[3]
-T = complex TM
+T = complex ((tateResolution(m2,E,-3,3))**E^{1}[3])
 
 X = stiefelComplex(T,stm)
 
@@ -41,8 +40,7 @@ Pn = kk[x_0..x_n]
 I = ideal(sum(n,i -> x_i^2),sum(n,i -> random(kk)*x_i^2))
 M = Pn^1/I
 cohomologyTable(sheaf M,-3,3)
-TM = tateResolution(presentation M,E,-3,3)[3] ** E^{1}
-T = complex TM
+T = complex (tateResolution(presentation M,E,-3,3)[3] ** E^{1})
 
 X = stiefelComplex(T,stm)
 
