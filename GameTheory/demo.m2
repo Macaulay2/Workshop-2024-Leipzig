@@ -21,3 +21,15 @@ X1#{0,1} = 0
 X1#{1,0} = 1
 X1#{1,1} = 0
 
+format X0
+indexset X0
+R = coefficientRing X0
+
+X = {X0,X1}
+--getVariableToIndexset (R,X)
+
+CX = correlatedEquilibria X
+dim CX
+vertices CX
+facets CX
+
