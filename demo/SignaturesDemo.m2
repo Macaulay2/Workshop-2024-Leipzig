@@ -12,7 +12,7 @@ First of all, we solve the easy problem of computing the signatures of piece-wis
 ///
 d=5
 X= id_(ZZ^d)
-A = QQ{l_1..l_d}  --We encoded tensors through non commutative polynomials
+R = QQ{l_1..l_d}  --We encoded tensors through non commutative polynomials
 pwlsig(X, l_1)
 CAxisMatrix =matrix table(d,d,(i,j) -> pwlsig(X, l_(i+1)*l_(j+1))) --Piecewise linear 2nd level signature tensor
 
@@ -21,14 +21,43 @@ CAxisMatrix =matrix table(d,d,(i,j) -> pwlsig(X, l_(i+1)*l_(j+1))) --Piecewise l
 Y=apply(entries X, i-> prepend(0, i)); 
 matrix table(d,d,(i,j) -> polysig(Y, l_(i+1)*l_(j+1)))
 
+-- It is also possible to choose generic coefficients!
+R = QQ{l_1,l_2}
+mR = QQ[a_(1,1)..a_(2,3)]
+A = genericMatrix(mR,3,2);
+f = l_1*l_2 - l_2*l_1;
+pwlsig(A,f)
+
 -- The two specific paths we just described turn out to generate interesting classes of paths through
 -- equivariance (i.e. the natural action of a matrix on the tensors), namely the classes of piecewise 
 -- linear paths with m segments and polynomial paths of degree at most m, in \RR^d.
 
 -- There are closed formulas for the corresponding core tensors. They can be obtained in the following way:
 
-CAxisTensor(2, A);
-CMonTensor(2,A);  
+R = QQ{l_1,l_2,l_3}
+CAxisTensor(2, R) -- core tensor in degree 2
+CMonTensor(2,R) -- core tensor in degree 2
+
+-- Sending a matrix to the tensor obtained by acting on the level k core tensor with that matrix yields a homogeneous map of affine varieties. This map can be constructed in the following way:
+
+l=getSymbol("l")
+R = QQ{l_1..l_3};
+coreTensor = CAxisTensor(2, R);
+ourmap = createMapFromCoreTensor(coreTensor,4,GroundField=>QQ);
+
+-- This uses the following function which obtains the image of a tensor under the matrix action
+
+R = QQ{l_1,l_2}
+A = matrix {{1,2,3},{4,5,6}}
+f = l_1*l_2^2 + l_1^2*l_1;
+g = l_1*l_2;
+R2 = QQ{e_1,e_2,e_3}
+matrixAction(A,f,R2)
+
+-- Then we can use inbuilt functions and packages to study its kernel. In other ways, we can study the Zariski closure of the image of the map above.
+
+kernel ourmap
 
 
--- Now we try to study the closure of the image of the 
+
+
