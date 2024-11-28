@@ -1,3 +1,5 @@
+needsPackage "GraphicalModels";
+
 intersectCImodel = method(Options => {Verbose=>false})
 intersectCImodel (Graph,Ideal,List) := (G,V,Di) -> (
 markovR = markovRing (toSequence(Di));
