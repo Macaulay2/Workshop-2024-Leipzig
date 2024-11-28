@@ -7,6 +7,7 @@ partials := ideal( DR.dpairVars_1);
 sub((P*sub(f,DR)) % partials,R)
 )
 
+
 diffratW=method();
 -- Add check that P is degree 1 in derivation
 diffratW(RingElement,RingElement,RingElement) :=(P,f,g)->(
@@ -17,7 +18,9 @@ diffratW(RingElement,RingElement,RingElement) :=(P,f,g)->(
 -- Convert entries of Pfaffian to fractions
 convertEntry = method();
 convertEntry(RingElement) := (h)->(
-    frach = sub(h, coefficientRing(ring h));
+    if coefficientRing(ring h) === QQ then subRing := ring h 
+        else subRing = coefficientRing ring h;
+    frach = sub(h, subRing);
     (numerator frach, denominator frach)
 )
 
