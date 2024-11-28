@@ -40,8 +40,9 @@ vertices CX
 facets CX
 
 ---NASH EQUILIBRIA
---- Traffic lights (same example)
-
+--- Random 2x2x2 game
+Di = {2,2,2}
+X = {randomTensor Di, randomTensor Di, randomTensor Di}
 R = NERing X
 I = NEideal (R,X)
 dim I
