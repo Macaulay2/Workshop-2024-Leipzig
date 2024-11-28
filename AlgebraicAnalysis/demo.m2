@@ -32,5 +32,6 @@ P1 = matrix{{-1/x, -y/x},
 P2 = matrix{{0, 1}, 
             {1/((x-y)*y), (3*y-x)/((x-y)*y)}};
 G = matrix{{1,0},{-1/x,-y/x}}
-
+--given a change of basis matrix G and matrices {P_1,...,P_n}
+--gauge returns the n matrices (dG/dx_i)*G^-1 + G P_i G^-1
 gauge(G,{P1,P2},W)
