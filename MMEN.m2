@@ -43,7 +43,7 @@ centralPosition(List,Function):= (L,f)->(
 --Strategy "Last" picks the last non-zero entry of a as a reference
 --Strategy "Central" picks the most central non-zero entry of a as a reference
 --If no Strategy is provided, then "Central" will be used
-MMEN=method(Options=>{Strategy=>"Last",Strategy=>"Central"});
+MMEN=method(Options=>{Strategy=>"Central"});
 MMEN(Matroid,List):=opts->(M,a)->(
     n:=#M.groundSet-1;
 
