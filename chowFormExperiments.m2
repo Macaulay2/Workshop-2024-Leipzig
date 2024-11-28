@@ -63,13 +63,14 @@ k=3,n=6
 Pn=kk[x_0..x_n]
 E=kk[e_0..e_n,SkewCommutative=>true]
 b=2
-m=matrix apply(b,i->apply(n+b-2,j->x_(i+j)))
+m=matrix apply(b,i->apply(n+2-b,j->x_(i+j)))
 m2=presentation prune symmetricPower(2,coker m)
-TM=(tateResolution(m2,E,-3,3))**E^{1}
+TM=(tateResolution(m2,E,-3,3))**E^{0}[3]
 betti TM
-apply(7,i->tally degrees TM_i)
-d1=TM.dd_4, d0=TM.dd_3
-
+apply(-3..3,i->tally degrees TM_i)
+ds={d0=TM.dd_0,d1=TM.dd_1, d2=TM.dd_2,d3=TM.dd_3};
+netList ds
+apply(ds,d->betti d)
 
 
 k,n
