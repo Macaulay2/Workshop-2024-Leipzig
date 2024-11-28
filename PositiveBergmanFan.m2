@@ -9,7 +9,7 @@ newPackage(
     PackageExports => {"Matroids", "Tropical","Polyhedra"}
     )
 
-export {"signedCircuits","isPositive","positiveBergmanFan","interiorVector"} --add BergmanFan ?
+export {"signedCircuits","isPositive","positiveBergmanFan","interiorVector"} --add BergmanFan2 ?
 
 -* Code section *-
 --------------------
@@ -24,12 +24,12 @@ export {"signedCircuits","isPositive","positiveBergmanFan","interiorVector"} --a
     groundSetM:=#M.groundSet;
     L := {};
     for F in C do(
-    	  vect:={};
-    	  scan(groundSetM, i->(
-	    if member(i,F) then vect =  append(vect,1) else vect = append(vect,0);
-	  ));
-	L = append(L, vect)
-	);
+          vect:={};
+          scan(groundSetM, i->(
+        if member(i,F) then vect =  append(vect,1) else vect = append(vect,0);
+      ));
+    L = append(L, vect)
+    );
    transpose  matrix L
 )
 
@@ -38,7 +38,7 @@ export {"signedCircuits","isPositive","positiveBergmanFan","interiorVector"} --a
 -- depends on functions above
 BergmanFan2 = (M) -> (
     if ( loops(M) != {} ) then
-	    error("The current method only works for loopless matroids");
+        error("The current method only works for loopless matroids");
     E := toList M.groundSet;
     L := {};
     LM := latticeOfFlats M;
@@ -47,8 +47,8 @@ BergmanFan2 = (M) -> (
         redOrdcplx := maximalChains redLM;
         allOnes := apply(E,i->1);
         for C in redOrdcplx do(
-        	L = append(L, coneFromVData(BergmanconeC(M,C),transpose matrix {allOnes}));
-    	);
+            L = append(L, coneFromVData(BergmanconeC(M,C),transpose matrix {allOnes}));
+        );
         F:= fan L;
         mults:=apply(#(maxCones F),i->1);
         return tropicalCycle(F,mults);    
@@ -83,25 +83,25 @@ signedCircuits Matrix := K -> (
     M:=matroid K;
     C:=circuits M;
     for c in C list(
-		c=toList(c);
-		K1:=K_c;
-		V:=gens ker(K1);
-		Pos:= new MutableList;
-		Neg:=new MutableList;
-		for i from 0 to numRows(V)-1 do(
-			if  V_(i,0)>0 then
-				Pos=append(Pos,c#i)
-			else Neg=append(Neg,c#i)
-		);
-		{toList Pos,toList Neg}
-	)
+        c=toList(c);
+        K1:=K_c;
+        V:=gens ker(K1);
+        Pos:= new MutableList;
+        Neg:=new MutableList;
+        for i from 0 to numRows(V)-1 do(
+            if  V_(i,0)>0 then
+                Pos=append(Pos,c#i)
+            else Neg=append(Neg,c#i)
+        );
+        {toList Pos,toList Neg}
+    )
 );
 
 --take maximal cone S and test if it is positive with the given list of signed circuits C
 --Input: Cone, List of lists, Output: Boolean
---Need to check if isPositive works for signed circuits with an empty list
---currently not working in the Terminal ... WHY?
-isPositive := (S,C) -> (
+--TO DO: Need to check if isPositive works for signed circuits with an empty list
+--TO DO: currently not working in the Terminal ... WHY?
+isPositive = (S,C) -> (
     P := entries interiorVector S;
     for c in C do (
         neg := c_1;
@@ -167,23 +167,51 @@ doc ///
 
 
 doc ///
-	Key
-		positiveBergmanFan
-	Headline
-		Compute the positive part of the Bergman fan given a matrix
-	Usage
-		positiveBergmanFan(matr)
-	Inputs
-		matr: Matrix
-		    realization of matroid as column matrix
-	Description
-	    Text
-	        This function computes the positive part of the Bergman Fan in the sense of Ardila-Klivans-Williams 2004
-	    Example
-    	        K = matrix {{0,1,1,0,0},{-1,1,0,0,-2},{0,0,0,1,1}}
-                P = positiveBergmanFan K
-                maxCones P
+    Key
+        positiveBergmanFan
+    Headline
+        Compute the positive part of the Bergman fan given a matrix
+    Usage
+        positiveBergmanFan(matr)
+    Inputs
+        matr: Matrix
+            realization of matroid as column matrix
+    Description
+        Text
+            This function computes the positive part of the Bergman Fan in the sense of Ardila-Klivans-Williams 2004
+        Example
+            K = matrix {{0,1,1,0,0},{-1,1,0,0,-2},{0,0,0,1,1}}
+            P = positiveBergmanFan K
+            maxCones P
 ///
+
+
+
+doc ///
+    Key
+        signedCircuits
+       (signedCircuits, Matrix)
+    Headline
+        Given a matrix it computes the positive, negative parts of each circuit of the column matroid
+    Usage
+        signedCircuits(matr)
+    Inputs
+        matr: Matrix
+            realization of matroid as column matrix
+    Description
+        Text
+            This function computes the positive, negative parts of each circuit of the column matroid for a given realization. 
+        Example
+            K = matrix {{0,1,1,0,0},{-1,1,0,0,-2},{0,0,0,1,1}}
+            C = circuits matroid K
+            SC = signedCircuits K
+        Text
+            We see how the circuits are partitioned into two sets, empty sets allowed.
+        Example
+            C_0 
+            SC_0
+///
+
 
 -* Test section *-
 TEST /// -* [insert short title for this test] *-
