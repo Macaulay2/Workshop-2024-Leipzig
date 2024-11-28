@@ -75,7 +75,7 @@ b=2
 m=matrix apply(b,i->apply(n+2-b,j->x_(i+j)))
 m2=presentation prune symmetricPower(2,coker m)
 
-TM=(tateResolution(m2,E,-3,3))**E^{0}[3]
+TM=(tateResolution(m2,E,-3,3))**E^{1}[3]
 T = complex TM
 
 stiefelComplex(T,stm)
@@ -172,7 +172,7 @@ matrix apply(L1,I->apply(L2,J-> (
 ///
 ----------------
 tautologicalBundle=method()
-tautologicalBundle((ZZ,ZZ,ZZ,Ring) := (p,k,n,Pl) -> (
+tautologicalBundle(ZZ,ZZ,ZZ,Ring) := (p,k,n,Pl) -> (
 	-- Input: p, desired exterior power
 	--        k,n values of the Grasmmanian GG(k,n+1)
 	--        Pl coordinate ring of PP(binomial(n+1,k))
