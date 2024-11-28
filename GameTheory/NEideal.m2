@@ -95,7 +95,7 @@ NEideal (Ring, List) := (R, L) -> (
 )
 
 
--- example to generate a list of random tensors and compute the ideal from it
+-- example to generate a list of random tensors and compute the ideal from it, and check the dimension of the ideal (which is fine = 0)
 nofplayers = 3
 dimGameTensor = {3,2,3}
 randomTensorList = apply(nofplayers, i->randomTensor dimGameTensor)
