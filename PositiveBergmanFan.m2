@@ -94,6 +94,20 @@ signedCircuits Matrix := K -> (
 --take maximal cone S and test if it is positive with the given list of signed circuits C
 isPositive := (S,C) -> (
     P := entries interiorVector S;
+    for c in C do (
+        neg := c_1;
+        pos := c_0;
+        if (neg == {} or pos == {}) then (
+            return false;
+        )
+        if (min P_neg != min P_pos) then (
+            return false;
+        );
+    );
+    return true
+)
+-*isPositive := (S,C) -> (
+    P := entries interiorVector S;
     boo := true;
     for c in C do (
         neg := c_1;
@@ -105,6 +119,7 @@ isPositive := (S,C) -> (
     );
     return boo;
 )
+*-
 
 
 

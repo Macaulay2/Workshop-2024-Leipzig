@@ -1,0 +1,22 @@
+needsPackage "PositiveBergmanFan"
+N = matrix {{-1,-1,1,0,0},{-2,0,0,-1,1}}-- matrix of equations}
+K = transpose gens ker N-- matrix where the columns are the groundset of the matroid
+M = matroid K;
+C = circuits M
+SC = signedCircuits K
+C_0 
+SC_0
+P = positiveBergmanFan K
+maxCones P
+
+
+-- Now a Problem :)
+N = random(ZZ^3,ZZ^5) -- matrix of equations
+K = transpose gens ker N -- matrix where the columns are the groundset of the matroid
+M = matroid K;
+C = circuits M
+SC = signedCircuits K
+C_0 
+SC_0
+P = positiveBergmanFan K
+--how do we find the location of the error?!
