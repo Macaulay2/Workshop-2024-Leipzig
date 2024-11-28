@@ -7,7 +7,7 @@ R := ring (V);
 Finv := map(R,markovR,R_*);
 S := globalMarkov G;
 I := Finv(conditionalIndependenceIdeal (markovR, S));
-if I+V==ideal(1) then (
+if I+V==ideal(R) then (
 result:=ideal(1);
 result
 );
