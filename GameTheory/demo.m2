@@ -24,6 +24,10 @@ X1#{1,1} = 0
 format X0
 indexset X0
 
+PRi = enumerateTensorIndices Di
+probabilityRing = QQ[apply(PRi, pr -> p_pr)]
+gens probabilityRing
+
 X = {X0,X1}
 
 CX = correlatedEquilibria X
