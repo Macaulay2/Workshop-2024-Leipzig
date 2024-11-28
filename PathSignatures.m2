@@ -58,8 +58,8 @@ isMatrix (List) := Boolean => M ->(
 
 ncMonToVar = method()
 ncMonToVar (NCRingElement) := List => f -> (
-    fmons = keys f.terms;
-    monKey = (keys fmons#0)#1;
+    fmons := keys f.terms;
+    monKey := (keys fmons#0)#1;
     (fmons#0)#(monKey)
 );
 
@@ -69,14 +69,14 @@ ncMonToVar (NCRingElement) := List => f -> (
 -------------------------------------
 coefficientHTable = method()
 coefficientHTable (NCRingElement) := HashTable => f -> (
-        fterms = terms f;
+        fterms := terms f;
         hashTable(apply(fterms, i -> {leadMonomial i, leadCoefficient i}))
 );
 
 -- for later use (maybe)
 varIndex = method()
 varIndex(NCRingElement) := List => (var) -> (
-    tbl = hashTable toList(apply(pairs var.ring.generators, (i,j)->(j,i)));
+    tbl := hashTable toList(apply(pairs var.ring.generators, (i,j)->(j,i)));
     return tbl#var
 )
 
@@ -88,8 +88,8 @@ varIndex(NCRingElement) := List => (var) -> (
 
 ncMonToList = method()
 ncMonToList (NCRingElement) := List => f -> (
-    fmons = keys f.terms;
-    monKey = (keys fmons#0)#1;
+    fmons := keys f.terms;
+    monKey := (keys fmons#0)#1;
     (fmons#0)#(monKey) / ( i -> last baseName i)
 );
 
@@ -139,7 +139,7 @@ polyIntegral (RingElement, RingElement) := RingElement => (f, xn) ->(
     termsf := terms f;
     return sum(apply(termsf, i->(
         i = i/((((exponents(i))#0)#(indexn)+1));
-        i= i* xn
+        i = i* xn
     )))
 );
 
@@ -208,8 +208,8 @@ assert(r == 1/6*a_1*a_3)
 matrixAction = method()
 matrixAction (Matrix,  NCRingElement, NCRing) := NCRingElement => (M,  p, B) -> (
     --if #(gens B) != 
-    N=entries transpose M;
-    f = ncMap(B, p.ring , apply(N, j->sum(length(j), i->j#i*(gens B)#i)));
+    N :=entries transpose M;
+    f := ncMap(B, p.ring , apply(N, j->sum(length(j), i->j#i*(gens B)#i)));
     f(p)
 )
 
@@ -263,7 +263,7 @@ CMonTensor(ZZ, NCPolynomialRing) := NCRingElement => (k,r) -> (
 
 createMapFromCoreTensor = method(Options=>{GroundField => QQ});
 createMapFromCoreTensor(NCRingElement, ZZ) := NCRingElement => opts -> (f,ambd) -> (
-    a = getSymbol "a";
+    a := getSymbol "a";
     lamb := getSymbol "lamb";
     ctd := #gens f.ring; -- if core tensor is element of (R^d)^{tensor k}, this is d
     mR := (opts.GroundField)[a_(1,1)..a_(ctd,ambd)]; -- create coordinate ring of matrix space
@@ -273,49 +273,6 @@ createMapFromCoreTensor(NCRingElement, ZZ) := NCRingElement => opts -> (f,ambd) 
     (wR,rmap) := wordRingAndValues(genTensor,GroundField=>opts.GroundField); -- get target ring and components of ring map
     map(mR, wR, rmap) -- create the map from word ring to matrix ring via rmap
 )
-
-end
-restart
-load("PathSignatures.m2");
-
-needsPackage "NumericalImplicitization"
-
-dimAndDegree = method();
-dimAndDegree(Number, Number, Number) := Ideal => (d,k,m) -> (
-l := getSymbol("l");
-ncR1 := QQ{l_1..l_m};
-print("Creating map...");
-ourmap := createMapFromCoreTensor(CAxisTensor(k,ncR1),d,GroundField=>CC);
--- print("Computing kernel...");
--- kernel(ourmap,SubringLimit => 100)
-numericalImageDegree(ourmap,ideal 0_(ourmap.target),DoRefinements => true, MaxAttempts => 10)
-)
-
-
-
-
-
-
------------------------------------
--- Bugs in MultigradedImplicitization/gfanInterface
-----------------------------------
--- Bug 1: can not use variable name x when defining map inline
--- needsPackage "MultigradedImplicitization"
--- R1 = QQ[x1,x2]
--- R2 = QQ[s1,s2]
--- m = {x1,x1*x2}
--- componentsOfKernel(2,map(R1,R2,m))
--- componentsOfKernel(2,map(R1,R2,m)) -- works fine
--- componentsOfKernel(2,map(R1,R2,{x1,x1*x2})) -- works fine once
--- componentsOfKernel(2,map(R1,R2,{x1,x1*x2})) -- error
----------------
--- Bug 2: conflict with NCAlgebra
--- needsPackage "MultigradedImplicitization"
--- needsPackage "NCAlgebra"
--- R1 = QQ[a,b]
--- R2 = QQ[c,d]
--- m = {a*b,a*b + b}
--- componentsOfKernel(2,map(R1,R2,m))
 
 TEST ///
 QQ{a_1..a_3}

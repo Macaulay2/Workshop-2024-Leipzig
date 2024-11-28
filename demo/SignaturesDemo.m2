@@ -23,9 +23,9 @@ matrix table(d,d,(i,j) -> polysig(Y, l_(i+1)*l_(j+1)))
 
 -- It is also possible to choose generic coefficients!
 R = QQ{l_1,l_2}
-mR = QQ[a_(1,1)..a_(2,3)]
+mR = QQ[a_(1,1)..a_(2,3)] -- 3 segments in R^2
 A = genericMatrix(mR,3,2);
-f = l_1*l_2 - l_2*l_1;
+f = l_1*l_2 - l_2*l_1; -- signed volume
 pwlsig(A,f)
 
 -- The two specific paths we just described turn out to generate interesting classes of paths through
@@ -40,8 +40,7 @@ CMonTensor(2,R) -- core tensor in degree 2
 
 -- Sending a matrix to the tensor obtained by acting on the level k core tensor with that matrix yields a homogeneous map of affine varieties. This map can be constructed in the following way:
 
-l=getSymbol("l")
-R = QQ{l_1..l_3};
+R = QQ{l_1,l_2,l_3};
 coreTensor = CAxisTensor(2, R);
 ourmap = createMapFromCoreTensor(coreTensor,4,GroundField=>QQ);
 
@@ -57,6 +56,10 @@ matrixAction(A,f,R2)
 -- Then we can use inbuilt functions and packages to study its kernel. In other ways, we can study the Zariski closure of the image of the map above.
 
 kernel ourmap
+
+needsPackage "MultigradedImplicitization"
+
+componentsOfKernel(2,ourmap)
 
 
 
