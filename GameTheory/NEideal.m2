@@ -1,4 +1,4 @@
-needsPackage "GameTheory"
+loadPackage "GameTheory"
 
 --random integer valued tensors (instead of real valued) for testing purposes
 randomTensorInteger = method()
@@ -6,7 +6,7 @@ randomTensorInteger List := dims -> (
    result := new Tensor;
    indexset := enumerateTensorIndices dims;
    for i in indexset do
-      result#i = random 10;
+      result#i = random QQ;
    result#"format" = dims;
    result
 )
@@ -20,16 +20,16 @@ randomTensorInteger (List, ZZ) := (dims,t) -> (
    result
 )
 
---mixedprobabilityRing; 
+--mixedProbabilityRing; 
 
-mixedprobabilityRing = method()
-mixedprobabilityRing List := L ->(
+mixedProbabilityRing = method()
+mixedProbabilityRing List := L ->(
     probabilityRing := QQ[flatten apply(#L, i -> apply(L#i, j->p_{i,j} ))];
     probabilityRing
 )
-mixedprobabilityRing Tensor := T ->(
+mixedProbabilityRing Tensor := T ->(
     indexSet := format T;
-    mixedprobabilityRing indexSet
+    mixedProbabilityRing indexSet
 )
 
 -- expands the method enumerateTensorIndices to case when the list is empty; can be absored into the original function into main package
@@ -48,7 +48,7 @@ enumerateTensorIndices2 List := s -> (
 NEpolynomials = method()
 NEpolynomials (Tensor, ZZ, Ring) := (T, u, R)->(
     -- u for the u-th player (0-based), R for the ambient polynomial ring;
-    -- in general, R should be mixedprobabilityRing(T), but in this function we should not regenerate R in place to keep all polynomials in the same ring
+    -- in general, R should be mixedProbabilityRing(T), but in this function we should not regenerate R in place to keep all polynomials in the same ring
     indexSet := format T;
     --return indexSet;
     indexLength := length indexSet;
@@ -72,45 +72,33 @@ NEpolynomials (Tensor, ZZ, Ring) := (T, u, R)->(
 )
 
 --the main method to return the ideal for a totally mixed Nash totally mixed Nash equilibria question.
+NERing = method()
+NERing List := L -> (
+    -- L is a list consisting of n- tensors; requires them to be of the same dimension/shape
+    indexSet := format first L;
+    polyring := mixedProbabilityRing indexSet;
+    return polyring
+)
 NEideal = method()
-NEideal = List := L -> (
+NEideal (Ring, List) := (R, L) -> (
     -- L is a list consisting of n- tensors; requires them to be of the same dimension/shape
     indexSet := format first L;
     --return indexSet;
-    polyring := mixedprobabilityRing indexSet;
+    polyring := R;
     --wholepoly := for i to (indexLength - 1) list NEpolynomials(T,i);
     completeGeneratingSet := flatten(apply(pairs L, (i,T) -> NEpolynomials(T,i,polyring)));
-    neIdeal:= ideal(completeGeneratingSet);
-    neIdeal
+    linearRelations := apply(pairs indexSet, (i,j)-> sum(j, k->p_{i,k}) - 1) ;
+    fullGeneratingSet := join(completeGeneratingSet, linearRelations);
+    neIdeal:= ideal(fullGeneratingSet);
+    --return #completeGeneratingSet;
+    return neIdeal;
 )
 
---example for auxiliary methods
-TestTensor1 = randomTensorInteger {3,2,4}
-format TestTensor1
-testRing = mixedprobabilityRing TestTensor1
-gens testRing
-NEpolynomials (TestTensor1, 0, testRing)
 
---test for NEideal
-
---2-player-game, and we put in our own payoff tensors
-TestTensor2 = zeroTensor {2,2}
-TestTensor3 = zeroTensor {2,2}
-TestTensor2#{0,0} = 2
-TestTensor2#{0,1} = 3
-TestTensor2#{1,0} = 4
-TestTensor2#{1,1} = 5
-TestTensor3#{0,0} = 6
-TestTensor3#{0,1} = 7
-TestTensor3#{1,0} = 8
-TestTensor3#{1,1} = 9
-
-TotalTestTensors = {TestTensor2, TestTensor3}
-NEideal TotalTestTensors
-
---example to generate a list of random tensors and compute the ideal from it
+-- example to generate a list of random tensors and compute the ideal from it
 nofplayers = 3
-dimGameTensor = {2,2,2}
-randomTensorList = apply(nofplayers, i->randomTensor (QQ,dimGameTensor))
-NEideal randomTensorList
---4-player-game, where players have {3,2,3,4} choices
+dimGameTensor = {3,2,3}
+randomTensorList = apply(nofplayers, i->randomTensor dimGameTensor)
+randomNEring = NERing (randomTensorList)
+randomIdeal = NEideal(randomNEring, randomTensorList)
+dim randomIdeal
