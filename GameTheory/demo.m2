@@ -83,8 +83,9 @@ degree SpohnIdeal
 KonstanzMatrix = konstanzMatrix(PR, X)
 
 --- Generic game
+Di = {2,2}
 PPR = payoffProbabilityRing(Di, CoefficientRing=>RR, ProbabilityVariableName=>"P", PayoffVariableName=>"x")
-describe PPR
+gens PPR
 X = genericGame PPR
 SpohnMatrices = spohnMatrices(PPR, X)
 SpohnIdeal = spohnIdeal(PPR, X)
