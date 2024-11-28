@@ -1,5 +1,4 @@
 needs "normalForm.m2"
--- NEED TO ALSO CHANGE WEIGHTS IN DEFINITION OF R
 
 -- Examples for testing with Pfaffian matrices
 -- Example 1.3: w = (0,0,2,1) ----> EQUALS COMPUTATIONS
@@ -20,6 +19,7 @@ normalForm({0,0,2,1},dy_R,flatten entries gens G)
 normalForm({0,0,2,1},dy_R^2,flatten entries gens G)
 
 
+-- Example for gauge transformation
 debug needsPackage "Dmodules"
 debug needsPackage "WeylAlgebras"
 load "changeofbasis.m2"
