@@ -84,3 +84,27 @@ treks2 (Digraph, Thing, Thing) := (G, i, j) -> (
  )
 
 
+TEST ///
+G = digraph{{1, 3}, {2, 3}};
+tr = toList treks2(G, 1, 2);
+assert(tr == {})
+///
+
+TEST ///
+G = digraph{{3, {1, 2}}};
+tr = toList treks2(G, 1, 2);
+assert(tr == {{{1, 3}, {3, 2}}})
+///
+
+TEST ///
+G = digraph{{1, {2}}, {2, {3}}};
+tr = toList treks(G, 1, 3);
+assert(tr == {{{3, 2, 1}}});
+///
+
+TEST///
+G = digraph{{2, {4, 6}}, {3, {6}}, {5, {3, 4}}, {6, {1}}};
+tr = toList treks2(G, 6, 4);
+assert(tr == {{{6, 3, 5}, {5, 4}}, {{6, 2}, {2, 4}}})
+///
+
