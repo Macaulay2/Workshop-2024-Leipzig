@@ -80,9 +80,9 @@ MMEN(Matroid,List):=opts->(M,a)->(
     S:=0;
     for F in FlatList do(
         m:=min(j+1,n+1-#F)*(n+1-max(j+1,n+1-#F))/(n+1);
-        M1:=M/F;
+        M1:=M/set(F);
         a1:=apply(n-#F,k->b#k);
-        M2:=M|F;
+        M2:=M|set(F);
         a2:=apply(#F-1,k->b#(k+n+1-#F));
         factor1:=MMEN(M1,a1, Strategy=>opts#Strategy);
         factor2:=MMEN(M2,a2, Strategy=>opts#Strategy);
