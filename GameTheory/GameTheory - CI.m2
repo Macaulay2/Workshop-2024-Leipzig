@@ -5,9 +5,10 @@ intersectCImodel (Graph,Ideal,List) := (G,V,Di) -> (
 markovR = markovRing (toSequence(Di));
 R := ring (V);
 Finv := map(R,markovR,R_*);
+H:=map(R,ZZ);
 S := globalMarkov G;
 I := Finv(conditionalIndependenceIdeal (markovR, S));
-if I+V==ideal(R) then (
+if I+V==H(ideal(1)) then (
 result:=ideal(1);
 result
 );
