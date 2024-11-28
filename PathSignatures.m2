@@ -276,14 +276,25 @@ createMapFromCoreTensor(NCRingElement, ZZ) := NCRingElement => opts -> (f,ambd) 
 
 end
 restart
-load("signatures_wip.m2");
-
-ncR1 = QQ{l_1,l_2,l_3};
-ourmap = createMapFromCoreTensor(CAxisTensor(2,ncR1),2,GroundField=>RR)
-kernel ourmap
+load("PathSignatures.m2");
 
 needsPackage "NumericalImplicitization"
-numericalImageDim(ourmap,ideal 0_(ourmap.target))
+
+dimAndDegree = method();
+dimAndDegree(Number, Number, Number) := Ideal => (d,k,m) -> (
+l := getSymbol("l");
+ncR1 := QQ{l_1..l_m};
+print("Creating map...");
+ourmap := createMapFromCoreTensor(CAxisTensor(k,ncR1),d,GroundField=>CC);
+-- print("Computing kernel...");
+-- kernel(ourmap,SubringLimit => 100)
+numericalImageDegree(ourmap,ideal 0_(ourmap.target),DoRefinements => true, MaxAttempts => 10)
+)
+
+
+
+
+
 
 -----------------------------------
 -- Bugs in MultigradedImplicitization/gfanInterface
