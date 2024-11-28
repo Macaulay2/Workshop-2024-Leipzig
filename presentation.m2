@@ -24,6 +24,10 @@ T = complex TM
 
 X = stiefelComplex(T,stm)
 
+needs "determinantOfAComplex.m2"
+
+determinantOfAComplex(chainComplex X)
+
 -------------------------------------------
 -- complete intersection of two quadrics, elliptic curve of degree 4
 
@@ -42,16 +46,33 @@ T = complex TM
 
 X = stiefelComplex(T,stm)
 
+needs "determinantOfAComplex.m2"
+
+c1 = determinantOfAComplex(chainComplex X[-1])
+c2 = det (X[-1]).dd_1
+
+denominator c1 == c2
 
 
 ------------------------------------------
 
 St = ring X
 
+Lp = subsets(toList(0..n),k)
+Pl = kk[apply(Lp, s -> p_s)]
 
+Q = St ** Pl
+graph = ideal apply(Lp, s -> substitute(p_s,Q) - substitute(det stm^s,Q))
 
+--  substitute(X.dd_0,Q) % graph
 
+c2Pl = substitute(substitute(c2,Q) % graph,Pl)
 
+needsPackage "Resultants"
+c3 = chowForm I
+c3Pl = substitute(c3,vars Pl)
+
+ideal c3Pl == ideal c2Pl
 
 
 

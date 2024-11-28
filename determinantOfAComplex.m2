@@ -5,7 +5,7 @@
 --        according to Cayley
 determinantOfAComplex=method()
 determinantOfAComplex(ChainComplex) := F -> (
-
+    S := ring F;
     numDet := 1;
     denDet := 1;
     p := id_(F_0);
