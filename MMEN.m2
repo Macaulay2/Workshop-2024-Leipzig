@@ -49,9 +49,8 @@ MMEN(Matroid,List):=opts->(M,a)->(
 
     --Checks if a is compatible with M
     if not (sum(a)==rank(M)-1) or not (#a==n) then (
-        print("Invalid sequence");
-        print(M,a);
-        break;
+        print("Length or sum of a don't math the matroid M");
+	return 0;
     );
     if #loops(M) > 0 then (
         return 0;
