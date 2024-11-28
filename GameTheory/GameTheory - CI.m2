@@ -9,7 +9,7 @@ H:=map(R,ZZ);
 S := globalMarkov G;
 I := Finv(conditionalIndependenceIdeal (markovR, S));
 if I+V==H(ideal(1)) then (
-result:=ideal(1);
+result:=H(ideal(1));
 result
 );
 for k from 0 to length(R_*)-1 do (
