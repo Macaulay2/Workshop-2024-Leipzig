@@ -8,19 +8,20 @@ determinantOfAComplex(ChainComplex) := F -> (
     S := ring F;
     numDet := 1;
     denDet := 1;
-    p := id_(F_0);
     T := F_0;
-for i from 1 to length(F) do(
-    S1 :=  S^(-(degrees F_i)_{0..(numrows(p)-1)});
-    j := random( F_i, S1 );
-    D  := p * (F.dd_i) * j;
+    p := id_(T);
+    if l:=length(F)==0 then return 0_(frac R);
+    for i from 1 to l do(
+	S1 :=  S^(-(degrees F_i)_{0..(numrows(p)-1)});
+	j := random( F_i, S1 );
+	D  := p * (F.dd_i) * j;
         if( i%2 == 0 ) then(
             numDet = numDet * det(D);
         ) else (denDet = denDet * det(D)); 
-    p = transpose syz transpose j;
-    T = coker p;
-);
-    numDet/denDet
+        p = transpose syz transpose j;
+	T = coker p;
+    );
+    return numDet/denDet
 )
 
 
