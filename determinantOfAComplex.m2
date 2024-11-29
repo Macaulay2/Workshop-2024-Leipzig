@@ -10,7 +10,7 @@ determinantOfAComplex(ChainComplex) := F -> (
     denDet := 1;
     T := F_0;
     p := id_(T);
-    if l:=length(F)==0 then return 0_(frac R);
+    if (l:=length(F))==0 then return 0_(frac R);
     for i from 1 to l do(
 	S1 :=  S^(-(degrees F_i)_{0..(numrows(p)-1)});
 	j := random( F_i, S1 );
