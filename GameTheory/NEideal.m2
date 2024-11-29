@@ -102,3 +102,5 @@ randomTensorList = apply(nofplayers, i->randomTensor dimGameTensor)
 randomNEring = NERing (randomTensorList)
 randomIdeal = NEideal(randomNEring, randomTensorList)
 dim randomIdeal
+
+--note that the last n (= number of players) generators of the ideal is the probability condition, the rest before these come from the Nash Equilibria polynomials that this game should satisfy.
