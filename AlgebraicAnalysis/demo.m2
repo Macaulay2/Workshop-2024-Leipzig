@@ -6,7 +6,11 @@ D = QQ[x,y,dx,dy, WeylAlgebra =>{x=>dx,y=>dy},MonomialOrder=>{Weights=>{0,0,2,1}
 I = ideal(x*dx^2-y*dy^2+dx-dy,x*dx+y*dy+1)
 R = rationalWeylAlgebra D
 G = gb I
-leadTerm(I) 
+leadTerm(I)
+
+end--
+restart
+needs "demo.m2"
 -- P1:
 -- first row P1 -- EQUAL
 normalForm({0,0,2,1},dx_R,flatten entries gens G)

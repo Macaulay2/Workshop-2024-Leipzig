@@ -1,4 +1,5 @@
 needs "holonomic.m2"
+needs "gbw-fixed.m2"
 needs "reduce.m2"
 importFrom_Core { "concatRows", "concatCols" }
 
@@ -7,9 +8,9 @@ checkSystem = (W, A) -> apply(toSequence \ subsets(numgens W // 2, 2), (i,j) -> 
 -- Given a D-ideal, compute its Pfaffian system
 -- c.f. [Theorem 1.4.22, SST]
 pfaffians Ideal := List => I -> (
-    W := ring I;
+    D := ring I;
     -- warning: multiplication in R isn't correct
-    R := (frac extractVarsAlgebra W)(monoid[W.dpairVars#1]);
+    R := (frac extractVarsAlgebra D)(monoid[D.dpairVars#1]);
     -- TODO: make sure this isn't doing something illegal!
     G := gb sub(I, R);
     -- cache the standard monomials
@@ -18,11 +19,11 @@ pfaffians Ideal := List => I -> (
     if r === infinity then error "system is not finite dimensional";
     B := sub(M.cache#"basis", R);
     --error 0;
-    A := apply(W.dpairVars#1,
+    A := apply(D.dpairVars#1,
 	dt -> concatCols apply(flatten entries B,
 	    s -> last coefficients(
 		sub(dt, R) * s % G, Monomials => B)));
-    assert all(checkSystem(W, A), zero);
+    assert all(checkSystem(D, A), zero);
     A)
 
 -- Given a D-ideal, compute its Pfaffian system
@@ -30,9 +31,9 @@ pfaffians Ideal := List => I -> (
 pfaffians(List, Ideal) := List => (w, I) -> (
     D := ring I;
     -- warning: multiplication in R isn't correct
-    R := rationalWeylAlgebra D;
+    R := rationalWeylAlgebra(D, w);
     -- TODO: make sure this isn't doing something illegal!
-    G := first entries gens gb I;
+    G := first entries gens gb sub(I, R);
     -- cache the standard monomials
     -- TODO: only works on my branch!!
     r := holonomicRank(M := comodule I);
@@ -41,18 +42,24 @@ pfaffians(List, Ideal) := List => (w, I) -> (
     A := apply(D.dpairVars#1,
 	dt -> concatCols apply(flatten entries B,
 	    s -> last coefficients(
-		normalForm(w, sub(dt, R) * s, G), Monomials => B)));
-    assert all(checkSystem(D, A), zero);
+		normalForm(D, w, sub(dt, R) * s, G), Monomials => B)));
+--    assert all(checkSystem(D, A), zero);
     A)
 
 end--
 restart
 needs "./pfaffians.m2"
 
+-- ALS notes, Example 7.16
+D = makeWeylAlgebra(QQ[x,y], w = {0,0,2,1})
+I = ideal (x*dx^2 - y*dy^2 + dx-dy, x*dx+y*dy+1)
+pfaffians({0,0,2,1}, I)
+pfaffians I
+
 -- GKZ system of matrix {{1,2,3}}
 -- gkz(matrix{{1,2}}, )
 D = makeWeylAlgebra(QQ[x,y])
-pfaffians({0,0,11,9}, ideal (x*dx+2*y*dy-3, dx^2-dy))
+pfaffians({0,0,1,1}, ideal (x*dx+2*y*dy-1, dx^2-dy))
 pfaffians ideal (x*dx+2*y*dy-1, dx^2-dy)
 -- permutation matrices?
 pfaffians ideal (dy^2-1, dx^5-dy)
