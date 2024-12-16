@@ -1,30 +1,9 @@
 needs "holonomic.m2"
-needs "gbw-fixed.m2"
+--needs "gbw-fixed.m2"
 needs "reduce.m2"
 importFrom_Core { "concatRows", "concatCols" }
 
 checkSystem = (W, A) -> apply(toSequence \ subsets(numgens W // 2, 2), (i,j) -> A_i * A_j - A_j * A_i)
-
--- Given a D-ideal, compute its Pfaffian system
--- c.f. [Theorem 1.4.22, SST]
-pfaffians Ideal := List => I -> (
-    D := ring I;
-    -- warning: multiplication in R isn't correct
-    R := (frac extractVarsAlgebra D)(monoid[D.dpairVars#1]);
-    -- TODO: make sure this isn't doing something illegal!
-    G := gb sub(I, R);
-    -- cache the standard monomials
-    -- TODO: only works on my branch!!
-    r := holonomicRank(M := comodule I);
-    if r === infinity then error "system is not finite dimensional";
-    B := sub(M.cache#"basis", R);
-    --error 0;
-    A := apply(D.dpairVars#1,
-	dt -> concatCols apply(flatten entries B,
-	    s -> last coefficients(
-		sub(dt, R) * s % G, Monomials => B)));
-    assert all(checkSystem(D, A), zero);
-    A)
 
 -- Given a D-ideal, compute its Pfaffian system
 -- c.f. [Theorem 1.4.22, SST]
@@ -33,28 +12,52 @@ pfaffians(List, Ideal) := List => (w, I) -> (
     -- warning: multiplication in R isn't correct
     R := rationalWeylAlgebra(D, w);
     -- TODO: make sure this isn't doing something illegal!
-    G := first entries gens gb sub(I, R);
+    G := gens gb I;
+    print G;
+--    G := gens ideal {I_1, (-x*y+y^2)*dy^2 + (-x+3*y)*dy + 1};
     -- cache the standard monomials
     -- TODO: only works on my branch!!
-    r := holonomicRank(M := comodule I);
+    r := holonomicRank(w, M := comodule I);
     if r === infinity then error "system is not finite dimensional";
     B := sub(M.cache#"basis", R);
+    print B;
     A := apply(D.dpairVars#1,
-	dt -> concatCols apply(flatten entries B,
+	dt -> transpose concatCols apply(flatten entries B,
 	    s -> last coefficients(
-		normalForm(D, w, sub(dt, R) * s, G), Monomials => B)));
---    assert all(checkSystem(D, A), zero);
+		-- essentially compute: sub(dt, R) * s % G
+		normalForm(D, w, sub(dt, R) * s, first entries G), Monomials => B)));
     A)
+-- TODO: pfaffians Ideal := List => I -> ()
 
 end--
 restart
 needs "./pfaffians.m2"
-
 -- ALS notes, Example 7.16
-D = makeWeylAlgebra(QQ[x,y], w = {0,0,2,1})
-I = ideal (x*dx^2 - y*dy^2 + dx-dy, x*dx+y*dy+1)
-pfaffians({0,0,2,1}, I)
-pfaffians I
+D = makeWeylAlgebra(QQ[x,y], w = {0,0,1,2});
+A = pfaffians(w, I = ideal (x*dx^2 - y*dy^2 + dx-dy, x*dx+y*dy+1)) -- doesn't commute
+
+-- i2 : D = makeWeylAlgebra(QQ[x,y], w = {0,0,2,1});
+-- i3 : A = pfaffians(w, I = ideal (x*dx^2 - y*dy^2 + dx-dy, x*dx+y*dy+1)) -- doesn't commute
+-- | xdx+ydy+1 ydxdy+ydy^2+dx+dy xydy^2-y2dy^2+xdy-3ydy-1 |
+-- | 1 dy |
+-- o3 = {{-1} | (-1)/x       (-y)/x         |, {-1} | 0         1               |}
+--       {-1} | (-1)/(x2-xy) (-x-y)/(x2-xy) |  {-1} | 1/(xy-y2) (-x+3y)/(xy-y2) |
+
+-- i4 : D = makeWeylAlgebra(QQ[x,y], w = {0,0,1,1});
+-- i5 : A = pfaffians(w, I = ideal (x*dx^2 - y*dy^2 + dx-dy, x*dx+y*dy+1)) -- doesn't commute
+-- | xdx+ydy+1 ydxdy+ydy^2+dx+dy xydy^2-y2dy^2+xdy-3ydy-1 |
+-- | 1 dy |
+-- o5 = {{-1} | (-1)/x       (-y)/x         |, {-1} | 0         1               |}
+--       {-1} | (-1)/(x2-xy) (-x-y)/(x2-xy) |  {-1} | 1/(xy-y2) (-x+3y)/(xy-y2) |
+
+-- i6 : D = makeWeylAlgebra(QQ[x,y], w = {0,0,1,2});
+-- i7 : A = pfaffians(w, I = ideal (x*dx^2 - y*dy^2 + dx-dy, x*dx+y*dy+1)) -- doesn't commute
+-- | ydy+xdx+1 xdxdy+xdx^2+dy+dx x2dx^2-xydx^2+3xdx-ydx+1 |
+-- | 1 dx |
+-- o7 = {{-1} | 0            1               |, {-1} | (-1)/y    (-x)/y        |}
+--       {-1} | (-1)/(x2-xy) (-3x+y)/(x2-xy) |  {-1} | 1/(xy-y2) (x+y)/(xy-y2) |
+
+checkSystem(D, A)
 
 -- GKZ system of matrix {{1,2,3}}
 -- gkz(matrix{{1,2}}, )

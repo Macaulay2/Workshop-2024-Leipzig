@@ -1,14 +1,14 @@
 debug needsPackage "Dmodules"
 
 makeWeylAlgebra(PolynomialRing, List) := opts -> (R, w) -> (
-     coordVars := gens R;
-     diffVars := apply(coordVars, i -> value("symbol d" | toString(i)) );
-     allVars := join(coordVars, diffVars);
-     W := (coefficientRing R)(monoid [allVars,
-	     WeylAlgebra   => apply(coordVars, diffVars, (x,dx) -> x => dx),
-	     MonomialOrder => { Weights => w, RevLex }, Global => false ]);
-     if opts.SetVariables then use W;
-     W)
+    coordVars := gens R;
+    diffVars := apply(coordVars, i -> value("symbol d" | toString(i)) );
+    allVars := join(coordVars, diffVars);
+    W := (coefficientRing R)(monoid [allVars,
+	    WeylAlgebra   => apply(coordVars, diffVars, (x,dx) -> x => dx),
+	    MonomialOrder => { Eliminate 2, Weights => w, Lex }, Global => false ]);
+    if opts.SetVariables then use W;
+    W)
 
 -- fraction field K(x) of a Weyl algebra K[x,dx]/(...)
 fractionField = memoize(D -> frac extractVarsAlgebra D)
@@ -16,7 +16,8 @@ fractionField = memoize(D -> frac extractVarsAlgebra D)
 -- graded associative ring of the rational Weyl algebra
 -- Used for bookkeeping elements in R
 rationalWeylAlgebra = memoize((D, w) -> (fractionField D)(monoid[D.dpairVars#1,
-	    MonomialOrder => { Weights => w } ]))
+	    MonomialOrder => { Weights => last pack_2 w, Lex }, Global => false ]))
+--            MonomialOrder => { Weights => w } ]))
 
 -- reduce the lead term in rational Weyl algebra R
 -- TODO: Write function for Gröbner Basis
@@ -29,47 +30,43 @@ normalForm(Ring, List, RingElement, RingElement) := (D, w, f, g) -> (
     F := fractionField D;
     R := rationalWeylAlgebra(D, w);
     if R =!= ring f then f = sub(f, R);
-    --wR := last pack_n w;
-    -- surprisingly inw works for elements of rational Weyl Algebra
-    --f := sub(f,R);
     f0 := leadTerm(f);
     g0 := leadTerm(g);
-    --f0 := inw(f,wR);
-    -- need it to be in D to perform derivative
-    --g0 := inw(g,w);   
-    -- g0 get exponent vector
-    -- pack_n is interior product with n
     --fexp := unique exponents f0;
     --gexp := unique apply(exponents g0, e -> last pack_n e);
     fexp := (exponents f0)#0;
     gexp := (last pack_n (exponents g0)#0);
-    --gexp := unique exponents g0;
-    --have to use RevLex!!!
-    --sortedListfin := sort(apply(fexp, e -> R_e));
-    --sortedListfin := sort(terms(f0));
-    --sortedListgin := sort(apply(gexp, e -> D_e));
-    --sortedListgin := sort(terms(g0));
-    --fin := sortedListfin#0;
-    --gin := sortedListgin#0;
-    --finexp := (exponents fin)#0;
-    --ginexp := last pack_n (exponents gin)#0;
+    -- as long as we use RevLex, we don't need generic weights
     --if #fexp > 1 or #gexp > 1 then error "expected generic weight order";
-    -- if gin does not divide fin, no reduction is necessary
-    -- RECURSION
-    if not (gexp << fexp) then return f0 + normalForm(D, w, f-f0, g);
+    -- RECURSION: if gin does not divide fin, no reduction is necessary
+    if not (gexp << fexp) then (return f0 + normalForm(D, w, f-f0, g));
     -- compare weights of leading monomials
-    --fwt := sum(fexp#0, last pack_n w, times);
-    --gwt := sum(gexp#0, last pack_n w, times);
-    --if fwt < gwt then return f;
+    fwt := sum(fexp, last pack_n w, times);
+    gwt := sum(gexp, last pack_n w, times);
+    if fwt < gwt then return f;
+    -- find the coefficient to divide by
     fcoef := lift(f0 // R_(fexp), F);
     gcoef := lift(sub(g0, R) // R_(gexp), F);
+    -- this must be in D to perform the derivative
     ddexp := fexp - gexp;
-    ddmon := sub(R_(ddexp), R);
+    ddmon := D_(toList(n:0) | ddexp);
     -- recurse to normalize the lower order terms
-    normalForm(D, w, f - fcoef / gcoef * sub(ddmon * g, R), g)
+    -- FIXME: this should work, but doesn't:
+    -- f - fcoef / gcoef * sub(ddmon * g, R)
+--    print netList {f, g, sub(ddmon * g, R), f % sub(ddmon * g, R)};
+--    error 0;
+    normalForm(D, w, f % sub(ddmon * g, R), g)
     )
 
+-- use this for lifting from R to D
+-- c.f. https://github.com/Macaulay2/M2/issues/3613
+sub' = (g, D) -> if instance(g, D) then g else sum(listForm g,
+    (e, c) -> sub(c, D) * sub((ring g)_e, D))
+
+clearDenominators = (G, D) -> apply(G, g -> sub'(g * lcm(denominator \ last \ listForm g), D))
+
 normalForm(Ring, List, RingElement, List) := (D, w, f, G) -> (
+    G = clearDenominators(G, D);
     scan(G, g -> f = normalForm(D, w, f, g));
     f)
 

@@ -1,7 +1,7 @@
 debug needsPackage "Dmodules"
 
 -- modified version to keep the standard basis
-holonomicRank Module := M -> (
+holonomicRank(List, Module) := (weightList, M) -> (
      W := ring M;
      createDpairs W;
      n := #(W.dpairInds#0);
@@ -9,11 +9,12 @@ holonomicRank Module := M -> (
      presM := presentation M;
      -- get weight vectors for the order filtration refined 
      -- by lex on the derivatives
-     weightList := { apply(m, i -> if member(i, W.dpairInds#1) then 1 else 0 ) };
+     --weightList := { apply(m, i -> if member(i, W.dpairInds#1) then 1 else 0 ) };
      -- ring equipped with the new order
      tempW := (coefficientRing W)(monoid [W_*,
 	  WeylAlgebra => W.monoid.Options.WeylAlgebra,
-	  Weights => weightList]);
+	  MonomialOrder => {
+	      Eliminate 2, Weights => weightList, Lex }]);
      WtotempW := map (tempW, W, vars tempW);
      -- commutative ring of derivative variables
      Rvars := symbol Rvars;
