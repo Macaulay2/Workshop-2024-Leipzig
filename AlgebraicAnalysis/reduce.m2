@@ -63,7 +63,7 @@ normalForm(Ring, List, RingElement, RingElement) := (D, w, f, g) -> (
 sub' = (g, D) -> if instance(g, D) then g else sum(listForm g,
     (e, c) -> sub(c, D) * sub((ring g)_e, D))
 
-clearDenominators = (G, D) -> apply(G, g -> sub'(g * lcm(denominator \ last \ listForm g), D))
+clearDenominators = (G, D) -> apply(G, g -> if instance(g, D) then g else sub'(g * lcm(denominator \ last \ listForm g), D))
 
 normalForm(Ring, List, RingElement, List) := (D, w, f, G) -> (
     G = clearDenominators(G, D);

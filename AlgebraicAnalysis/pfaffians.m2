@@ -9,25 +9,29 @@ checkSystem = (W, A) -> apply(toSequence \ subsets(numgens W // 2, 2), (i,j) -> 
 -- c.f. [Theorem 1.4.22, SST]
 pfaffians(List, Ideal) := List => (w, I) -> (
     D := ring I;
-    -- warning: multiplication in R isn't correct
+    -- warning: multiplication in R isn't correct,
+    -- but this acts as the associated graded ring of R
     R := rationalWeylAlgebra(D, w);
-    -- TODO: make sure this isn't doing something illegal!
+    -- gb with respect to an elimination
+    -- weight order tie broken by RevLex?
     G := gens gb I;
-    print G;
---    G := gens ideal {I_1, (-x*y+y^2)*dy^2 + (-x+3*y)*dy + 1};
-    -- cache the standard monomials
-    -- TODO: only works on my branch!!
+    printerr "Grobner basis:";
+    printerr net G;
+    -- compute and cache the standard monomials
     r := holonomicRank(w, M := comodule I);
     if r === infinity then error "system is not finite dimensional";
     B := sub(M.cache#"basis", R);
-    print B;
+    printerr "Standard monomials:";
+    printerr net B;
     A := apply(D.dpairVars#1,
 	dt -> transpose concatCols apply(flatten entries B,
 	    s -> last coefficients(
-		-- essentially compute: sub(dt, R) * s % G
-		normalForm(D, w, sub(dt, R) * s, first entries G), Monomials => B)));
+		-- essentially compute: (dt * s) % G
+		normalForm(D, w, dt_R * s, first entries G), Monomials => B)));
     A)
--- TODO: pfaffians Ideal := List => I -> ()
+pfaffians Ideal := List => I -> (
+    n := numgens ring I // 2;
+    pfaffians(toList(n:0) | toList(n:1), I))
 
 end--
 restart
@@ -57,12 +61,11 @@ A = pfaffians(w, I = ideal (x*dx^2 - y*dy^2 + dx-dy, x*dx+y*dy+1)) -- doesn't co
 -- o7 = {{-1} | 0            1               |, {-1} | (-1)/y    (-x)/y        |}
 --       {-1} | (-1)/(x2-xy) (-3x+y)/(x2-xy) |  {-1} | 1/(xy-y2) (x+y)/(xy-y2) |
 
-checkSystem(D, A)
 
 -- GKZ system of matrix {{1,2,3}}
 -- gkz(matrix{{1,2}}, )
-D = makeWeylAlgebra(QQ[x,y])
-pfaffians({0,0,1,1}, ideal (x*dx+2*y*dy-1, dx^2-dy))
+D = makeWeylAlgebra(QQ[x,y], w = {0,0,1,1})
+pfaffians(w, ideal (x*dx+2*y*dy-1, dx^2-dy))
 pfaffians ideal (x*dx+2*y*dy-1, dx^2-dy)
 -- permutation matrices?
 pfaffians ideal (dy^2-1, dx^5-dy)
@@ -76,7 +79,7 @@ D = makeWA(QQ[a,b,c,c', DegreeRank => 0][x,y])
 I = ideal(
     dx*(x*dx + c  - 1) - (x*dx + y*dy + a)*(x*dx + y*dy + b),
     dy*(y*dy + c' - 1) - (x*dx + y*dy + a)*(x*dx + y*dy + b))
-A = pfaffians({0,0,11,9}, I);
+A = pfaffians({0,0,1,1}, I);
 netList apply(A, mat -> sub(mat, {a => 10, b => 4/5, c => -2, c' => 3/2}))
 gens gb sub(I, {a => 10, b => 4/5, c => -2, c' => 3/2})
 
