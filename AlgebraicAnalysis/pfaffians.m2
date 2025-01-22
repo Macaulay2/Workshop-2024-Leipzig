@@ -85,7 +85,6 @@ gens gb sub(I, {a => 10, b => 4/5, c => -2, c' => 3/2})
 
 checkSystem(D, A)
 
--- FIXME: why zero?
 pfaffians AppellF1 {10,4/5,-2,3/2}
 
 D = makeWA(QQ[x_1,x_2,x_3])
@@ -102,7 +101,7 @@ I = ideal(
     x_1*dx_1 - x_4*dx_4 + 1 - c,
     x_2*dx_2 + x_4*dx_4 + a,
     x_3*dx_3 + x_4*dx_4 + b)
---I = sub(I, {a => 1/2, b => 1/2, c => 1})
+I = sub(I, {a => 1/2, b => 1/2, c => 1})
 --WeylClosure I
 netList(A = pfaffians I)
 
