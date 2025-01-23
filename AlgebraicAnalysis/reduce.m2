@@ -1,7 +1,11 @@
 debug needsPackage "Dmodules"
 
-EliminationWeightOrder = w -> join( { Weights => w }, apply(entries id_(ZZ^(#w)), w' -> Weights => w'))
---D = QQ[x,y,dx,dy, WeylAlgebra => {x=>dx, y=>dy}, MonomialOrder => EliminationWeightOrder {0,0,1,1}]
+WeightThenLexicographicOrder = w -> join( { Weights => w },
+    apply(entries id_(ZZ^(#w)), w' -> Weights => w'))
+WeightThenEliminationOrder = w -> join( { Weights => w },
+    apply(flatten reverse pack_(#w//2) entries id_(ZZ^(#w)), w' -> Weights => w'))
+--D = QQ[x,y,dx,dy, WeylAlgebra => {x=>dx, y=>dy}, MonomialOrder => WeightThenEliminationOrder {0,0,1,1}]
+--D = QQ[x,y,dx,dy, WeylAlgebra => {x=>dx, y=>dy}, MonomialOrder => WeightThenLexicographicOrder {0,0,1,1}]
 --1 + dx + dy + dx^2 + dx*dy + dy^2 + x*(1 + dx + dy + dx^2 + dx*dy + dy^2)
 
 makeWeylAlgebra(PolynomialRing, List) := opts -> (R, w) -> (
@@ -10,7 +14,7 @@ makeWeylAlgebra(PolynomialRing, List) := opts -> (R, w) -> (
     allVars := join(coordVars, diffVars);
     W := (coefficientRing R)(monoid [allVars,
 	    WeylAlgebra   => apply(coordVars, diffVars, (x,dx) -> x => dx),
-	    MonomialOrder => EliminationWeightOrder w ]);
+	    MonomialOrder => WeightThenEliminationOrder w ]);
     if opts.SetVariables then use W;
     W)
 
@@ -20,7 +24,7 @@ fractionField = memoize(D -> frac extractVarsAlgebra D)
 -- graded associative ring of the rational Weyl algebra
 -- Used for bookkeeping elements in R
 rationalWeylAlgebra = memoize((D, w) -> (fractionField D)(monoid[D.dpairVars#1,
-	    MonomialOrder => EliminationWeightOrder last pack_(#w//2) w ]))
+	    MonomialOrder => WeightThenEliminationOrder last pack_(#w//2) w ]))
 --            MonomialOrder => { Weights => w } ]))
 
 -- reduce the lead term in rational Weyl algebra R
