@@ -93,6 +93,16 @@ ncMonToList (NCRingElement) := List => f -> (
     (fmons#0)#(monKey) / ( i -> last baseName i)
 );
 
+------------------------------------
+--This function converts a list to the corresponding monomial in an NCring
+-------------------------------------
+
+ncListToMon = method()
+ncListToMon (List, NCRing) := (w,R) -> (
+    return(product(w,i->R_(i-1)));
+);
+
+
 --------------------------------
 --wordRingAndValues takes an nc polynomial f and returns a ring wR and a list vals of elements in the base ring of f
 -- For every monomial m in f, it creates a new variable v_m. The ring wR is the free commutative QQ-algebra in the variables v_m.
@@ -274,7 +284,25 @@ createMapFromCoreTensor(NCRingElement, ZZ) := NCRingElement => opts -> (f,ambd) 
     map(mR, wR, rmap) -- create the map from word ring to matrix ring via rmap
 )
 
-TEST ///
-QQ{a_1..a_3}
-CAxisComponent(a_1^4);
-///
+
+-- define shuffle products on words, use linExt to extend to NCRingElements. Use ** for shuffle product in NCAlgebra
+
+shuffle = method();
+shuffle (List,List,NCRing) := (w1,w2,R) -> (
+    l1 := length(w1);
+    l2 := length(w2);
+    perms = select(permutations(toList(0..l1+l2-1)), i->sort(i_{0..l1-1}) == i_{0..l1-1} and sort(i_{l1..l1+l2-1}) == i_{l1..l1+l2-1});
+    idp := toList(0..l1+l2-1);
+    invperms := apply(transpose {perms, toList(length(perms):idp)}, i -> values hashTable(transpose i));
+    w := join(w1,w2);
+    words := apply(invperms, i-> w_i);
+    sum(words,i->ncListToMon(i,R))
+)
+
+shuffle (NCRingElement, List) := (f,w2) -> linExt(i->shuffle(i,w2,ring f),f);
+
+shuffle (NCRingElement, NCRingElement) := (f,g) -> linExt(i->shuffle(f,i),g);
+
+NCRingElement ** NCRingElement := (f,g) -> (
+    shuffle(f,g)
+)

@@ -41,8 +41,8 @@ CMonTensor(2,R) -- core tensor in degree 2
 -- Sending a matrix to the tensor obtained by acting on the level k core tensor with that matrix yields a homogeneous map of affine varieties. This map can be constructed in the following way:
 
 R = QQ{l_1,l_2,l_3};
-coreTensor = CAxisTensor(2, R);
-ourmap = createMapFromCoreTensor(coreTensor,4,GroundField=>QQ);
+coreTensor = CAxisTensor(4, R);
+ourmap = createMapFromCoreTensor(coreTensor,3,GroundField=>QQ);
 
 -- This uses the following function which obtains the image of a tensor under the matrix action
 
@@ -53,14 +53,10 @@ g = l_1*l_2;
 R2 = QQ{e_1,e_2,e_3}
 matrixAction(A,f,R2)
 
--- Then we can use inbuilt functions and packages to study its kernel. In other ways, we can study the Zariski closure of the image of the map above.
+-- Then we can use inbuilt functions and packages to study its kernel. In other words, we can study the Zariski closure of the image of the map above.
 
 kernel ourmap
 
 needsPackage "MultigradedImplicitization"
 
-componentsOfKernel(2,ourmap)
-
-
-
-
+flatten values componentsOfKernel(4,ourmap)
