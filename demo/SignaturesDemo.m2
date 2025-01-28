@@ -55,8 +55,8 @@ matrixAction(A,f,R2)
 
 -- Then we can use inbuilt functions and packages to study its kernel. In other words, we can study the Zariski closure of the image of the map above.
 
-kernel ourmap
+-- kernel ourmap
 
 needsPackage "MultigradedImplicitization"
 
-flatten values componentsOfKernel(4,ourmap)
+flatten values componentsOfKernel(2,ourmap)

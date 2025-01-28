@@ -97,8 +97,8 @@ ncMonToList (NCRingElement) := List => f -> (
 --This function converts a list to the corresponding monomial in an NCring
 -------------------------------------
 
-ncListToMon = method()
-ncListToMon (List, NCRing) := (w,R) -> (
+toNCMon = method()
+toNCMon (List, NCRing) := (w,R) -> (
     return(product(w,i->R_(i-1)));
 );
 
@@ -164,9 +164,8 @@ polySigGen = method()
 
 polySigGen (List, List, Ring) := RingElement => (l, w, bR) ->(
     k:= length w;
-    x := getSymbol "x";
-    R := bR[x_1..x_k];
-    S := bR[s];
+    R := bR[local x_1..local x_k];
+    S := bR[local s];
     X := apply(l, i-> sum(1..length(i)-1, j -> (i#j)_S * s^j));
 
     res:= product for i from 1 to k list (
@@ -181,7 +180,8 @@ polySigGen (List, List, Ring) := RingElement => (l, w, bR) ->(
         res = eval1-eval0;
         );
     res = sub(polyIntegral(res, R_(k-1)),R);
-    res = substitute(res, {R_(k-1) => 1_QQ}) - substitute(res, {R_(k-1) =>0_QQ});
+    use(bR);
+    res = substitute(res, {R_(k-1) => 1}) - substitute(res, {R_(k-1) =>0});
     return leadCoefficient res
 );
 
@@ -199,13 +199,13 @@ errorDepth = 0;
 
 
 TEST ///
-R = QQ{l_1..l_5};
-f = 1/2*(l_1*l_2 - l_2*l_1);
-A = QQ[a_1,a_2,a_3]
+R = QQ{s_1..s_5};
+f = 1/2*(s_1*s_2 - s_2*s_1);
+A = QQ[x_1,x_2,x_3]
 
 <<<<<<< HEAD
-r =polysig({{0,a_1},{0,a_2,a_3}},f, BaseRing => A)
-assert(r == 1/6*a_1*a_3) 
+r = polysig({{0,x_1},{0,x_2,x_3}},f, BaseRing => A)
+assert(r == 1/6*x_1*x_3) 
 ///
 
 
@@ -218,9 +218,24 @@ assert(r == 1/6*a_1*a_3)
 matrixAction = method()
 matrixAction (Matrix,  NCRingElement, NCRing) := NCRingElement => (M,  p, B) -> (
     --if #(gens B) != 
-    N :=entries transpose M;
-    f := ncMap(B, p.ring , apply(N, j->sum(length(j), i->j#i*(gens B)#i)));
+    N :=transpose entries M;
+    f := ncMap(B, ring p, apply(N, j->sum(length(j), i->j#i*(gens B)#i)));
     f(p)
+)
+
+----------------
+-- Matrix * Tensor gives the result of the diagonal action of the matrix on the tensor
+----------------
+
+Matrix * NCRingElement := (M, f) -> (
+    n := length entries M;
+    m := length entries transpose M;
+    tf := length gens ring f;
+    if(m != tf) then (error("A " | toString(n) | "x" | toString(m) | " matrix can not act on a tensor over " | toString(tf) | "-dimensional space.");)
+    else (
+    t := new IndexedVariableTable;
+    B := (baseRing ring f){local t_1..local t_n};
+    return(matrixAction(M, f, B));)
 )
 
 ----------------------------------------------------------------------------
@@ -285,7 +300,7 @@ createMapFromCoreTensor(NCRingElement, ZZ) := NCRingElement => opts -> (f,ambd) 
 )
 
 
--- define shuffle products on words, use linExt to extend to NCRingElements. Use ** for shuffle product in NCAlgebra
+-- define shuffle products on words, then overload function and use linExt to extend to NCRingElements. Define operator ** as shuffle product in NCAlgebra
 
 shuffle = method();
 shuffle (List,List,NCRing) := (w1,w2,R) -> (
@@ -296,13 +311,40 @@ shuffle (List,List,NCRing) := (w1,w2,R) -> (
     invperms := apply(transpose {perms, toList(length(perms):idp)}, i -> values hashTable(transpose i));
     w := join(w1,w2);
     words := apply(invperms, i-> w_i);
-    sum(words,i->ncListToMon(i,R))
+    sum(words,i->toNCMon(i,R))
 )
 
 shuffle (NCRingElement, List) := (f,w2) -> linExt(i->shuffle(i,w2,ring f),f);
 
-shuffle (NCRingElement, NCRingElement) := (f,g) -> linExt(i->shuffle(f,i),g);
+shuffle (NCRingElement, NCRingElement) := (f,g) -> (
+        if(ring f === ring g) then (
+        return(linExt(i->shuffle(f,i),g);))
+    else (
+        error "Can not apply shuffle to polynomials from different rings";
+    )
+)
 
 NCRingElement ** NCRingElement := (f,g) -> (
     shuffle(f,g)
+)
+
+-- define halfshuffle product. Define operator << as halfshuffle product in NCAlgebra
+
+halfshuffle = method();
+halfshuffle(NCRingElement, List) := (f,w) -> (
+    wl = w_(toList(0..length(w)-2));
+    wr = w_(-1);
+    return( shuffle(f,wl) * (ring f)_(wr-1) );
+)
+
+halfshuffle (NCRingElement, NCRingElement) := (f,g) -> (
+    if(ring f === ring g) then (
+        return(linExt(i->halfshuffle(f,i),g));)
+    else (
+        error "Can not apply halfshuffle to polynomials from different rings";
+    )
+)
+
+NCRingElement << NCRingElement := (f,g) -> (
+    halfshuffle(f,g)
 )
