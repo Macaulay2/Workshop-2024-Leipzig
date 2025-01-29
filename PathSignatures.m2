@@ -1,5 +1,27 @@
 needsPackage "NCAlgebra"
 
+
+------------------------------------------------
+--Defining the Type "Path" as a subclass of MutableHashTable.
+--It should be able to allow for concatenation of piecewise linear
+--and polynomial paths and to correctly call the functions
+--already implemented depending on the type of path.
+--To allow for better integration, it will have two subclasses:
+--PolyPath, reserved for paths given in polynomial form
+--LinPath, reserved for paths given through the articulation points.
+--A Path will then be an (ordered) list of LinPaths and PolyPaths
+
+-- Methods to implement:
+    -- "+": Component-wise sum of paths
+    -- "*": concatenation of paths
+    -- "==": check whether two paths are equal (this could be hard)
+    -- Latex export of a path
+    -- override the "display" command (look into "net" class)
+    --
+    -- ... other suggestions
+    -- 
+
+
 -----------------------------------------
 --Signature of a linear path
 --u is a vector correspongding to the increment of the path
@@ -90,7 +112,9 @@ ncMonToList = method()
 ncMonToList (NCRingElement) := List => f -> (
     fmons := keys f.terms;
     monKey := (keys fmons#0)#1;
-    (fmons#0)#(monKey) / ( i -> last baseName i)
+    R := ring f;
+    varst := hashTable(toList apply(0..length(gens R)-1, i-> (baseName R_i,i+1)));
+    (fmons#0)#(monKey) / ( i -> varst#i)
 );
 
 ------------------------------------
@@ -317,8 +341,8 @@ shuffle (List,List,NCRing) := (w1,w2,R) -> (
 shuffle (NCRingElement, List) := (f,w2) -> linExt(i->shuffle(i,w2,ring f),f);
 
 shuffle (NCRingElement, NCRingElement) := (f,g) -> (
-        if(ring f === ring g) then (
-        return(linExt(i->shuffle(f,i),g);))
+    if(ring f === ring g) then (
+        return(linExt(i->shuffle(f,i),g));)
     else (
         error "Can not apply shuffle to polynomials from different rings";
     )
@@ -349,24 +373,45 @@ NCRingElement << NCRingElement := (f,g) -> (
     halfshuffle(f,g)
 )
 
-------------------------------------------------
---Defining the Type "Path" as a subclass of MutableHashTable.
---It should be able to allow for concatenation of piecewise linear
---and polynomial paths and to correctly call the functions
---already implemented depending on the type of path.
---To allow for better integration, it will have two subclasses:
---PolyPath, reserved for paths given in polynomial form
---LinPath, reserved for paths given through the articulation points.
---A Path will then be an (ordered) list of LinPaths and PolyPaths
-
--- Methods to implement:
-    -- "+": Component-wise sum of paths
-    -- "*": concatenation of paths
-    -- "==": check whether two paths are equal (this could be hard)
-    -- Latex export of a path
-    -- override the "display" command (look into "net" class)
-    --
-    -- ... other suggestions
-    -- 
 
 Path = new Type of MutableHashTable
+
+
+letterFormat = method();
+letterFormat NCRingElement := f -> (
+   if #(f.terms) == 0 then return net "0";
+   
+   firstTerm := true;
+   myNet := net "";
+   isZp := (class coefficientRing ring f === QuotientRing and ambient coefficientRing ring f === ZZ);
+   for t in sort pairs coefficientHTable f do (
+      tempNet := net t#1 | net " ";
+      printParens := ring t#1 =!= QQ and
+  		     ring t#1 =!= ZZ and
+                     not isZp and
+		     (size t#1 > 1 or (isField ring t#1 and 
+			               numgens coefficientRing ring t#1 > 0 and
+				       size sub(t#1, coefficientRing ring t#1) > 1));
+      myNet = myNet |
+              (if isZp and tempNet#0#0 != " - " and not firstTerm then net " + "
+	       else if not firstTerm and t#1 > 0 then
+                 net " + "
+               else 
+                 net "") |
+              (if printParens then net "(" else net "") | 
+              (if t#1 != 1 and t#1 != -1 then
+                 tempNet
+               else if t#1 == -1 then net " - "
+               else net "") |
+              (if printParens then net ")" else net "") |
+              (if t#0 === {} and (t#1 == 1 or t#1 == -1) then net "1" else (net new Array from ncMonToList(t#0)));
+      firstTerm = false;
+   );
+   myNet
+)
+
+Array ^ NCPolynomialRing := (a, R) -> (
+    if(max(toList a)>length(gens R)) then (error(toString(net "Not enough letters in ring " | net R | ".")));
+    
+    product(a,i->R_(i-1))
+)
