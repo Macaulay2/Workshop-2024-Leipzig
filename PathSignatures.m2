@@ -348,3 +348,25 @@ halfshuffle (NCRingElement, NCRingElement) := (f,g) -> (
 NCRingElement << NCRingElement := (f,g) -> (
     halfshuffle(f,g)
 )
+
+------------------------------------------------
+--Defining the Type "Path" as a subclass of MutableHashTable.
+--It should be able to allow for concatenation of piecewise linear
+--and polynomial paths and to correctly call the functions
+--already implemented depending on the type of path.
+--To allow for better integration, it will have two subclasses:
+--PolyPath, reserved for paths given in polynomial form
+--LinPath, reserved for paths given through the articulation points.
+--A Path will then be an (ordered) list of LinPaths and PolyPaths
+
+-- Methods to implement:
+    -- "+": Component-wise sum of paths
+    -- "*": concatenation of paths
+    -- "==": check whether two paths are equal (this could be hard)
+    -- Latex export of a path
+    -- override the "display" command (look into "net" class)
+    --
+    -- ... other suggestions
+    -- 
+
+Path = new Type of MutableHashTable
