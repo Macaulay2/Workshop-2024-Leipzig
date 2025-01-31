@@ -1,13 +1,18 @@
 debug needsPackage "Dmodules"
 
+-- Orders
+-- Weighted lexicographic order x_1 > .. > x_n > dx_1 > .. > dx_n (Not an elimination order)
 WeightThenLexicographicOrder = w -> join( { Weights => w },
     apply(entries id_(ZZ^(#w)), w' -> Weights => w'))
+
+-- Weighted lexicographic elimination order dx_1 > .. > dx_n > x_1 > .. > x_n
 WeightThenEliminationOrder = w -> join( { Weights => w },
     apply(flatten reverse pack_(#w//2) entries id_(ZZ^(#w)), w' -> Weights => w'))
 --D = QQ[x,y,dx,dy, WeylAlgebra => {x=>dx, y=>dy}, MonomialOrder => WeightThenEliminationOrder {0,0,1,1}]
 --D = QQ[x,y,dx,dy, WeylAlgebra => {x=>dx, y=>dy}, MonomialOrder => WeightThenLexicographicOrder {0,0,1,1}]
 --1 + dx + dy + dx^2 + dx*dy + dy^2 + x*(1 + dx + dy + dx^2 + dx*dy + dy^2)
 
+-- Weyl Algebra with monomial order given by the weighted lexicographic elimination order
 makeWeylAlgebra(PolynomialRing, List) := opts -> (R, w) -> (
     coordVars := gens R;
     diffVars := apply(coordVars, i -> value("symbol d" | toString(i)) );
@@ -18,17 +23,64 @@ makeWeylAlgebra(PolynomialRing, List) := opts -> (R, w) -> (
     if opts.SetVariables then use W;
     W)
 
--- fraction field K(x) of a Weyl algebra K[x,dx]/(...)
+-- Weyl Algebra with non-weighted lexicographic elimination order
+makeWeylAlgebra(PolynomialRing) := opts -> R -> (
+    n := length(gens R);
+    w := for i from 1 to 2*n list 0;
+    W := makeWeylAlgebra(R, w);
+    W)
+
+-- Fraction field K(x) of a Weyl algebra K[x,dx]/(...)
 fractionField = memoize(D -> frac extractVarsAlgebra D)
 
--- graded associative ring of the rational Weyl algebra
+-- Graded associative ring of the rational Weyl algebra
 -- Used for bookkeeping elements in R
 rationalWeylAlgebra = memoize((D, w) -> (fractionField D)(monoid[D.dpairVars#1,
-	    MonomialOrder => WeightThenEliminationOrder last pack_(#w//2) w ]))
+	    MonomialOrder => WeightThenLexicographicOrder last pack_(#w//2) w ]))
 --            MonomialOrder => { Weights => w } ]))
 
 -- reduce the lead term in rational Weyl algebra R
--- TODO: Write function for Gröbner Basis
+
+reduceOneStep = method()
+reduceOneStep(Ring, List, RingElement, RingElement) := (D, w, f, g) -> (
+    if f == 0 then return f;
+    --D := ring g;
+    n := numgens D // 2;
+    F := fractionField D;
+    R := rationalWeylAlgebra(D, w);
+    if R =!= ring f then f = sub(f, R);
+    f0 := leadTerm(f);
+    g0 := leadTerm(g);
+    --fexp := unique exponents f0;
+    --gexp := unique apply(exponents g0, e -> last pack_n e);
+    fexp := (exponents f0)#0;
+    gexp := (last pack_n (exponents g0)#0);
+    -- as long as we refine with elimination lexicographic order, we don't need generic weights
+    -- if #fexp > 1 or #gexp > 1 then error "expected generic weight order";
+    -- RECURSION: if g0 does not divide f0, no reduction is necessary
+    if not (gexp << fexp) then (return f0 + reduceOneStep(D, w, f-f0, g));
+    -- compare weights of leading monomials
+    -- scalar product of exponent vector with the weight of the d's
+    fwt := sum(fexp, last pack_n w, times);
+    gwt := sum(gexp, last pack_n w, times);
+    if fwt < gwt then return f;
+    -- find the coefficient to divide by
+    fcoef := lift(f0 // R_(fexp), F);
+    gcoef := lift(sub(g0, R) // R_(gexp), F);
+    -- this must be in D to perform the derivative
+    ddexp := fexp - gexp;
+    ddmon := D_(toList(n:0) | ddexp);
+    -- exponents on the x's are zeroes and exponents of the d's are ddexp
+    -- recurse to normalize the lower order terms
+--     -- FIXME: this should work, but doesn't:
+--     -- f - fcoef / gcoef * sub(ddmon * g, R)
+--     --    print netList {f, g, sub(ddmon * g, R), f % sub(ddmon * g, R)};
+--     --    error 0;
+    f % sub(ddmon * g, R)
+    -- eliminates leading term of f and restarts with the remainder
+    )
+
+--    -- TODO: Write function for Gröbner Basis
 normalForm = method()
 -- weightorder, f in D, g in D, SST page 7
 normalForm(Ring, List, RingElement, RingElement) := (D, w, f, g) -> (
@@ -44,11 +96,12 @@ normalForm(Ring, List, RingElement, RingElement) := (D, w, f, g) -> (
     --gexp := unique apply(exponents g0, e -> last pack_n e);
     fexp := (exponents f0)#0;
     gexp := (last pack_n (exponents g0)#0);
-    -- as long as we use RevLex, we don't need generic weights
-    --if #fexp > 1 or #gexp > 1 then error "expected generic weight order";
-    -- RECURSION: if gin does not divide fin, no reduction is necessary
+    -- as long as we refine with elimination lexicographic order, we don't need generic weights
+    -- if #fexp > 1 or #gexp > 1 then error "expected generic weight order";
+    -- RECURSION: if g0 does not divide f0, no reduction is necessary
     if not (gexp << fexp) then (return f0 + normalForm(D, w, f-f0, g));
     -- compare weights of leading monomials
+    -- scalar product of exponent vector with the weight of the d's
     fwt := sum(fexp, last pack_n w, times);
     gwt := sum(gexp, last pack_n w, times);
     if fwt < gwt then return f;
@@ -58,12 +111,14 @@ normalForm(Ring, List, RingElement, RingElement) := (D, w, f, g) -> (
     -- this must be in D to perform the derivative
     ddexp := fexp - gexp;
     ddmon := D_(toList(n:0) | ddexp);
+    -- exponents on the x's are zeroes and exponents of the d's are ddexp
     -- recurse to normalize the lower order terms
-    -- FIXME: this should work, but doesn't:
-    -- f - fcoef / gcoef * sub(ddmon * g, R)
---    print netList {f, g, sub(ddmon * g, R), f % sub(ddmon * g, R)};
---    error 0;
+--     -- FIXME: this should work, but doesn't:
+--     -- f - fcoef / gcoef * sub(ddmon * g, R)
+--     --    print netList {f, g, sub(ddmon * g, R), f % sub(ddmon * g, R)};
+--     --    error 0;
     normalForm(D, w, f % sub(ddmon * g, R), g)
+    -- eliminates leading term of f and restarts with the remainder
     )
 
 -- use this for lifting from R to D
@@ -73,20 +128,26 @@ sub' = (g, D) -> if instance(g, D) then g else sum(listForm g,
 
 clearDenominators = (G, D) -> apply(G, g -> if instance(g, D) then g else sub'(g * lcm(denominator \ last \ listForm g), D))
 
+-- TO DOUBLE CHECK
 normalForm(Ring, List, RingElement, List) := (D, w, f, G) -> (
     G = clearDenominators(G, D);
-    scan(G, g -> f = normalForm(D, w, f, g));
+    haschanged := true;
+    -- iterate as long as going through G does not give any change
+    while haschanged do(
+        fstart := f;
+        scan(G, g -> f = reduceOneStep(D, w, f, g));
+        haschanged = not(fstart == f);
+    );
+    -- scan(G, g -> f = normalForm(D, w, f, g)); -- not enough
     f)
 
 end--
 restart
 needs "reduce.m2"
 
-D = QQ[x,y,dx,dy, WeylAlgebra => {x => dx, y => dy},
-    MonomialOrder => { Weights => {0,0,1,1}, RevLex },
-    Global => false]
-
 w = {0,0,1,1}
+D = QQ[x,y,dx,dy, WeylAlgebra => {x => dx, y => dy},MonomialOrder => WeightThenEliminationOrder(w)]
+
 f = dx^2
 --f = ((x+y)*dx)
 g = x*dx+1
@@ -95,6 +156,7 @@ leadTerm inw(x*dx+y*dy,w)
 
 --new Example
 
+R = rationalWeylAlgebra(D, w)
 f2 = (x_R)^(-1)*dx_R + (y_R)^(-1)*dy_R
 f = (x_R)^(-4)*dx_R^2 + (y_R)^(-1)*dy_R
 use D
@@ -103,9 +165,10 @@ h = (x_R+y_R)^(-1)*dx_R^2+x_R^(-1)*dx_R*dy_R
 h0 = inw(h,wR)
 terms(h0)
 use D
+
+-- not correct definition of Weyl Algebra
 D = QQ[x,y,dx,dy, WeylAlgebra =>{x=>dx,y=>dy},MonomialOrder=>{Weights=>{0,0,2,1}, RevLex}, Global => false]
 I = ideal(x*dx^2-y*dy^2+dx-dy,x*dx+y*dy+1)
-R = rationalWeylAlgebra(D, w)
 G = gb I
 leadTerm(I)
 normalForm(D, {0,0,1,2},dx_R,flatten entries gens G)
