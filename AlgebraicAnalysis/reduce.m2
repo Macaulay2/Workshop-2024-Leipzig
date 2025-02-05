@@ -128,34 +128,58 @@ sub' = (g, D) -> if instance(g, D) then g else sum(listForm g,
 
 clearDenominators = (G, D) -> apply(G, g -> if instance(g, D) then g else sub'(g * lcm(denominator \ last \ listForm g), D))
 
--- TO DOUBLE CHECK
 normalForm(Ring, List, RingElement, List) := (D, w, f, G) -> (
     G = clearDenominators(G, D);
-    haschanged := true;
-    -- iterate as long as going through G does not give any change
-    while haschanged do(
-        fstart := f;
-        scan(G, g -> f = reduceOneStep(D, w, f, g));
-        haschanged = not(fstart == f);
+
+    useRecursiveVersion := false;
+
+    -- iterated version:
+
+    if useMahrudsVersion then (
+        scan(G, g -> f = normalForm(D, w, f, g)); 
+    ) else (
+        haschanged := true;
+        -- iterate as long as going through G does not give any change
+        while haschanged do(
+            fstart := f;
+            scan(G, g -> f = reduceOneStep(D, w, f, g));
+            haschanged = not(fstart == f);
+        );
     );
-    -- scan(G, g -> f = normalForm(D, w, f, g)); -- is it enough??
     f)
 
 end--
+
+--------------------------------------------------------
+
 restart
 needs "reduce.m2"
 
+
+-----------------------------------------------------------------
+-- Example: Test construction of Weyl algebra with weighted Lex.
 w = {0,0,1,1}
-D = QQ[x,y,dx,dy, WeylAlgebra => {x => dx, y => dy},MonomialOrder => WeightThenEliminationOrder(w)]
 D = makeWeylAlgebra(QQ[x,y],w)
 
 f = dx^2
 --f = ((x+y)*dx)
 g = x*dx+1
-normalForm(D, w, f, g)
-leadTerm inw(x*dx+y*dy,w)
 
---new Example
+-- Reduce completely by g.
+normalForm(D, w, f, g)          -- Output:  2 / x^2
+
+-- Check leadterm:
+leadTerm inw(x*dx+y*dy,w)       -- Output: x*dx
+--------------------------------------------------------
+--------------------------------------------------------
+
+
+
+
+
+--------------------------------------------------------
+-- OLD CODE TO CHECK IMPLEMENTATION --------------------
+--------------------------------------------------------
 
 R = rationalWeylAlgebra(D, w)
 f2 = (x_R)^(-1)*dx_R + (y_R)^(-1)*dy_R
@@ -183,3 +207,5 @@ assert((x_R)^(-4)*dx_R^2+y_R^(-1)*dy_R == normalForm(D, {0,0,1,1},(x_R)^(-4)*dx_
 f = 2*x_R^(-2)
 w = {0,0,2,1}
 g = (flatten entries gens G)#1
+
+----------------------------------------------------------------------------------------------------------------
