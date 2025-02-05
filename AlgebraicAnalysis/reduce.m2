@@ -138,7 +138,7 @@ normalForm(Ring, List, RingElement, List) := (D, w, f, G) -> (
         scan(G, g -> f = reduceOneStep(D, w, f, g));
         haschanged = not(fstart == f);
     );
-    -- scan(G, g -> f = normalForm(D, w, f, g)); -- not enough
+    -- scan(G, g -> f = normalForm(D, w, f, g)); -- is it enough??
     f)
 
 end--
