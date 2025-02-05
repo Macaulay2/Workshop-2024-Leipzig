@@ -147,6 +147,7 @@ needs "reduce.m2"
 
 w = {0,0,1,1}
 D = QQ[x,y,dx,dy, WeylAlgebra => {x => dx, y => dy},MonomialOrder => WeightThenEliminationOrder(w)]
+D = makeWeylAlgebra(QQ[x,y],w)
 
 f = dx^2
 --f = ((x+y)*dx)
