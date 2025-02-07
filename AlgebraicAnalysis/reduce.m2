@@ -135,7 +135,7 @@ normalForm(Ring, List, RingElement, List) := (D, w, f, G) -> (
 
     -- iterated version:
 
-    if useMahrudsVersion then (
+    if useRecursiveVersion then (
         scan(G, g -> f = normalForm(D, w, f, g)); 
     ) else (
         haschanged := true;
