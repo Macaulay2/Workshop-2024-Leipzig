@@ -31,7 +31,7 @@ Path := new Type of MutableHashTable;
 --polyPathList is an iterable collection of coordinate functions 
 polyPath = (polyPathList) -> (
     new Path from{
-        type => "polynomial", 
+        type => "PPolynomial", -- Piecewise Polynomial 
         pieces => toList polyPathList,
         dimension => #((polyPathList#0)), --add check that all pieces have the same dimension
         numberOfPieces => #polyPathList
@@ -41,12 +41,12 @@ polyPath = (polyPathList) -> (
 
 --A piecewise linear polynomial path.
 --linPathList is an iterable collection of points
-linPath = (points) ->(
+linPath = (linPathList) ->(
     new Path from{
         type => "PLinear", -- PiecewiseLinear
-        pieces => toList points,
-        dimension => #points#0,
-        numberOfPieces =>  #points
+        pieces => toList linPathList,
+        dimension => #linPathList#0,
+        numberOfPieces =>  #linPathList
     }
 )
 
@@ -55,12 +55,12 @@ R= QQ[t];
 
 
 p = polyPath({t, t^2});
-assert(p#"kind" === "polynomial", "p should be a polynomial path");
-assert(keys(p#"pieces") === {0}, "p should have one piece (key 0)");
+assert(p#"type" === "PPolynomial", "p should be a polynomial path");
+assert(keys(p#"pieces") === {0}, "p should have one piece");
 assert(p#"dimension" === 2, "p should be 2-dimensional");
 
-pp = piecewisePolynomialPath({ {t, t^2}, {t^3, t^4} });
-assert(pp#"kind" === "piecewisePolynomial", "pp should be a piecewise polynomial path");
+pp = polyPath({ {t, t^2}, {t^3, t^4} });
+assert(pp#"type" === "PPolynomial", "pp should be a piecewise polynomial path");
 assert(keys(pp#"pieces") === {0,1}, "pp should have pieces with keys 0 and 1");
 assert(pp#"dimension" === 2, "pp should be 2-dimensional");
 
