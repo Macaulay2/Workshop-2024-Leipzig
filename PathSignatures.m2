@@ -22,6 +22,7 @@ needsPackage "NCAlgebra"
     -- 
 
 -- I think there is already a way to do this but i could not find it
+-- I think 'pairs' does what you want!
 enumerate = L -> toList apply(0..(#L - 1), i -> {i, L#i});
 
 
