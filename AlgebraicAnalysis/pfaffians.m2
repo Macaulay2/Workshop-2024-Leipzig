@@ -132,7 +132,7 @@ delta3 = (x+z)*(y+z)*dx*dy-e*(x+z)*dx-e*(y+z)*dy+e^2
 h = x*dx+y*dy+z*dz-2*e
 I = ideal(delta1+delta3, delta2+delta3,h)
 r = holonomicRank I;                                        -- WRONG: Gives "infinity" (instead of 4)
-P = pfaffians I;                                            -- ERROR: Does not terminate.
+P = pfaffians I;                                            -- (old: ERROR: Does not terminate.)
 
 --------------------------------------------------------
 
@@ -146,7 +146,7 @@ delta3 = (x+z)*(y+z)*dx*dy-e*(x+z)*dx-e*(y+z)*dy+e^2
 h = x*dx+y*dy+z*dz-2*e
 I = ideal(delta1+delta3, delta2+delta3,h)
 r = holonomicRank I;                                        -- CORRECT: Outputs 4 as holonomic rank.
-P = pfaffians I;                                            -- ERROR:  reduce.m2:38:54:(3):[4]: error: not implemented yet: fraction fields of polynomial rings over rings other than ZZ, QQ, or a finite field
+P = pfaffians I;                                            -- (old: ERROR:  reduce.m2:38:54:(3):[4]: error: not implemented yet: fraction fields of polynomial rings over rings other than ZZ, QQ, or a finite field)
 
 --------------------------------------------------------
 
