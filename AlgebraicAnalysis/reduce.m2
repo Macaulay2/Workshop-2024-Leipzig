@@ -31,7 +31,12 @@ makeWeylAlgebra(PolynomialRing) := opts -> R -> (
     W)
 
 -- Fraction field K(x) of a Weyl algebra K[x,dx]/(...)
-fractionField = memoize(D -> frac extractVarsAlgebra D)
+fractionField = memoize(D -> if class(coefficientRing(D)) === FractionField then (
+                    frac(coefficientRing(coefficientRing(D))[(gens coefficientRing D) | (drop(gens D, - (numgens D)//2))])
+                )
+                else frac extractVarsAlgebra(D)
+);
+
 
 -- Graded associative ring of the rational Weyl algebra
 -- Used for bookkeeping elements in R
@@ -141,7 +146,7 @@ normalForm(Ring, List, RingElement, List) := (D, w, f, G) -> (
         haschanged := true;
         -- iterate as long as going through G does not give any change
         while haschanged do(
-            fstart := f;
+            fstart := sub(f, rationalWeylAlgebra(D,w));
             scan(G, g -> f = reduceOneStep(D, w, f, g));
             haschanged = not(fstart == f);
         );
