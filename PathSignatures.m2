@@ -68,17 +68,17 @@ assert(pp#"dimension" === 2, "pp should be 2-dimensional");
 ///
 
 
-linToPoly = method(Options => {polyRing => QQ[local t] });
-linToPoly Path := Path => opts -> p -> (
-    if p#'type' == 
-)
+-- linToPoly = method(Options => {polyRing => QQ[local t] });
+-- linToPoly Path := Path => opts -> p -> (
+--     if p#'type' == 
+-- )
 
 
 
-Path"+" = (p,q) -> (
-    --For now assuming p, q have the same number of pieces 
+-- Path"+" = (p,q) -> (
+--     --For now assuming p, q have the same number of pieces 
 
-)
+-- )
 
 
 -----------------------------------------
@@ -239,7 +239,7 @@ polyIntegral (RingElement, RingElement) := RingElement => (f, xn) ->(
 -------------------------------------
 --polySigGen computes the signature of a polynomial path for words
 -- l is the list of components of the polynomial path, each represented by a list
--- Here, a polynomial \sum a_i x^i is represented by {a_0,a_1,...}
+-- Here, a polynomial is represented by its list form, see M2 documentation for listForm
 -- w is a list representing a word as in linsig
 -- br is the base ring of the coefficients
 -------------------------------------
@@ -249,7 +249,7 @@ polySigGen (List, List, Ring) := RingElement => (l, w, bR) ->(
     k:= length w;
     R := bR[local x_1..local x_k];
     S := bR[local s];
-    X := apply(l, i-> sum(1..length(i)-1, j -> (i#j)_S * s^j));
+    X := apply(l, i-> sum(0..length(i)-1, j -> ((i#j)#1)_S * s^((i#j)#0#0)));
 
     res:= product for i from 1 to k list (
         comp := X#(w#(i-1)-1);
@@ -265,7 +265,7 @@ polySigGen (List, List, Ring) := RingElement => (l, w, bR) ->(
     res = sub(polyIntegral(res, R_(k-1)),R);
     use(bR);
     res = substitute(res, {R_(k-1) => 1}) - substitute(res, {R_(k-1) =>0});
-    return leadCoefficient res
+    return (if class res === bR then res else leadCoefficient res)
 );
 
 ---------------------------------------------
@@ -287,7 +287,7 @@ f = 1/2*(s_1*s_2 - s_2*s_1);
 A = QQ[x_1,x_2,x_3]
 
 <<<<<<< HEAD
-r = polysig({{0,x_1},{0,x_2,x_3}},f, BaseRing => A)
+r = polysig({ {({1},x_1)} , {({1},x_2),({2},x_3)} },f, BaseRing => A)
 assert(r == 1/6*x_1*x_3) 
 ///
 
