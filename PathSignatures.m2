@@ -26,7 +26,7 @@ needsPackage "NCAlgebra"
 enumerate = L -> toList apply(0..(#L - 1), i -> {i, L#i});
 
 
-Path := new Type of MutableHashTable;
+Path = new Type of MutableHashTable
 
 --A piecewise polynomial path
 --polyPathList is an iterable collection of coordinate functions 
@@ -38,6 +38,22 @@ polyPath = (polyPathList) -> (
         numberOfPieces => #polyPathList
 
     }
+)
+
+--Take parts of a path
+
+Path _ List := (X, l) -> (
+    P := new Path from{
+        type => X.type,
+        pieces => (X.pieces)_l,
+        dimension => X.dimension,
+        numberOfPieces => length(l)
+    };
+    return P;
+)
+
+Path _ Sequence := (X,l) -> (
+    return X_(toList l);
 )
 
 --A piecewise linear polynomial path.
@@ -93,6 +109,14 @@ linsig (List, List) := QQ => (u, w)-> (
     product(h, i-> u#(w#i-1))/(h!)
 )
 
+
+-- sig = method()
+-- sig(Path,List) := QQ => (X,w) -> (
+--     h := X.numberOfPieces;
+--     sum(h+1, i -> (
+--         sig(X, w_{0..i-1})*polySigGen(X[-1],w_{i..h-1}))
+--     )
+-- )
 
 -----------------------------------------
 --Signature of a piecewise linear path
