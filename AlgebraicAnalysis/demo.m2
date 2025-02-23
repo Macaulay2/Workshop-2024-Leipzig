@@ -1,4 +1,59 @@
 needs "normalForm.m2"
+needs "pfaffians.m2"
+needs "gaugeMatrix.m2"
+needs "changeofbasis.m2"
+
+
+-- Example 1: Connection matrices and change of basis
+
+w1 = {0,0,2,1}
+w2 = {0,0,1,2}
+
+D1 = makeWeylAlgebra(QQ[x,y],w1)
+D2 = makeWeylAlgebra(QQ[x,y],w2)
+
+I = sub(ideal(x*dx^2-y*dy^2+2*dx-2*dy,x*dx+y*dy+1),D1)
+
+holonomicRank(I)
+
+C1 = pfaffians(w1,I)
+SM1 = {sub(1,D1),dy}
+
+C2 = pfaffians(w2,sub(I,D2))
+SM2 = {sub(1,D2),dx}
+
+G = flatten entries gens gb I
+changeofvar = gaugeMatrix(w1,G,SM1,SM2)
+gauge(changeofvar,C1,D1)
+
+
+-- Example 2: ideal with parameters
+-- Example equation (11) from https://arxiv.org/pdf/2410.14757 
+
+w = {0,0,0,1,1,1}
+D = makeWeylAlgebra(frac(QQ[e,DegreeRank=>0])[x,y,z],w)    
+
+delta1 = (x^2-z^2)*dx^2+2*(1-e)*x*dx-e*(1-e)
+delta2 = (y^2-z^2)*dy^2+2*(1-e)*y*dy-e*(1-e)
+delta3 = (x+z)*(y+z)*dx*dy-e*(x+z)*dx-e*(y+z)*dy+e^2
+h = x*dx+y*dy+z*dz-2*e
+
+I = ideal(delta1+delta3, delta2+delta3,h)
+r = holonomicRank I
+P = pfaffians I;
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 -- Examples for testing with Pfaffian matrices
 -- Example 1.3: w = (0,0,2,1) ----> EQUALS COMPUTATIONS

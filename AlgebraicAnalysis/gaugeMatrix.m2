@@ -23,6 +23,8 @@ gaugeMatrix(List, List, List, List) := (w, G, stdMon, newStdMon) -> (
   return matrix gaugeMat
 );
 
+end--
+restart 
 
 -- Example Francesca overleaf
 w1 = {0,0,2,1};
