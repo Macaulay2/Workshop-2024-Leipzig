@@ -29,16 +29,30 @@ enumerate = L -> toList apply(0..(#L - 1), i -> {i, L#i});
 Path = new Type of MutableHashTable
 
 --A piecewise polynomial path
---polyPathList is an iterable collection of coordinate functions 
-polyPath = (polyPathList) -> (
+--polyPath takes a list of polynomials in some variable and constructs the corresponding polynomial path from it
+--the polynomials can be given as actual polynomials or directly in listForm
+polyPath = method();
+polyPath List := (polyPathList) -> (
     if(polyPathList === {}) then return new Path from {type => "PPolynomial", pieces => {}, dimension => -1, numberOfPieces => 0};
+
+    if (class(class polyPathList#0) === PolynomialRing) then (
+        P := new Path from{
+            type => "PPolynomial",
+            pieces => {apply(polyPathList,listForm)},
+            dimension => length polyPathList,
+            numberOfPieces => 1
+        };
+        return(P);
+    );
+
     new Path from{
-        type => "PPolynomial", -- Piecewise Polynomial 
-        pieces => toList polyPathList,
-        dimension => #((polyPathList#0)), --add check that all pieces have the same dimension
-        numberOfPieces => #polyPathList
+        type => "PPolynomial",
+        pieces => {polyPathList},
+        dimension => length,
+        numberOfPieces => 1
     }
 )
+
 
 --Take parts of a path
 
@@ -60,6 +74,28 @@ Path _ Sequence := (X,l) -> (
 Path _ ZZ := (X, z) -> (
     return X_{z};
 )
+
+-- Concatenation of paths
+
+Path ** Path := (X,Y) -> (
+    if(X.dimension != Y.dimension) then error("Can not concatenate paths of different ambient dimension.");
+    P := new Path from{
+        type => X.type,
+        pieces => X.pieces | Y.pieces,
+        dimension => X.dimension,
+        numberOfPieces => X.numberOfPieces + Y.numberOfPieces
+    };
+    return P;
+)
+
+TEST ///
+pR = QQ[t];
+X = polyPath({t,t^2})
+Y = polyPath({t,t^2})
+
+<<<<<<< HEAD
+X**Y
+///
 
 -- The general method for computing the signature of a piecewise polynomial path
 
@@ -86,7 +122,7 @@ f = 1/2*(s_1*s_2 - s_2*s_1);
 A = QQ[symbol x_1..symbol x_3]
 
 pR = A[t];
-X = polyPath({{listForm(x_1*t),listForm(x_2*t^2)},{listForm(x_3*t^3 + 3*t),listForm(t^2 -1)}})
+X = polyPath({x_1*t,x_2*t^2}) ** polyPath({x_3*t^3 + 3*t, t^2 - 1})
 
 <<<<<<< HEAD
 r = sig(X,f,BaseRing => A)
