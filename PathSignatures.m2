@@ -101,14 +101,15 @@ X**Y
 
 sig = method(Options=>{BaseRing => QQ});
 sig(Path,List) := QQ => opts -> (X,w) -> (
-    h := X.numberOfPieces;
+    nop := X.numberOfPieces;
+    h := length(w);
     if(w == {}) then return 1;
-    if(h == 0) then return 0;
-    if(h == 1) then (
+    if(nop == 0) then return 0;
+    if(nop == 1) then (
         return(polySigGen(X.pieces#0,w,opts.BaseRing))
     );
     sum(h+1, i -> (
-        sig(X_(0..h-2), w_{0..i-1}, BaseRing => opts.BaseRing)*sig(X_(h-1),w_{i..h-1}, BaseRing => opts.BaseRing))
+        sig(X_(0..nop-2), w_{0..i-1}, BaseRing => opts.BaseRing)*sig(X_(nop-1),w_{i..h-1}, BaseRing => opts.BaseRing))
     )
 )
 
@@ -558,7 +559,7 @@ letterFormat NCRingElement := f -> (
    myNet
 )
 
-Array ^ NCPolynomialRing := (a, R) -> (
+Array _ NCPolynomialRing := (a, R) -> (
     if(max(toList a)>length(gens R)) then (error(toString(net "Not enough letters in ring " | net R | ".")));
     
     product(a,i->R_(i-1))
