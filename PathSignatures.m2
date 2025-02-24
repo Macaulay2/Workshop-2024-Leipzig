@@ -31,18 +31,19 @@ Path = new Type of MutableHashTable
 --A piecewise polynomial path
 --polyPathList is an iterable collection of coordinate functions 
 polyPath = (polyPathList) -> (
+    if(polyPathList === {}) then return new Path from {type => "PPolynomial", pieces => {}, dimension => -1, numberOfPieces => 0};
     new Path from{
         type => "PPolynomial", -- Piecewise Polynomial 
         pieces => toList polyPathList,
         dimension => #((polyPathList#0)), --add check that all pieces have the same dimension
         numberOfPieces => #polyPathList
-
     }
 )
 
 --Take parts of a path
 
 Path _ List := (X, l) -> (
+    if(l === {}) then return polyPath({});
     P := new Path from{
         type => X.type,
         pieces => (X.pieces)_l,
@@ -55,6 +56,42 @@ Path _ List := (X, l) -> (
 Path _ Sequence := (X,l) -> (
     return X_(toList l);
 )
+
+Path _ ZZ := (X, z) -> (
+    return X_{z};
+)
+
+-- The general method for computing the signature of a piecewise polynomial path
+
+sig = method(Options=>{BaseRing => QQ});
+sig(Path,List) := QQ => opts -> (X,w) -> (
+    h := X.numberOfPieces;
+    if(w == {}) then return 1;
+    if(h == 0) then return 0;
+    if(h == 1) then (
+        return(polySigGen(X.pieces#0,w,opts.BaseRing))
+    );
+    sum(h+1, i -> (
+        sig(X_(0..h-2), w_{0..i-1}, BaseRing => opts.BaseRing)*sig(X_(h-1),w_{i..h-1}, BaseRing => opts.BaseRing))
+    )
+)
+
+sig(Path,NCRingElement) := QQ => opts -> (X,f) -> (
+    return(linExt(w->sig(X,w,BaseRing => opts.BaseRing),f));
+)
+
+TEST ///
+R = QQ{symbol s_1..symbol s_5};
+f = 1/2*(s_1*s_2 - s_2*s_1);
+A = QQ[symbol x_1..symbol x_3]
+
+pR = A[t];
+X = polyPath({{listForm(x_1*t),listForm(x_2*t^2)},{listForm(x_3*t^3 + 3*t),listForm(t^2 -1)}})
+
+<<<<<<< HEAD
+r = sig(X,f,BaseRing => A)
+///
+
 
 --A piecewise linear polynomial path.
 --linPathList is an iterable collection of points
@@ -109,15 +146,6 @@ linsig (List, List) := QQ => (u, w)-> (
     product(h, i-> u#(w#i-1))/(h!)
 )
 
-
--- sig = method()
--- sig(Path,List) := QQ => (X,w) -> (
---     h := X.numberOfPieces;
---     sum(h+1, i -> (
---         sig(X, w_{0..i-1})*polySigGen(X[-1],w_{i..h-1}))
---     )
--- )
-
 -----------------------------------------
 --Signature of a piecewise linear path
 --Build calling recursively linsig
@@ -125,7 +153,7 @@ linsig (List, List) := QQ => (u, w)-> (
 --w is a word, as in linsig
 -----------------------------------------
 pwlsigw = method()
-pwlsigw (List, List) := QQ => (M, w)-> (
+pwlsigw (List, List) := QQ => (M, w, bR)-> (
     h := length (w); 
     m := length(M);
 
@@ -270,14 +298,15 @@ polyIntegral (RingElement, RingElement) := RingElement => (f, xn) ->(
 polySigGen = method()
 
 polySigGen (List, List, Ring) := RingElement => (l, w, bR) ->(
+    if(w == {}) then return 1;
     k:= length w;
-    R := bR[local x_1..local x_k];
-    S := bR[local s];
-    X := apply(l, i-> sum(0..length(i)-1, j -> ((i#j)#1)_S * s^((i#j)#0#0)));
+    R := bR monoid([symbol x_1..symbol x_k]);
+    S := bR monoid([symbol s]);
+    X := apply(l, i-> sum(0..length(i)-1, j -> ((i#j)#1)_S * (S_0)^((i#j)#0#0)));
 
     res:= product for i from 1 to k list (
         comp := X#(w#(i-1)-1);
-        if(comp == 0) then 0_R else sub(diff(s,comp), {s => R_(i-1)})
+        if(comp == 0) then 0_R else sub(diff(S_0,comp), {S_0 => R_(i-1)})
         );
     
     for i from 1 to k-1 do (
