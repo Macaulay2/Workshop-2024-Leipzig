@@ -97,6 +97,23 @@ Y = polyPath({t,t^2})
 X**Y
 ///
 
+net Path := (X) ->
+(
+    myNet := net ("Path in " | X.dimension | "-dimensional space with " | X.numberOfPieces | (if(X.numberOfPieces == 1) then " polynomial segment:" else " polynomial segments:") );
+    t:= getSymbol("t");
+    locR := QQ[local t];
+    pieces := apply(X.pieces,l->
+        apply(l,
+            p-> sum(p, 
+                i-> i#1*t^(i#0#0)
+                )
+            )
+        );
+    myNet = myNet || "" || (net pieces);
+    return(myNet)
+)
+
+
 -- The general method for computing the signature of a piecewise polynomial path
 
 sig = method(Options=>{BaseRing => QQ});
@@ -130,15 +147,20 @@ r = sig(X,f,BaseRing => A)
 ///
 
 
---A piecewise linear polynomial path.
---linPathList is an iterable collection of points
-linPath = (linPathList) ->(
+--Constructs the linear polynomial path t*v for a vector v
+linPath = (v) ->(
     new Path from{
         type => "PLinear", -- PiecewiseLinear
-        pieces => toList linPathList,
-        dimension => #linPathList#0,
-        numberOfPieces =>  #linPathList
+        pieces => {apply(v,i->{({1},i)})},
+        dimension => #v,
+        numberOfPieces => 1
     }
+)
+
+--Constructs a pw linear path from a given matrix of increments
+pwlinPath = (pwlMatrix) -> (
+    pathList := apply(transpose entries pwlMatrix, i-> linPath(i));
+    return(fold(pathList,(i,j)->i**j));
 )
 
 TEST ///
