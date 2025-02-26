@@ -1,5 +1,57 @@
-needsPackage "NCAlgebra"
+newPackage("PathSignatures",
+         Version => "1.0",
+         Authors => {{Name => "Felix Lotter"}, {Name => "Oriol Reig"}, {Name => "Angelo El Saliby"}},
+         Headline => "A package for working with signatures of algebraic paths",
+);
+export {
+    --types
+    "Path",
+    --methods
+    "sig",
+    "polyPath",
+    "linPath",
+    "pwlinPath",
+    "matrixAction",
+    "CAxisTensor",
+    "CMonTensor",
+    "shuffle",
+    "halfshuffle",
+    "letterFormat",
+    -- symbols
+    "GroundField"
+};
+importFrom_Core {
+    "BaseRing"
+};
+protect type
+protect pieces
+protect dimension
+protect numberOfPieces
 
+needsPackage "NCAlgebra";
+
+Path = new Type of MutableHashTable
+
+sig = method(Options=>{BaseRing => QQ})
+
+sig (Path, List) := QQ => opts -> (X,w) -> (
+    nop := X.numberOfPieces;
+    h := length(w);
+    if(w == {}) then return 1;
+    if(nop == 0) then return 0;
+    if(nop == 1) then (
+        return(polySigGen(X.pieces#0,w,opts.BaseRing))
+    );
+    sum(h+1, i -> (
+        sig(X_(0..nop-2), w_{0..i-1}, BaseRing => opts.BaseRing)*sig(X_(nop-1),w_{i..h-1}, BaseRing => opts.BaseRing))
+    )
+)
+
+sig(Path,NCRingElement) := QQ => opts -> (X,f) -> (
+    return(linExt(w->sig(X,w,BaseRing => opts.BaseRing),f));
+)
+
+--globalAssignment Path
 
 ------------------------------------------------
 --Defining the Type "Path" as a subclass of MutableHashTable.
@@ -25,12 +77,10 @@ needsPackage "NCAlgebra"
 -- I think 'pairs' does what you want!
 enumerate = L -> toList apply(0..(#L - 1), i -> {i, L#i});
 
-
-Path = new Type of MutableHashTable
-
 --A piecewise polynomial path
 --polyPath takes a list of polynomials in some variable and constructs the corresponding polynomial path from it
 --the polynomials can be given as actual polynomials or directly in listForm
+
 polyPath = method();
 polyPath List := (polyPathList) -> (
     if(polyPathList === {}) then return new Path from {type => "PPolynomial", pieces => {}, dimension => -1, numberOfPieces => 0};
@@ -52,7 +102,6 @@ polyPath List := (polyPathList) -> (
         numberOfPieces => 1
     }
 )
-
 
 --Take parts of a path
 
@@ -77,7 +126,7 @@ Path _ ZZ := (X, z) -> (
 
 -- Concatenation of paths
 
-Path ** Path := (X,Y) -> (
+Path ** Path := Path => (X,Y) -> (
     if(X.dimension != Y.dimension) then error("Can not concatenate paths of different ambient dimension.");
     P := new Path from{
         type => X.type,
@@ -88,14 +137,14 @@ Path ** Path := (X,Y) -> (
     return P;
 )
 
-TEST ///
-pR = QQ[t];
-X = polyPath({t,t^2})
-Y = polyPath({t,t^2})
+-- TEST ///
+-- pR = QQ[t];
+-- X = polyPath({t,t^2})
+-- Y = polyPath({t,t^2})
 
-<<<<<<< HEAD
-X**Y
-///
+-- <<<<<<< HEAD
+-- X**Y
+-- ///
 
 net Path := (X) ->
 (
@@ -113,26 +162,11 @@ net Path := (X) ->
     return(myNet)
 )
 
+-- foo = method(Options=>{BaseRing => QQ})
+-- foo(List,List) := (l,g)->(l|g);
+-- foo(Path,List) := (l,g)->(l_g);
 
 -- The general method for computing the signature of a piecewise polynomial path
-
-sig = method(Options=>{BaseRing => QQ});
-sig(Path,List) := QQ => opts -> (X,w) -> (
-    nop := X.numberOfPieces;
-    h := length(w);
-    if(w == {}) then return 1;
-    if(nop == 0) then return 0;
-    if(nop == 1) then (
-        return(polySigGen(X.pieces#0,w,opts.BaseRing))
-    );
-    sum(h+1, i -> (
-        sig(X_(0..nop-2), w_{0..i-1}, BaseRing => opts.BaseRing)*sig(X_(nop-1),w_{i..h-1}, BaseRing => opts.BaseRing))
-    )
-)
-
-sig(Path,NCRingElement) := QQ => opts -> (X,f) -> (
-    return(linExt(w->sig(X,w,BaseRing => opts.BaseRing),f));
-)
 
 TEST ///
 R = QQ{symbol s_1..symbol s_5};
@@ -148,7 +182,8 @@ r = sig(X,f,BaseRing => A)
 
 
 --Constructs the linear polynomial path t*v for a vector v
-linPath = (v) ->(
+linPath = method();
+linPath List := Path => (v) ->(
     new Path from{
         type => "PLinear", -- PiecewiseLinear
         pieces => {apply(v,i->{({1},i)})},
@@ -157,8 +192,9 @@ linPath = (v) ->(
     }
 )
 
+pwlinPath = method();
 --Constructs a pw linear path from a given matrix of increments
-pwlinPath = (pwlMatrix) -> (
+pwlinPath Matrix := (pwlMatrix) -> (
     pathList := apply(transpose entries pwlMatrix, i-> linPath(i));
     return(fold(pathList,(i,j)->i**j));
 )
@@ -307,6 +343,7 @@ wordRingAndValues = method(Options => {GroundField => QQ})
 wordRingAndValues(NCRingElement) := (Ring,List) => opts -> f -> (
         htable := coefficientHTable(f);
         whtable := applyKeys(htable, ncMonToList);
+        v := getSymbol("v");
         vs := new Array from apply(keys whtable, i-> v_(toSequence(i)));
         wR := opts.GroundField vs;
         vals := values whtable;
@@ -327,9 +364,10 @@ linExt(FunctionClosure, NCRingElement) := RingElement => (fun, w) -> (
 --------------------------------------
 pwlsig = method();
 pwlsig (Matrix, NCRingElement) := QQ => (M, w)-> (
-    Mentries = entries M;
+    Mentries := entries M;
     linExt(i->pwlsigw(Mentries,i),w)
 );
+
 
 --------------------------------------
 --polyIntegral computes integrals of polynomials with respect to one variable
@@ -359,8 +397,10 @@ polySigGen = method()
 polySigGen (List, List, Ring) := RingElement => (l, w, bR) ->(
     if(w == {}) then return 1;
     k:= length w;
-    R := bR monoid([symbol x_1..symbol x_k]);
-    S := bR monoid([symbol s]);
+    x := getSymbol("x");
+    R := bR monoid([x_1..x_k]);
+    s := getSymbol("s");
+    S := bR monoid([s]);
     X := apply(l, i-> sum(0..length(i)-1, j -> ((i#j)#1)_S * (S_0)^((i#j)#0#0)));
 
     res:= product for i from 1 to k list (
@@ -501,7 +541,7 @@ shuffle = method();
 shuffle (List,List,NCRing) := (w1,w2,R) -> (
     l1 := length(w1);
     l2 := length(w2);
-    perms = select(permutations(toList(0..l1+l2-1)), i->sort(i_{0..l1-1}) == i_{0..l1-1} and sort(i_{l1..l1+l2-1}) == i_{l1..l1+l2-1});
+    perms := select(permutations(toList(0..l1+l2-1)), i->sort(i_{0..l1-1}) == i_{0..l1-1} and sort(i_{l1..l1+l2-1}) == i_{l1..l1+l2-1});
     idp := toList(0..l1+l2-1);
     invperms := apply(transpose {perms, toList(length(perms):idp)}, i -> values hashTable(transpose i));
     w := join(w1,w2);
@@ -527,8 +567,8 @@ NCRingElement ** NCRingElement := (f,g) -> (
 
 halfshuffle = method();
 halfshuffle(NCRingElement, List) := (f,w) -> (
-    wl = w_(toList(0..length(w)-2));
-    wr = w_(-1);
+    wl := w_(toList(0..length(w)-2));
+    wr := w_(-1);
     return( shuffle(f,wl) * (ring f)_(wr-1) );
 )
 
@@ -543,10 +583,6 @@ halfshuffle (NCRingElement, NCRingElement) := (f,g) -> (
 NCRingElement << NCRingElement := (f,g) -> (
     halfshuffle(f,g)
 )
-
-
-Path = new Type of MutableHashTable
-
 
 letterFormat = method();
 letterFormat NCRingElement := f -> (
@@ -586,3 +622,24 @@ Array _ NCPolynomialRing := (a, R) -> (
     
     product(a,i->R_(i-1))
 )
+
+beginDocumentation()
+
+doc ///
+Node
+ Key
+  PathSignatures
+ Headline
+  A package for working with signatures of algebraic paths
+ Description
+  Text
+   {\em PathSignatures} is a package for studying the signature of piecewise polynomial paths.
+Node
+ Key
+  Path
+ Headline
+  The type of a piecewise polynomial path
+
+///
+
+endPackage;

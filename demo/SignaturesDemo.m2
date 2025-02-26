@@ -2,18 +2,18 @@
 -- Authors: Felix Lotter, Oriol Reig, Angelo El Saliby, Carlos Amendola
 -----------------------------------------------------------------------------------------------------------
 
-load("../PathSignatures.m2")
+installPackage("PathSignatures",FileName => "../PathSignatures.m2")
 
 ///
 The k-th level signature of a path $X:[0,1]\rightarrow \RR^d$  is a k-tensor whose coordinates are iterated 
 integrals of some of the derivatives of X over a k-dimensional simplex.
 
-First of all, we solve the easy problem of computing the signatures of piece-wise linear and polynomial paths
+First of all, we solve the easy problem of computing the signatures of piecewise linear and polynomial paths
 ///
 d=5
-X= id_(ZZ^d)
-R = QQ{l_1..l_d}  --We encoded tensors through non commutative polynomials
-pwlsig(X, l_1)
+A = id_(ZZ^d)
+R = QQ{l_1..l_d}  --We encode tensors through non commutative polynomials
+X = pwlinPath(A)
 CAxisMatrix =matrix table(d,d,(i,j) -> pwlsig(X, l_(i+1)*l_(j+1))) --Piecewise linear 2nd level signature tensor
 
 --Here, a polynomial \sum a_i x^i is represented by {a_0,a_1,...}
