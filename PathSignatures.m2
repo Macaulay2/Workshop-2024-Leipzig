@@ -14,12 +14,16 @@ export {
     "matrixAction",
     "CAxisTensor",
     "CMonTensor",
+    "wordAlgebra",
     "shuffle",
     "halfshuffle",
     "letterFormat",
     -- symbols
     "GroundField"
 };
+exportMutable {
+    "Lt"
+}
 importFrom_Core {
     "BaseRing"
 };
@@ -85,7 +89,7 @@ polyPath = method();
 polyPath List := (polyPathList) -> (
     if(polyPathList === {}) then return new Path from {type => "PPolynomial", pieces => {}, dimension => -1, numberOfPieces => 0};
 
-    if (class(class polyPathList#0) === PolynomialRing) then (
+    if (instance(polyPathList#0, RingElement)) then (
         P := new Path from{
             type => "PPolynomial",
             pieces => {apply(polyPathList,listForm)},
@@ -98,7 +102,7 @@ polyPath List := (polyPathList) -> (
     new Path from{
         type => "PPolynomial",
         pieces => {polyPathList},
-        dimension => length,
+        dimension => length polyPathList,
         numberOfPieces => 1
     }
 )
@@ -536,6 +540,15 @@ createMapFromCoreTensor(NCRingElement, ZZ) := NCRingElement => opts -> (f,ambd) 
 
 
 -- define shuffle products on words, then overload function and use linExt to extend to NCRingElements. Define operator ** as shuffle product in NCAlgebra
+
+wordAlgebra = method();
+wordAlgebra (List) := (l) -> (
+    myvars := apply(l,i-> (Lt_i));
+    return(QQ myvars);
+)
+wordAlgebra (ZZ) := (z) -> (
+    return(wordAlgebra(toList(1..z)));
+)
 
 shuffle = method();
 shuffle (List,List,NCRing) := (w1,w2,R) -> (
