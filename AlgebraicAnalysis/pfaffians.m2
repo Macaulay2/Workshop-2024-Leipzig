@@ -3,7 +3,8 @@ needs "holonomic.m2"
 needs "reduce.m2"
 importFrom_Core { "concatRows", "concatCols" }
 
-checkSystem = (W, A) -> apply(toSequence \ subsets(numgens W // 2, 2), (i,j) -> A_i * A_j - A_j * A_i)
+-- ToDO: Fix this -- write correct "integrability condition".
+-- checkSystem = (W, A) -> apply(toSequence \ subsets(numgens W // 2, 2), (i,j) -> A_i * A_j - A_j * A_i)
 
 -- Given a D-ideal, compute its Pfaffian system
 -- c.f. [Theorem 1.4.22, SST]
