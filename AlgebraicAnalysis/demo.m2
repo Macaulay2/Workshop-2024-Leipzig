@@ -1,4 +1,4 @@
-needs "normalForm.m2"
+needs "reduce.m2"
 needs "pfaffians.m2"
 needs "gaugeMatrix.m2"
 needs "changeofbasis.m2"
@@ -27,7 +27,7 @@ changeofvar = gaugeMatrix(w1,G,SM1,SM2)
 gauge(changeofvar,C1,D1)
 
 
--- Example 2: ideal with parameters
+-- Example 2: with parameters
 -- Example equation (11) from https://arxiv.org/pdf/2410.14757 
 
 w = {0,0,0,1,1,1}
@@ -41,14 +41,17 @@ h = x*dx+y*dy+z*dz-2*e
 I = ideal(delta1+delta3, delta2+delta3,h)
 r = holonomicRank I
 P = pfaffians I;
+G = flatten entries gens gb I
+SM1 = {1,dy,dz,dz^2}
 
+B2 = {1,dx,dy,dx*dy}
+changeofvar = gaugeMatrix(w,G,SM1,B2)
+P2 = gauge(changeofvar,P,D)
 
-
-
-
-
-
-
+changeofvar2 = transpose((1/(2*z*e^2))*matrix({{2*z*e^2, -e^2*(x-z), -e^2*(y-z), -e^2*(x+y)},{0,e*(x^2-z^2),0,e*(x+y)*(x+z)},{0,0,e*(y^2-z^2),e*(x+y)*(y+z)},{0,0,0,-(x+y)*(x+z)*(y+z)}}))
+P3 = gauge(changeofvar2,P2,D)
+-- P3 is an epsilon-factorized pfaffian system, changeofvar2 is the matrix from equation (13)
+1/e*connectionMatrix(P3)
 
 
 

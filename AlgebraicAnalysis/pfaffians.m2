@@ -33,6 +33,23 @@ pfaffians Ideal := List => I -> (
     n := numgens ring I // 2;
     pfaffians(toList(n:0) | toList(n:1), I))
 
+connectionMatrix = method()
+connectionMatrix(List,Ideal) := List => (w, I) -> (
+    P = pfaffians(w,I);
+    R = ring P_0;
+    var = gens R;
+    sum((for i from 0 to length(var)-1 list var_i*P_i ))
+)
+
+connectionMatrix(List) := List => (P) -> (
+    R = ring P_0;
+    var = gens R;
+    sum((for i from 0 to length(var)-1 list var_i*P_i ))
+)
+
+
+
+
 end--
 restart
 needs "./pfaffians.m2"
