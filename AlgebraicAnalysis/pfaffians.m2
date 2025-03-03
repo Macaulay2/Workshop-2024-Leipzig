@@ -10,6 +10,7 @@ importFrom_Core { "concatRows", "concatCols" }
 -- c.f. [Theorem 1.4.22, SST]
 pfaffians(List, Ideal) := List => (w, I) -> (
     D := ring I;
+    createDpairs D;
     -- warning: multiplication in R isn't correct,
     -- but this acts as the associated graded ring of R
     R := rationalWeylAlgebra(D, w);
