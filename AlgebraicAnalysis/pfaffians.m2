@@ -8,12 +8,13 @@ importFrom_Core { "concatRows", "concatCols" }
 
 -- Given a D-ideal, compute its Pfaffian system
 -- c.f. [Theorem 1.4.22, SST]
-pfaffians(List, Ideal) := List => (w, I) -> (
+pfaffians(Ideal) := List => (I) -> (
     D := ring I;
     createDpairs D;
+    w := (((options(D)).MonomialOrder)#1)#1;
     -- warning: multiplication in R isn't correct,
     -- but this acts as the associated graded ring of R
-    R := rationalWeylAlgebra(D, w);
+    R := rationalWeylAlgebra(D);
     -- gb with respect to an elimination
     -- weight order tie broken by RevLex?
     G := gens gb I;
@@ -29,11 +30,9 @@ pfaffians(List, Ideal) := List => (w, I) -> (
 	dt -> transpose concatCols apply(flatten entries B,
 	    s -> last coefficients(
 		-- essentially compute: (dt * s) % G
-		normalForm(D, w, dt_R * s, first entries G), Monomials => B)));
-    A)
-pfaffians Ideal := List => I -> (
-    n := numgens ring I // 2;
-    pfaffians(toList(n:0) | toList(n:1), I))
+		normalForm(dt_R * s, first entries G), Monomials => B)));
+    A
+)
 
 connectionMatrix = method()
 connectionMatrix(List,Ideal) := List => (w, I) -> (
@@ -54,11 +53,10 @@ stdMon = method()
 stdMon(Ideal) := (I) -> (
     D := ring I;
     w := (((options(D)).MonomialOrder)#1)#1;
-    R := rationalWeylAlgebra(D,w);
     M := comodule I;
     r := holonomicRank(w, M);
-    B := sub(M.cache#"basis", R);
-    return B;
+    B := sub(M.cache#"basis", D);
+    return flatten entries B;
 );
 
 
@@ -71,7 +69,7 @@ needs "./pfaffians.m2"
 -- ALS notes, Example 7.16
 D = makeWeylAlgebra(QQ[x,y], w = {0,0,1,2});
 I = ideal (x*dx^2 - y*dy^2 + dx-dy, x*dx+y*dy+1); -- doesn't commute
-A = pfaffians(w, I);
+A = pfaffians(I);
 
 -- i2 : D = makeWeylAlgebra(QQ[x,y], w = {0,0,2,1});
 -- i3 : A = pfaffians(w, I = ideal (x*dx^2 - y*dy^2 + dx-dy, x*dx+y*dy+1)) -- doesn't commute
