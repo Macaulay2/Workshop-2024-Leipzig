@@ -40,19 +40,25 @@ fractionField = memoize(D -> if class(coefficientRing(D)) === FractionField then
 
 -- Graded associative ring of the rational Weyl algebra
 -- Used for bookkeeping elements in R
-rationalWeylAlgebra = memoize((D, w) -> (fractionField D)(monoid[D.dpairVars#1,
+rationalWeylAlgebra = memoize((D) -> (
+    createDpairs D;
+    w := (((options(D)).MonomialOrder)#1)#1;
+    R := fractionField(D);
+    (R)(monoid[D.dpairVars#1,
 	    MonomialOrder => WeightThenLexicographicOrder last pack_(#w//2) w ]))
+)
 --            MonomialOrder => { Weights => w } ]))
 
 -- reduce the lead term in rational Weyl algebra R
 
 reduceOneStep = method()
-reduceOneStep(Ring, List, RingElement, RingElement) := (D, w, f, g) -> (
+reduceOneStep(RingElement, RingElement) := (f, g) -> (
     if f == 0 then return f;
-    --D := ring g;
+    D := ring g;
+    w := (((options(D)).MonomialOrder)#1)#1;
     n := numgens D // 2;
     F := fractionField D;
-    R := rationalWeylAlgebra(D, w);
+    R := rationalWeylAlgebra(D);
     if R =!= ring f then f = sub(f, R);
     f0 := leadTerm(f);
     g0 := leadTerm(g);
@@ -63,7 +69,7 @@ reduceOneStep(Ring, List, RingElement, RingElement) := (D, w, f, g) -> (
     -- as long as we refine with elimination lexicographic order, we don't need generic weights
     -- if #fexp > 1 or #gexp > 1 then error "expected generic weight order";
     -- RECURSION: if g0 does not divide f0, no reduction is necessary
-    if not (gexp << fexp) then (return f0 + reduceOneStep(D, w, f-f0, g));
+    if not (gexp << fexp) then (return f0 + reduceOneStep(f-f0, g));
     -- compare weights of leading monomials
     -- scalar product of exponent vector with the weight of the d's
     fwt := sum(fexp, last pack_n w, times);
@@ -88,12 +94,13 @@ reduceOneStep(Ring, List, RingElement, RingElement) := (D, w, f, g) -> (
 --    -- TODO: Write function for Gröbner Basis
 normalForm = method()
 -- weightorder, f in D, g in D, SST page 7
-normalForm(Ring, List, RingElement, RingElement) := (D, w, f, g) -> (
+normalForm(RingElement, RingElement) := (f, g) -> (
     if f == 0 then return f;
-    --D := ring g;
+    D := ring g;
+    w := (((options(D)).MonomialOrder)#1)#1;
     n := numgens D // 2;
     F := fractionField D;
-    R := rationalWeylAlgebra(D, w);
+    R := rationalWeylAlgebra(D);
     if R =!= ring f then f = sub(f, R);
     f0 := leadTerm(f);
     g0 := leadTerm(g);
@@ -104,7 +111,7 @@ normalForm(Ring, List, RingElement, RingElement) := (D, w, f, g) -> (
     -- as long as we refine with elimination lexicographic order, we don't need generic weights
     -- if #fexp > 1 or #gexp > 1 then error "expected generic weight order";
     -- RECURSION: if g0 does not divide f0, no reduction is necessary
-    if not (gexp << fexp) then (return f0 + normalForm(D, w, f-f0, g));
+    if not (gexp << fexp) then (return f0 + normalForm(f-f0, g));
     -- compare weights of leading monomials
     -- scalar product of exponent vector with the weight of the d's
     fwt := sum(fexp, last pack_n w, times);
@@ -122,7 +129,7 @@ normalForm(Ring, List, RingElement, RingElement) := (D, w, f, g) -> (
 --     -- f - fcoef / gcoef * sub(ddmon * g, R)
 --     --    print netList {f, g, sub(ddmon * g, R), f % sub(ddmon * g, R)};
 --     --    error 0;
-    normalForm(D, w, f % sub(ddmon * g, R), g)
+    normalForm(f % sub(ddmon * g, R), g)
     -- eliminates leading term of f and restarts with the remainder
     )
 
@@ -133,7 +140,9 @@ sub' = (g, D) -> if instance(g, D) then g else sum(listForm g,
 
 clearDenominators = (G, D) -> apply(G, g -> if instance(g, D) then g else sub'(g * lcm(denominator \ last \ listForm g), D))
 
-normalForm(Ring, List, RingElement, List) := (D, w, f, G) -> (
+normalForm(RingElement, List) := (f, G) -> (
+    D := ring(G#0);
+    w := (((options(D)).MonomialOrder)#1)#1;
     G = clearDenominators(G, D);
 
     useRecursiveVersion := false;
@@ -141,13 +150,13 @@ normalForm(Ring, List, RingElement, List) := (D, w, f, G) -> (
     -- iterated version:
 
     if useRecursiveVersion then (
-        scan(G, g -> f = normalForm(D, w, f, g)); 
+        scan(G, g -> f = normalForm(f, g)); 
     ) else (
         haschanged := true;
         -- iterate as long as going through G does not give any change
         while haschanged do(
-            fstart := sub(f, rationalWeylAlgebra(D,w));
-            scan(G, g -> f = reduceOneStep(D, w, f, g));
+            fstart := sub(f, rationalWeylAlgebra(D));
+            scan(G, g -> f = reduceOneStep(f, g));
             haschanged = not(fstart == f);
         );
     );
@@ -175,7 +184,7 @@ f = dx^2
 g = x*dx+1
 
 -- Reduce completely by g.
-normalForm(D, w, f, g)          -- Output:  2 / x^2
+normalForm(f, g)          -- Output:  2 / x^2
 
 -- Check leadterm:
 leadTerm inw(x*dx+y*dy,w)       -- Output: x*dx
@@ -190,7 +199,7 @@ leadTerm inw(x*dx+y*dy,w)       -- Output: x*dx
 -- OLD CODE TO CHECK IMPLEMENTATION --------------------
 --------------------------------------------------------
 
-R = rationalWeylAlgebra(D, w)
+R = rationalWeylAlgebra(D)
 f2 = (x_R)^(-1)*dx_R + (y_R)^(-1)*dy_R
 f = (x_R)^(-4)*dx_R^2 + (y_R)^(-1)*dy_R
 use D
