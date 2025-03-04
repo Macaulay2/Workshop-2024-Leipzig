@@ -19,14 +19,18 @@ I = ideal(delta1+delta3, delta2+delta3,h)
 P = pfaffians I;    -- Weird: Computing Pfaffians first does not work.  (in the demo file the holonomic rank is computed first.)
 r = holonomicRank I;  
 
-
 assert(holonomicRank I == 4)
+
+-- Get Groebner Basis
+G = flatten entries gens gb I;
 
 -- TODO: Assert that the following change of bases lead to an epsilon factorized form.
 
 SM1 = {1,dy,dz,dz^2};   -- TODO: Change this to take the standard monomials from P directly
 
 B2 = {1,dx,dy,dx*dy};
+
+
 changeofvar = gaugeMatrix(w,G,SM1,B2);
 P2 = gauge(changeofvar,P,D);
 
