@@ -49,7 +49,17 @@ connectionMatrix(List) := List => (P) -> (
     sum((for i from 0 to length(var)-1 list var_i*P_i ))
 )
 
-
+-- output standard monomials
+stdMon = method()
+stdMon(Ideal) := (I) -> (
+    D := ring I;
+    w := (((options(D)).MonomialOrder)#1)#1;
+    R := rationalWeylAlgebra(D,w);
+    M := comodule I;
+    r := holonomicRank(w, M);
+    B := sub(M.cache#"basis", R);
+    return B;
+);
 
 
 end--
@@ -60,7 +70,8 @@ needs "./pfaffians.m2"
 ------------------------------
 -- ALS notes, Example 7.16
 D = makeWeylAlgebra(QQ[x,y], w = {0,0,1,2});
-A = pfaffians(w, I = ideal (x*dx^2 - y*dy^2 + dx-dy, x*dx+y*dy+1)) -- doesn't commute
+I = ideal (x*dx^2 - y*dy^2 + dx-dy, x*dx+y*dy+1); -- doesn't commute
+A = pfaffians(w, I);
 
 -- i2 : D = makeWeylAlgebra(QQ[x,y], w = {0,0,2,1});
 -- i3 : A = pfaffians(w, I = ideal (x*dx^2 - y*dy^2 + dx-dy, x*dx+y*dy+1)) -- doesn't commute
