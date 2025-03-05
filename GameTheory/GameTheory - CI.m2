@@ -1,6 +1,5 @@
 needsPackage "GraphicalModels";
 
-
 -- makes the corresponding markovRing from the GraphicalModels package
 -- to a given probabilityRing from the DependencyEquilibria.m2 file
 
@@ -149,6 +148,15 @@ spohnCI (Graph, Ring, List, List) := o -> (G, PR, X, PlayerNames) -> (
     Di := PR#"gameFormat";
     intersectWithCImodel(G, spohn, Di, PlayerNames, Verbose => v)
     )
-
-
-
+spohnCI (List, Ring, List) := o -> (L, PR, X) -> (
+    v := o.Verbose;
+    spohn := spohnIdeal(PR, X);
+    Di := PR#"gameFormat";
+    intersectWithCImodel(L, spohn, Di, Verbose => v)
+    )
+spohnCI (List, Ring, List, List) := o -> (L, PR, X, PlayerNames) -> (
+    v := o.Verbose;
+    spohn := spohnIdeal(PR, X);
+    Di := PR#"gameFormat";
+    intersectWithCImodel(L, spohn, Di, PlayerNames, Verbose => v)
+    )
