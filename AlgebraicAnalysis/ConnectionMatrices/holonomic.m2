@@ -1,4 +1,4 @@
-debug needsPackage "Dmodules"
+--debug needsPackage "Dmodules"
 
 -- modified version to keep the standard basis
 holonomicRank(List, Module) := (weightList, M) -> (

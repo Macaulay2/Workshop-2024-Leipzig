@@ -1,4 +1,4 @@
-debug needsPackage "Dmodules"
+--debug needsPackage "Dmodules"
 
 -- Orders
 -- Weighted lexicographic order x_1 > .. > x_n > dx_1 > .. > dx_n (Not an elimination order)

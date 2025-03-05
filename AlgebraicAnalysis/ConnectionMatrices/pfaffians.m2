@@ -1,7 +1,7 @@
-needs "holonomic.m2"
+--needs "holonomic.m2"
 --needs "gbw-fixed.m2"
-needs "reduce.m2"
-importFrom_Core { "concatRows", "concatCols" }
+--needs "reduce.m2"
+--importFrom_Core { "concatRows", "concatCols" }
 
 -- ToDO: Fix this -- write correct "integrability condition".
 -- checkSystem = (W, A) -> apply(toSequence \ subsets(numgens W // 2, 2), (i,j) -> A_i * A_j - A_j * A_i)
@@ -36,15 +36,15 @@ pfaffians(Ideal) := List => (I) -> (
 
 connectionMatrix = method()
 connectionMatrix(List,Ideal) := List => (w, I) -> (
-    P = pfaffians(w,I);
-    R = ring P_0;
-    var = gens R;
+    P := pfaffians(w,I);
+    R := ring P_0;
+    var := gens R;
     sum((for i from 0 to length(var)-1 list var_i*P_i ))
 )
 
 connectionMatrix(List) := List => (P) -> (
-    R = ring P_0;
-    var = gens R;
+    R := ring P_0;
+    var := gens R;
     sum((for i from 0 to length(var)-1 list var_i*P_i ))
 )
 
