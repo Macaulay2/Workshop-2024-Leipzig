@@ -1,21 +1,24 @@
 -- -*- coding: utf-8 -*-
 newPackage(
-    "FirstPackage",
+    "ourDmodules",
     Version => "1.4.1.1",
     Date => "March 2025",
     Authors => {
-        {Name => "Paul Goerlach", Email => "paul.goerlach@ovgu.de", HomePage => ""}
+        {Name => "Paul Goerlach", Email => "paul.goerlach@ovgu.de", HomePage => ""},
 	    {Name => "Joris Koefler", Email => "joris.koefler@mis.mpg.de", HomePage => ""},
         {Name => "Mahrud Sayrafi", Email => "mahrud@fields.utoronto.ca", HomePage => ""},
         {Name => "Anna-Laura Sattelberger", Email => "anna-laura.sattelberger@mis.mpg.de", HomePage => ""},
         {Name => "Carlos Rodriguez", Email => "carlos.rodriguez@mis.mpg.de", HomePage => ""},
         {Name => "Hendrik Schroeder", Email => "h.schroeder@tu-berlin.de", HomePage => ""},
         {Name => "Nicolas Weiss", Email => "nicolas.weiss@mis.mpg.de", HomePage => ""},
-        {Name => "Franzesca Zaffalon", Email => "francesca.zaffalon@mis.mpg.de", HomePage => ""},
+        {Name => "Franzesca Zaffalon", Email => "francesca.zaffalon@mis.mpg.de", HomePage => ""}
     },
-    Headline => "an example Macaulay2 package",
+    Headline => "Additions to Dmodules",
     Keywords => {"Documentation"},
-    DebuggingMode => false
+    DebuggingMode => false,
+    PackageExports => {
+	 "Dmodules"
+	 }
     )
 
 --------------------------------------------------------------------------------
@@ -25,7 +28,7 @@ newPackage(
 -- Pfaffians basic files
 load "./AlgebraicAnalysis/reduce.m2"
 export {
-    "makeWeylAlgebra",
+    --"makeWeylAlgebra",
     "fractionField",
     "rationalWeylAlgebra",
     "reduceOneStep",
@@ -36,7 +39,7 @@ export {
 -- Tests
 --------------------------------------------------------------------------------
 
-load "./AlgebraicAnalysis/tests/example.m2"
+--load "./tests/example.m2"
 
 --------------------------------------------------------------------------------
 -- Documentation
@@ -44,14 +47,14 @@ load "./AlgebraicAnalysis/tests/example.m2"
 
 beginDocumentation()
 
-load "./AlgebraicAnalysis/DOC/general.m2"
+load "./DOC/general.m2"
 
 end--
 
 restart
-uninstallPackage "Dmodules"
-installPackage "Dmodules"
+uninstallPackage "ourDmodules"
+installPackage "ourDmodules"
 
 restart
-needsPackage "Dmodules"
-check Dmodules
+needsPackage "ourDmodules"
+check ourDmodules
