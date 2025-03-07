@@ -55,20 +55,19 @@ ciIdeal (Ring, Graph) := (PR, G) -> (
     Stmts := globalMarkov G;
     ciIdeal (PR, Stmts)
     )
-    
 
--- the following method has a slightly different name to the original,
--- so that the two can be compared when loading the same file
+----------------------------------
+-- intersectWithCImodel (V, Stmts)
+-- intersectWithCImodel (V, G)
+--------------------------------
+
 
 intersectWithCImodel = method(Options => {Verbose => false})
-intersectWithCImodel (Graph, Ideal, List, List) := o -> (G, V, Di, PlayerNames) -> (
+intersectWithCImodel (Ideal, List, List) := o -> (V, Stmts, PlayerNames) -> (
     v := o.Verbose;
-    R := ring (V);
-    markovR := toMarkovRing R;
-    F := mapToProbabilityRing(R);
-    H := map(R,ZZ);
-    S := globalMarkov G;
-    I := F(conditionalIndependenceIdeal (markovR, S, PlayerNames));
+    R := ring V;
+    H := map (R,ZZ);
+    I := ciIdeal (R, Stmts, PlayerNames);
     if I + V == H(ideal(1)) then (
 	result := H(ideal(1));
 	result
@@ -92,71 +91,43 @@ intersectWithCImodel (Graph, Ideal, List, List) := o -> (G, V, Di, PlayerNames) 
     result = J;
     result
     )
-intersectWithCImodel (Graph, Ideal, List) := o -> (G,V,Di) -> (
+intersectWithCImodel (Ideal, List) := o -> (V, Stmts) -> (
     v := o.Verbose;
-    PlayerNames := toList (1..#Di);
-    intersectWithCImodel(G, V, Di, PlayerNames, Verbose=>v)
+    d := (ring V)#"gameFormat";
+    PlayerNames := toList (1..#d);
+    intersectWithCImodel (V, Stmts, PlayerNames, Verbose=>v)
     )
-intersectWithCImodel (List, Ideal, List, List) := o -> (Stmts, V, Di, PlayerNames) -> (
+intersectWithCImodel (Ideal, Graph, List) := o -> (V, G, PlayerNames) -> (
     v := o.Verbose;
-    R := ring (V);
-    markovR := toMarkovRing R;
-    F := mapToProbabilityRing(R);
-    H := map(R,ZZ);
-    I := F(conditionalIndependenceIdeal (markovR, Stmts, PlayerNames));
-    if I + V == H(ideal(1)) then (
-	result := H(ideal(1));
-	result
-	);
-    for k from 0 to length(R_*)-1 do (
-	I = saturate(I,R_k,Strategy=>Bayer);
-	if v then print ("Completed step " | k+1 | " of saturating CI ideal");
-	V = saturate(V,R_k,Strategy=>Bayer);
-	if v then print ("Completed step " |k+1| " of saturating input ideal");
-	);
-    I = saturate(I,sum(R_*),Strategy=>Bayer);
-    if v then print ("Completed step " |length(R_*)+1| " of saturating CI ideal");
-    V = saturate(V, sum(R_*), Strategy=>Bayer);
-    if v then print ("Completed step " |length(R_*) +1|" of saturating input ideal");
-    J := I+V;
-    for k from 0 to length(R_*)-1 do (
-	J = saturate(J,R_k,Strategy=>Bayer);
-	if v then print ("Completed step "|k+1|" of saturating sum");
-	);
-    J = saturate(J,sum(R_*),Strategy=>Bayer);
-    result = J;
-    result
+    Stmts := globalMarkov G;
+    intersectWithCImodel (V, Stmts, PlayerNames, Verbose=>v)
     )
-intersectWithCImodel (List, Ideal, List) := o -> (Stmts, V, Di) -> (
+intersectWithCImodel (Ideal, Graph) := o -> (V, G) -> (
     v := o.Verbose;
-    PlayerNames := toList (1..#Di);
-    result = intersectWithCImodel (Stmts, V, Di, PlayerNames, Verbose=>v);
-    result
+    d := (ring V)#"gameFormat";
+    PlayerNames := toList (1..#d);
+    intersectWithCImodel (V, G, PlayerNames, Verbose=>v)
     )
 
 
 spohnCI = method(Options => {Verbose => false})
-spohnCI (Graph, Ring, List) := o -> (G, PR, X) -> (
+spohnCI (Ring, List, Graph) := o -> (PR, X, G) -> (
     v := o.Verbose;
     spohn := spohnIdeal(PR, X);
-    Di := PR#"gameFormat";
-    intersectWithCImodel(G, spohn, Di, Verbose => v)
+    intersectWithCImodel(spohn, G, Verbose => v)
     )
-spohnCI (Graph, Ring, List, List) := o -> (G, PR, X, PlayerNames) -> (
+spohnCI (Ring, List, Graph, List) := o -> (PR, X, G, PlayerNames) -> (
     v := o.Verbose;
     spohn := spohnIdeal(PR, X);
-    Di := PR#"gameFormat";
-    intersectWithCImodel(G, spohn, Di, PlayerNames, Verbose => v)
+    intersectWithCImodel(spohn, G, PlayerNames, Verbose => v)
     )
-spohnCI (List, Ring, List) := o -> (L, PR, X) -> (
+spohnCI (Ring, List, List) := o -> (PR, X, Stmts) -> (
     v := o.Verbose;
     spohn := spohnIdeal(PR, X);
-    Di := PR#"gameFormat";
-    intersectWithCImodel(L, spohn, Di, Verbose => v)
+    intersectWithCImodel(spohn, Stmts, Verbose => v)
     )
-spohnCI (List, Ring, List, List) := o -> (L, PR, X, PlayerNames) -> (
+spohnCI (Ring, List, List, List) := o -> (PR, X, Stmts, PlayerNames) -> (
     v := o.Verbose;
     spohn := spohnIdeal(PR, X);
-    Di := PR#"gameFormat";
-    intersectWithCImodel(L, spohn, Di, PlayerNames, Verbose => v)
+    intersectWithCImodel(spohn, Stmts, PlayerNames, Verbose => v)
     )
