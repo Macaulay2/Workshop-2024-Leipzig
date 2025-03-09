@@ -24,16 +24,16 @@ I = sub(ideal(x*dx^2-y*dy^2+2*dx-2*dy,x*dx+y*dy+1),D1);  -- Ex. 1.4
 assert(holonomicRank(I) == 2) 
 
 -- Computing the Pfaffian system w.r.t. weight vector w1
-C1 = pfaffians(w1,I);
-SM1 = {sub(1,D1),dy}  -- Q: How to extract here directly from C1? -- Also should verify.
+C1 = pfaffians(I);
+SM1 = stdMon(I);
 
 -- Computing the Pfaffian system w.r.t. weight vector w2
-C2 = pfaffians(w2,sub(I,D2));
-SM2 = {sub(1,D2),dx} -- TODO: Take directly from C2 and assert they are correct.
+C2 = pfaffians(sub(I,D2));
+SM2 = stdMon(sub(I,D2));
 
 -- Compute Groebner Basis
 G = flatten entries gens gb I; 
-changeofvar = gaugeMatrix(w1,G,SM1,SM2);
+changeofvar = gaugeMatrix(G,SM1,SM2);
 
 -- Now transform the Pfaffian system C1 into the Pfaffian System C2 via Gauge transform
-assert(C2 == gauge(changeofvar,C1,D1)) -- TODO: Need to remove the weight information.   // Fails so far.
+assert(C2 == gaugeTransform(changeofvar,C1,D1)) -- TODO: Need to remove the weight information.   // Fails so far.
