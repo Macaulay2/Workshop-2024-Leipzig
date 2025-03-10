@@ -16,11 +16,11 @@ I = sub(ideal(x*dx^2-y*dy^2+2*dx-2*dy,x*dx+y*dy+1),D1)
 
 holonomicRank(I)
 
-C1 = pfaffians(w1,I)
-SM1 = {sub(1,D1),dy}
+C1 = pfaffians(I)
+SM1 = stdMon I
 
-C2 = pfaffians(w2,sub(I,D2))
-SM2 = {sub(1,D2),dx}
+C2 = pfaffians(sub(I,D2))
+SM2 = stdMon sub(I,D2)
 
 G = flatten entries gens gb I
 changeofvar = gaugeMatrix(w1,G,SM1,SM2)
