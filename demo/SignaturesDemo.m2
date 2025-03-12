@@ -2,61 +2,73 @@
 -- Authors: Felix Lotter, Oriol Reig, Angelo El Saliby, Carlos Amendola
 -----------------------------------------------------------------------------------------------------------
 
-installPackage("PathSignatures",FileName => "../PathSignatures.m2")
-
+--installPackage("PathSignatures",FileName => "../PathSignatures.m2")
+needsPackage "PathSignatures";
 ///
 The k-th level signature of a path $X:[0,1]\rightarrow \RR^d$  is a k-tensor whose coordinates are iterated 
 integrals of some of the derivatives of X over a k-dimensional simplex.
-
-First of all, we solve the easy problem of computing the signatures of piecewise linear and polynomial paths
 ///
-d=5
-A = id_(ZZ^d)
-R = QQ{l_1..l_d}  --We encode tensors through non commutative polynomials
-X = pwlinPath(A)
-CAxisMatrix =matrix table(d,d,(i,j) -> pwlsig(X, l_(i+1)*l_(j+1))) --Piecewise linear 2nd level signature tensor
 
---Here, a polynomial \sum a_i x^i is represented by {a_0,a_1,...}
---We compute this for X(t)= (t, t^2, ..., t^d)
-Y=apply(entries X, i-> prepend(0, i)); 
-matrix table(d,d,(i,j) -> polysig(Y, l_(i+1)*l_(j+1)))
+-- A path can be constructed in different ways
 
--- It is also possible to choose generic coefficients!
-R = QQ{l_1,l_2}
-mR = QQ[a_(1,1)..a_(2,3)] -- 3 segments in R^2
-A = genericMatrix(mR,3,2);
-f = l_1*l_2 - l_2*l_1; -- signed volume
-pwlsig(A,f)
+X = linPath({2,3}) -- a linear path with increment {2,3}
+Y = polyPath({{({1},1)},{({2},2)}}) -- polynomials can be given in list form...
+R = QQ[t]
+Y = polyPath({t,2*t^2}) --or as actual polynomials
+Z = X**Y -- concatenate paths using **
 
--- The two specific paths we just described turn out to generate interesting classes of paths through
+-- The signature of a path is evaluated at non-commutative polynomials in the coordinates
+
+R = wordAlgebra(2) -- create a free associative algebra over two letters Lt_1, Lt_2
+
+f= [1,2]_R -- [i_1,...,i_k]_R defines a word.
+
+letterFormat f -- write the polynomial in word notation
+
+-- words can be shuffled and half-shuffled
+
+f = ([1,2]_R ** [1,2]_R) -- shuffle product
+f // letterFormat
+
+-- Finally, to compute the signature of a path, use sig.
+
+sig(Z**Z,[1,2]_R**[1,2]_R) == (sig(Z**Z,[1,2]_R))^2
+
+-- The base ring does not need to be QQ
+
+S = QQ[a_1..a_4]
+A = genericMatrix(S,2,2)
+X = pwlinPath(A) -- creates a piecewise linear path from a matrix with increments given by columns
+Lev2 = matrix table(2,2,(i,j) -> sig(X, [i+1,j+1]_R, BaseRing => S)) -- 2nd level signature tensor
+sig(X, signedVolume(R), BaseRing => S) -- the signed volume of X
+
+-- Polynomial and piecewise linear paths turn out to generate interesting classes of paths through
 -- equivariance (i.e. the natural action of a matrix on the tensors), namely the classes of piecewise 
 -- linear paths with m segments and polynomial paths of degree at most m, in \RR^d.
 
 -- There are closed formulas for the corresponding core tensors. They can be obtained in the following way:
 
-R = QQ{l_1,l_2,l_3}
+R = wordAlgebra(2, BaseRing => S)
 CAxisTensor(2, R) -- core tensor in degree 2
 CMonTensor(2,R) -- core tensor in degree 2
 
+-- The action of a matrix A on a tensor T can be computed as A*T
+
+Lev2
+(A * CAxisTensor(2,R)) // letterFormat
+
+
 -- Sending a matrix to the tensor obtained by acting on the level k core tensor with that matrix yields a homogeneous map of affine varieties. This map can be constructed in the following way:
 
-R = QQ{l_1,l_2,l_3};
-coreTensor = CAxisTensor(4, R);
-ourmap = createMapFromCoreTensor(coreTensor,3,GroundField=>QQ);
-
--- This uses the following function which obtains the image of a tensor under the matrix action
-
-R = QQ{l_1,l_2}
-A = matrix {{1,2,3},{4,5,6}}
-f = l_1*l_2^2 + l_1^2*l_1;
-g = l_1*l_2;
-R2 = QQ{e_1,e_2,e_3}
-matrixAction(A,f,R2)
+coreTensor = CAxisTensor(3, R); coreTensor // letterFormat -- core tensor in degree 3
+ourmap = createMapFromCoreTensor(coreTensor,2,GroundField=>QQ); -- paths in R^2 with 3 segments
 
 -- Then we can use inbuilt functions and packages to study its kernel. In other words, we can study the Zariski closure of the image of the map above.
 
--- kernel ourmap
+I = kernel ourmap
+dim I
 
 needsPackage "MultigradedImplicitization"
 
-flatten values componentsOfKernel(2,ourmap)
+
+flatten values componentsOfKernel(3,ourmap)

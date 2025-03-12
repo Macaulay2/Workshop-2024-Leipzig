@@ -14,25 +14,26 @@ export {
     "matrixAction",
     "CAxisTensor",
     "CMonTensor",
+    "createMapFromCoreTensor",
     "wordAlgebra",
+    "signedVolume",
     "shuffle",
     "halfshuffle",
     "letterFormat",
     -- symbols
-    "GroundField"
+    "GroundField",
+    "BaseRing"
 };
 exportMutable {
     "Lt"
 }
-importFrom_Core {
-    "BaseRing"
-};
 protect type
 protect pieces
 protect dimension
 protect numberOfPieces
 
 needsPackage "NCAlgebra";
+needsPackage "Permutations";
 
 Path = new Type of MutableHashTable
 
@@ -54,6 +55,11 @@ sig (Path, List) := QQ => opts -> (X,w) -> (
 sig(Path,NCRingElement) := QQ => opts -> (X,f) -> (
     return(linExt(w->sig(X,w,BaseRing => opts.BaseRing),f));
 )
+
+-- TODO: implement method to compute all signature values of X up to fixed level
+-- sigAll(Path) := NCRingElement => (X) -> (
+
+-- )
 
 --globalAssignment Path
 
@@ -154,7 +160,7 @@ net Path := (X) ->
 (
     myNet := net ("Path in " | X.dimension | "-dimensional space with " | X.numberOfPieces | (if(X.numberOfPieces == 1) then " polynomial segment:" else " polynomial segments:") );
     t:= getSymbol("t");
-    locR := QQ[local t];
+    locR := ring((X.pieces)#0#0#0#1)[local t];
     pieces := apply(X.pieces,l->
         apply(l,
             p-> sum(p, 
@@ -473,7 +479,7 @@ Matrix * NCRingElement := (M, f) -> (
     if(m != tf) then (error("A " | toString(n) | "x" | toString(m) | " matrix can not act on a tensor over " | toString(tf) | "-dimensional space.");)
     else (
     t := new IndexedVariableTable;
-    B := (baseRing ring f){local t_1..local t_n};
+    B := (coefficientRing ring f){local t_1..local t_n};
     return(matrixAction(M, f, B));)
 )
 
@@ -541,13 +547,13 @@ createMapFromCoreTensor(NCRingElement, ZZ) := NCRingElement => opts -> (f,ambd) 
 
 -- define shuffle products on words, then overload function and use linExt to extend to NCRingElements. Define operator ** as shuffle product in NCAlgebra
 
-wordAlgebra = method();
-wordAlgebra (List) := (l) -> (
+wordAlgebra = method(Options=>{BaseRing => QQ});
+wordAlgebra (List) := opts -> (l) -> (
     myvars := apply(l,i-> (Lt_i));
-    return(QQ myvars);
+    return(opts.BaseRing myvars);
 )
-wordAlgebra (ZZ) := (z) -> (
-    return(wordAlgebra(toList(1..z)));
+wordAlgebra (ZZ) := opts -> (z) -> (
+    return(wordAlgebra(toList(1..z), BaseRing => opts.BaseRing));
 )
 
 shuffle = method();
@@ -635,6 +641,12 @@ Array _ NCPolynomialRing := (a, R) -> (
     
     product(a,i->R_(i-1))
 )
+
+signedVolume = method();
+signedVolume NCPolynomialRing := (R) -> (
+    perms := permutations(toList(1..length(gens R)));
+    (1/(length(gens R))!) * sum(perms,i-> sign(permutation i) * (new Array from i)_R)
+);
 
 beginDocumentation()
 
