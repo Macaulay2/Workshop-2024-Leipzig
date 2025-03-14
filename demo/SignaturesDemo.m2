@@ -72,3 +72,21 @@ needsPackage "MultigradedImplicitization"
 
 
 flatten values componentsOfKernel(3,ourmap)
+
+
+needsPackage "PathSignatures";
+S=QQ[x,y];
+T=QQ{l_1,l_2,l_3}
+
+--Polynmials defining the function:
+L={x^2,y^3,x-y};
+d=2
+
+functionMp(l_1, T,d,L)
+
+
+functionMp(l_2, T,d,L)
+
+functionMp(l_3, T,d,L)
+
+functionMp(l_3^2, T,d,L)

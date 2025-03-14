@@ -22,7 +22,8 @@ export {
     "letterFormat",
     -- symbols
     "GroundField",
-    "BaseRing"
+    "BaseRing",
+    "functionMp"
 };
 exportMutable {
     "Lt"
@@ -818,9 +819,9 @@ phiJacobian (List, NCPolynomialRing) := NCMatrix => (l, S) -> (
     M:=matrix{l};
     J:=jacobian M;
 
-    m := table(numgens target J-1, numgens source J-1, (i,j)->phiMap(J_(i,j), S););
+    m := table(numgens target J, numgens source J, (i,j)->phiMap(J_(i,j), S));
 
-    return ncMatrix(apply(numgens target J, i->apply(numgens source J, j->m_(i,j))))
+    return ncMatrix(apply(numgens target J, i->apply(numgens source J, j->m#i#j)))
 
 )
 
@@ -882,9 +883,6 @@ functionMp (NCRingElement, NCPolynomialRing, ZZ, List) := NCRingElement => (g, T
     return sum(#(values coefTableAux), i-> (values coefTableAux)_i* functionMpWord((keys coefTableAux)_i, T,d,l))
 
 )
-
-
-
 
 
 
