@@ -649,23 +649,11 @@ signedVolume NCPolynomialRing := (R) -> (
 );
 
 
-
-
-
---Auxiliary function
-
-coefficientHTable = method()
-coefficientHTable (NCRingElement) := HashTable => f -> (
-        fterms = terms f;
-        hashTable(apply(fterms, i -> {leadMonomial i, leadCoefficient i}))
-);
-
-
 --Returns the shuffle product of two words 
 --
 
-shuffleProductMons = method();
-shuffleProductMons (NCRingElement, NCRingElement, NCPolynomialRing) := NCRingElement => (word1, word2, R) -> (
+shuffleRec = method();
+shuffleRec (NCRingElement, NCRingElement, NCPolynomialRing) := NCRingElement => (word1, word2, R) -> (
 
     list1Aux:=(values ((keys word1.terms)#0))#1; --List of factors in the monomial
     list2Aux:=(values ((keys word2.terms)#0))#1;
@@ -693,11 +681,11 @@ shuffleProductMons (NCRingElement, NCRingElement, NCPolynomialRing) := NCRingEle
         
         bb:= value (list2Aux)#-1;
 
-    return word2*word1 + shuffleProductMons(word1, ww2, R)*bb
+    return word2*word1 + shuffleRec(word1, ww2, R)*bb
     );
 
     if (length(list1Aux)>1) and (length(list2Aux)==1) then (
-    return  shuffleProductMons(word2, word1, R)
+    return  shuffleRec(word2, word1, R)
     );
 
 
@@ -710,11 +698,19 @@ shuffleProductMons (NCRingElement, NCRingElement, NCPolynomialRing) := NCRingEle
     b:= value (list2Aux)#-1;
 
 
-    return (shuffleProductMons(w1, word2, R)* a) + (shuffleProductMons(word1, w2, R)* b)
+    return (shuffleRec(w1, word2, R)* a) + (shuffleRec(word1, w2, R)* b)
 )
 
 
+shuffleRec (NCRingElement, List) := (f,w2) -> linExt(i->shuffle(i,w2,ring f),f);
 
+shuffleRec (NCRingElement, NCRingElement) := (f,g) -> (
+    if(ring f === ring g) then (
+        return(linExt(i->shuffle(f,i),g));)
+    else (
+        error "Can not apply shuffle to polynomials from different rings";
+    )
+)
 
 --Returns the shuffle product of NCpolynomials of the type (sum f_i x^i) shuffle x^j
 --
@@ -723,7 +719,7 @@ shuffleProductRightSum = method()
 shuffleProductRightSum (NCRingElement, NCRingElement, NCPolynomialRing) := (NCRingElement) => (g , word, R) -> (
 
     coefTableAux:= coefficientHTable(g);       
-    return sum(#(values coefTableAux), i-> (values coefTableAux)_i* shuffleProductMons((keys coefTableAux)_i, word, R))
+    return sum(#(values coefTableAux), i-> (values coefTableAux)_i* shuffleRec((keys coefTableAux)_i, word, R))
 
 );
 
@@ -793,22 +789,6 @@ phiMapMon (NCRingElement, NCPolynomialRing):= NCRingElement => (f, S) -> (
 )
 
 
---felix functions:
-
-
-ncMonToList = method()
-ncMonToList (NCRingElement) := List => f -> (
-    fmons = keys f.terms;
-    monKey = (keys fmons#0)#1;
-    (fmons#0)#(monKey) / ( i -> last baseName i)
-);
-
-linExt = method();
-linExt(FunctionClosure, NCRingElement) := RingElement => (fun, w) -> (
-    lot := apply(terms w, i -> {leadCoefficient i, ncMonToList(i)});
-    sum(length(lot),i->(lot#i)#0 * fun((lot#i)#1))
-)
-
 
 
 
@@ -835,14 +815,10 @@ phiMap (RingElement, NCPolynomialRing) := NCRingElement => (f, S) -> (
 phiJacobian = method();
 phiJacobian (List, NCPolynomialRing) := NCMatrix => (l, S) -> ( 
 
-    M=matrix{l};
-    J=jacobian M;
+    M:=matrix{l};
+    J:=jacobian M;
 
-    for i from 0 to numgens target J -1 do 
-        (for j from 0 to numgens source J -1 do (
-            m_(i,j)=phiMap(J_(i,j), S);
-            ); ); 
-
+    m := table(numgens target J-1, numgens source J-1, (i,j)->phiMap(J_(i,j), S););
 
     return ncMatrix(apply(numgens target J, i->apply(numgens source J, j->m_(i,j))))
 
@@ -853,7 +829,7 @@ phiJacobian (List, NCPolynomialRing) := NCMatrix => (l, S) -> (
 
 varIndex = method()
 varIndex(NCRingElement) := List => (var) -> (
-    tbl = hashTable toList(apply(pairs var.ring.generators, (i,j)->(j,i)));
+    tbl := hashTable toList(apply(pairs var.ring.generators, (i,j)->(j,i)));
     return tbl#var
 )
 
@@ -864,7 +840,7 @@ varIndex(NCRingElement) := List => (var) -> (
 functionMpWord = method()
 functionMpWord (NCRingElement, NCPolynomialRing, ZZ, List) := NCRingElement => (word, T, d, l) -> (
 
-    if length(L)!= length(gens T) then (
+    if length(l)!= length(gens T) then (
         print("Number of polynomials does not equal number of generators of the NCRing")
     );
 
@@ -878,21 +854,21 @@ functionMpWord (NCRingElement, NCPolynomialRing, ZZ, List) := NCRingElement => (
             return 0_T
         );
     
-    listAux = (values ((keys word.terms)#0))#1;
-    M = transpose phiJacobian(L, T);
-    listVars = gens T;
+    listAux := (values ((keys word.terms)#0))#1;
+    M := transpose phiJacobian(l, T);
+    listVars := gens T;
 
 
     if length(listAux)==1 then (
-        i=varIndex(word);
+        i:=varIndex(word);
         return sum(d, j-> ((M.matrix)_i)_j*listVars_(j))
     );
 
     if length(listAux)>1 then (
-        ww= product(length(listAux)-1, i-> value (listAux)#i);
-        i= varIndex(value (listAux)#-1);
+        ww := product(length(listAux)-1, i-> value (listAux)#i);
+        i:= varIndex(value (listAux)#-1);
 
-        return sum(d, j-> shuffleProduct(functionMpWord(ww, T, d, L), ((M.matrix)_i)_j, T)*listVars_(j))
+        return sum(d, j-> shuffleProduct(functionMpWord(ww, T, d, l), ((M.matrix)_i)_j, T)*listVars_(j))
     );
 )
 
