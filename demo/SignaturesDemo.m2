@@ -83,10 +83,17 @@ T=QQ{l_1,l_2,l_3}
 L={x^2,y^3,x-y};
 d=2
 
-functionMp(l_1, T,d,L)
+R = QQ[t];
+X = polyPath({t,t})
+Y = polyPath({t^2,t^3,0_R})
+w = l_1*l_2
+adw = adjointWord(w, T,d,L)
+sig(Y, w)
+sig(X, adw)
 
 
-functionMp(l_2, T,d,L)
+
+adjointWord(l_2, T,d,L)
 
 functionMp(l_3, T,d,L)
 

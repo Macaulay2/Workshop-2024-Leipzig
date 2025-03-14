@@ -23,7 +23,7 @@ export {
     -- symbols
     "GroundField",
     "BaseRing",
-    "functionMp"
+    "adjointWord"
 };
 exportMutable {
     "Lt"
@@ -312,7 +312,7 @@ coefficientHTable (NCRingElement) := HashTable => f -> (
         hashTable(apply(fterms, i -> {leadMonomial i, leadCoefficient i}))
 );
 
--- for later use (maybe)
+--Returns the index of a variable given as an element of a NCRing
 varIndex = method()
 varIndex(NCRingElement) := List => (var) -> (
     tbl := hashTable toList(apply(pairs var.ring.generators, (i,j)->(j,i)));
@@ -557,27 +557,91 @@ wordAlgebra (ZZ) := opts -> (z) -> (
     return(wordAlgebra(toList(1..z), BaseRing => opts.BaseRing));
 )
 
-shuffle = method();
-shuffle (List,List,NCRing) := (w1,w2,R) -> (
-    l1 := length(w1);
-    l2 := length(w2);
-    perms := select(permutations(toList(0..l1+l2-1)), i->sort(i_{0..l1-1}) == i_{0..l1-1} and sort(i_{l1..l1+l2-1}) == i_{l1..l1+l2-1});
-    idp := toList(0..l1+l2-1);
-    invperms := apply(transpose {perms, toList(length(perms):idp)}, i -> values hashTable(transpose i));
-    w := join(w1,w2);
-    words := apply(invperms, i-> w_i);
-    sum(words,i->toNCMon(i,R))
+
+--Returns the shuffle product of two words 
+--
+
+shuffleMon = method();
+shuffleMon (NCRingElement, NCRingElement, NCPolynomialRing) := NCRingElement => (word1, word2, R) -> (
+
+    list1Aux:=(values ((keys word1.terms)#0))#1; --List of factors in the monomial
+    list2Aux:=(values ((keys word2.terms)#0))#1;
+
+    if (word1==0_R or word2==0_R ) then (return 0_R);
+
+    if (word1==1_R) then (return word2);
+
+    if (word2==1_R) then (return word1);
+
+    if (length(list1Aux)==1) and (length(list2Aux)==1) then (return word2*word1 + word1*word2);
+
+    if (length(list1Aux)==1) and (length(list2Aux)>1) then (
+        ww2:= product(length(list2Aux)-1, i-> value (list2Aux)#i);
+        bb:= value (list2Aux)#-1;
+        return word2*word1 + shuffleMon(word1, ww2, R)*bb
+    );
+
+    if (length(list1Aux)>1) and (length(list2Aux)==1) then (
+        return  shuffleMon(word2, word1, R)
+    );
+
+
+    w1:= product(length(list1Aux)-1, i-> value (list1Aux)#i);
+
+    w2:= product(length(list2Aux)-1, i-> value (list2Aux)#i);
+
+    a:= value (list1Aux)#-1;
+
+    b:= value (list2Aux)#-1;
+
+    return (shuffleMon(w1, word2, R)* a) + (shuffleMon(word1, w2, R)* b)
 )
 
-shuffle (NCRingElement, List) := (f,w2) -> linExt(i->shuffle(i,w2,ring f),f);
+--Returns the shuffle product of NCpolynomials of the type (sum f_i x^i) shuffle x^j
+--
 
-shuffle (NCRingElement, NCRingElement) := (f,g) -> (
-    if(ring f === ring g) then (
-        return(linExt(i->shuffle(f,i),g));)
-    else (
-        error "Can not apply shuffle to polynomials from different rings";
-    )
+shuffleMonExtL = method()
+shuffleMonExtL (NCRingElement, NCRingElement, NCPolynomialRing) := (NCRingElement) => (g , word, R) -> (
+
+    coefTableAux:= coefficientHTable(g);       
+    return sum(#(values coefTableAux), i-> (values coefTableAux)_i* shuffleMon((keys coefTableAux)_i, word, R))
+
+);
+
+
+
+--Returns the shuffle product of NCpolynomials of the type (sum f_i x^i) shuffle (sum g_j x^j)
+--
+shuffle = method(); -- is faster than shuffle!
+shuffle (NCRingElement, NCRingElement, NCPolynomialRing) := NCRingElement => (f, g, R) -> (
+
+    coefTableAux:= coefficientHTable(g);       
+    return sum(#(values coefTableAux), i-> (values coefTableAux)_i* shuffleMonExtL(f, (keys coefTableAux)_i, R))
+
 )
+
+----- old shuffle function, depracated
+-- shuffle = method();
+-- shuffle (List,List,NCRing) := (w1,w2,R) -> (
+--     l1 := length(w1);
+--     l2 := length(w2);
+--     perms := select(permutations(toList(0..l1+l2-1)), i->sort(i_{0..l1-1}) == i_{0..l1-1} and sort(i_{l1..l1+l2-1}) == i_{l1..l1+l2-1});
+--     idp := toList(0..l1+l2-1);
+--     invperms := apply(transpose {perms, toList(length(perms):idp)}, i -> values hashTable(transpose i));
+--     w := join(w1,w2);
+--     words := apply(invperms, i-> w_i);
+--     sum(words,i->toNCMon(i,R))
+-- )
+
+-- shuffle (NCRingElement, List) := (f,w2) -> linExt(i->shuffle(i,w2,ring f),f);
+
+-- shuffle (NCRingElement, NCRingElement) := (f,g) -> (
+--     if(ring f === ring g) then (
+--         return(linExt(i->shuffle(f,i),g));)
+--     else (
+--         error "Can not apply shuffle to polynomials from different rings";
+--     )
+-- )
 
 NCRingElement ** NCRingElement := (f,g) -> (
     shuffle(f,g)
@@ -586,19 +650,34 @@ NCRingElement ** NCRingElement := (f,g) -> (
 -- define halfshuffle product. Define operator << as halfshuffle product in NCAlgebra
 
 halfshuffle = method();
-halfshuffle(NCRingElement, List) := (f,w) -> (
-    wl := w_(toList(0..length(w)-2));
-    wr := w_(-1);
-    return( shuffle(f,wl) * (ring f)_(wr-1) );
+halfshuffle (NCRingElement, NCRingElement) := NCRingElement => (word1, word2) -> (
+  
+    if (length((values ((keys word2.terms)#0))#1)==1) then (
+    return word1*word2
+    );
+
+
+    w2:= product(length((values ((keys word2.terms)#0))#1)-1, i-> value ((values ((keys word2.terms)#0))#1)#i);
+    b:= value ((values ((keys word2.terms)#0))#1)#-1;
+
+    return (halfshuffle(word1, w2) + halfshuffle(w2, word1))*b
 )
 
-halfshuffle (NCRingElement, NCRingElement) := (f,g) -> (
-    if(ring f === ring g) then (
-        return(linExt(i->halfshuffle(f,i),g));)
-    else (
-        error "Can not apply halfshuffle to polynomials from different rings";
-    )
-)
+------ old halfshuffle methods, depracated ----
+-- halfshuffle = method();
+-- halfshuffle(NCRingElement, List) := (f,w) -> (
+--     wl := w_(toList(0..length(w)-2));
+--     wr := w_(-1);
+--     return( shuffle(f,wl) * (ring f)_(wr-1) );
+-- )
+
+-- halfshuffle (NCRingElement, NCRingElement) := (f,g) -> (
+--     if(ring f === ring g) then (
+--         return(linExt(i->halfshuffle(f,i),g));)
+--     else (
+--         error "Can not apply halfshuffle to polynomials from different rings";
+--     )
+-- )
 
 NCRingElement << NCRingElement := (f,g) -> (
     halfshuffle(f,g)
@@ -650,121 +729,14 @@ signedVolume NCPolynomialRing := (R) -> (
 );
 
 
---Returns the shuffle product of two words 
---
-
-shuffleRec = method();
-shuffleRec (NCRingElement, NCRingElement, NCPolynomialRing) := NCRingElement => (word1, word2, R) -> (
-
-    list1Aux:=(values ((keys word1.terms)#0))#1; --List of factors in the monomial
-    list2Aux:=(values ((keys word2.terms)#0))#1;
-
-
-
-    if (word1==0_R or word2==0_R ) then (
-        return 0_R);
-
-    if (word1==1_R) then (
-        return word2
-    );
-
-
-    if (word2==1_R) then (
-        return word1
-    );
-
-    if (length(list1Aux)==1) and (length(list2Aux)==1) then (
-    return word2*word1 + word1*word2
-    );
-
-    if (length(list1Aux)==1) and (length(list2Aux)>1) then (
-        ww2:= product(length(list2Aux)-1, i-> value (list2Aux)#i);
-        
-        bb:= value (list2Aux)#-1;
-
-    return word2*word1 + shuffleRec(word1, ww2, R)*bb
-    );
-
-    if (length(list1Aux)>1) and (length(list2Aux)==1) then (
-    return  shuffleRec(word2, word1, R)
-    );
-
-
-    w1:= product(length(list1Aux)-1, i-> value (list1Aux)#i);
-
-    w2:= product(length(list2Aux)-1, i-> value (list2Aux)#i);
-
-    a:= value (list1Aux)#-1;
-
-    b:= value (list2Aux)#-1;
-
-
-    return (shuffleRec(w1, word2, R)* a) + (shuffleRec(word1, w2, R)* b)
-)
-
-
-shuffleRec (NCRingElement, List) := (f,w2) -> linExt(i->shuffle(i,w2,ring f),f);
-
-shuffleRec (NCRingElement, NCRingElement) := (f,g) -> (
-    if(ring f === ring g) then (
-        return(linExt(i->shuffle(f,i),g));)
-    else (
-        error "Can not apply shuffle to polynomials from different rings";
-    )
-)
-
---Returns the shuffle product of NCpolynomials of the type (sum f_i x^i) shuffle x^j
---
-
-shuffleProductRightSum = method()
-shuffleProductRightSum (NCRingElement, NCRingElement, NCPolynomialRing) := (NCRingElement) => (g , word, R) -> (
-
-    coefTableAux:= coefficientHTable(g);       
-    return sum(#(values coefTableAux), i-> (values coefTableAux)_i* shuffleRec((keys coefTableAux)_i, word, R))
-
-);
-
-
-
---Returns the shuffle product of NCpolynomials of the type (sum f_i x^i) shuffle (sum g_j x^j)
---
-shuffleProduct = method();
-shuffleProduct (NCRingElement, NCRingElement, NCPolynomialRing) := NCRingElement => (f, g, R) -> (
-
-    coefTableAux:= coefficientHTable(g);       
-    return sum(#(values coefTableAux), i-> (values coefTableAux)_i* shuffleProductRightSum(f, (keys coefTableAux)_i, R))
-
-)
-
-
-
-
---Returns the half shuffle product of two words
---
-halfShuffleProduct = method();
-halfShuffleProduct (NCRingElement, NCRingElement) := NCRingElement => (word1, word2) -> (
-  
-    if (length((values ((keys word2.terms)#0))#1)==1) then (
-    return word1*word2
-    );
-
-
-    w2:= product(length((values ((keys word2.terms)#0))#1)-1, i-> value ((values ((keys word2.terms)#0))#1)#i);
-    b:= value ((values ((keys word2.terms)#0))#1)#-1;
-
-    return (halfShuffleProduct(word1, w2) + halfShuffleProduct(w2, word1))*b
-)
-
-
 --Funtion to transform a commutative polynomial into a non-commutative polynomial, with the same ordered variables of a given NCRing
 --
-ElementToNCElement = method();
-ElementToNCElement (RingElement, NCPolynomialRing):= NCRingElement => (f, S) -> (
+elementToNCElement = method();
+elementToNCElement (RingElement, NCPolynomialRing):= NCRingElement => (f, S) -> (
     R:=ring f;
     phi:=ncMap(S ,R , apply(length(gens S), i->(gens S)_i));
     return phi(f)
 )
-
 
 
 --Returns the image of a monomial under the map \varphi: R[x_1..x_d] \to T(R^d), x_i\maptso i, x_{i_1},...,x_{i_l}\mapsto x_{i_1}\shuffle .... \shuffle x_{i_l} 
@@ -786,12 +758,8 @@ phiMapMon (NCRingElement, NCPolynomialRing):= NCRingElement => (f, S) -> (
     fw:= product(length(ListAux)-1, i-> value (ListAux)#i);
     b:= value (ListAux)#-1;
 
-    return shuffleProduct(phiMapMon(fw, S), b, S)
+    return shuffle(phiMapMon(fw, S), b, S)
 )
-
-
-
-
 
 --Returns the image of a polynomial under the map \varphi: R[x_1..x_d] \to T(R^d), x_i\maptso i, x_{i_1},...,x_{i_l}\mapsto x_{i_1}\shuffle .... \shuffle x_{i_l} 
 
@@ -803,13 +771,10 @@ phiMap (RingElement, NCPolynomialRing) := NCRingElement => (f, S) -> (
         return 0_S
     );
 
-    ncomf:= ElementToNCElement(f, S);
+    ncomf:= elementToNCElement(f, S);
     coefTableAux:= coefficientHTable(ncomf);
     return sum(#(values coefTableAux), i-> (values coefTableAux)_i* phiMapMon((keys coefTableAux)_i, S))
 )
-
-
-
 
 --Returns the image of the jacobian for a list of polynomials
 
@@ -826,26 +791,17 @@ phiJacobian (List, NCPolynomialRing) := NCMatrix => (l, S) -> (
 )
 
 
---Returns the index of a variable given as an element of a NCRing
-
-varIndex = method()
-varIndex(NCRingElement) := List => (var) -> (
-    tbl := hashTable toList(apply(pairs var.ring.generators, (i,j)->(j,i)));
-    return tbl#var
-)
-
-
----Print message ip phi map does not have correct degree, check p(0)=0.
+---Print message if phi map does not have correct degree, check p(0)=0.
 --Function M_p applied to words
 
-functionMpWord = method()
-functionMpWord (NCRingElement, NCPolynomialRing, ZZ, List) := NCRingElement => (word, T, d, l) -> (
+
+adjointWordMon = method()
+adjointWordMon (NCRingElement, NCPolynomialRing, ZZ, List) := NCRingElement => (word, T, d, l) -> (
 
     if length(l)!= length(gens T) then (
         print("Number of polynomials does not equal number of generators of the NCRing")
     );
 
-    
     if d> length(gens T) then (
         print("Degree is bigger than number of generators of the NCRing")
     );
@@ -869,22 +825,19 @@ functionMpWord (NCRingElement, NCPolynomialRing, ZZ, List) := NCRingElement => (
         ww := product(length(listAux)-1, i-> value (listAux)#i);
         i:= varIndex(value (listAux)#-1);
 
-        return sum(d, j-> shuffleProduct(functionMpWord(ww, T, d, l), ((M.matrix)_i)_j, T)*listVars_(j))
+        return sum(d, j-> shuffle(adjointWordMon(ww, T, d, l), ((M.matrix)_i)_j, T)*listVars_(j))
     );
 )
 
-
 --Function M_p applied to polynomials
 
-functionMp = method()
-functionMp (NCRingElement, NCPolynomialRing, ZZ, List) := NCRingElement => (g, T, d, l) -> (
+adjointWord = method()
+adjointWord (NCRingElement, NCPolynomialRing, ZZ, List) := NCRingElement => (g, T, d, l) -> (
 
     coefTableAux:= coefficientHTable(g);       
-    return sum(#(values coefTableAux), i-> (values coefTableAux)_i* functionMpWord((keys coefTableAux)_i, T,d,l))
+    return sum(#(values coefTableAux), i-> (values coefTableAux)_i* adjointWordMon((keys coefTableAux)_i, T,d,l))
 
 )
-
-
 
 beginDocumentation()
 
