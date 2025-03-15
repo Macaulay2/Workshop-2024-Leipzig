@@ -67,3 +67,49 @@ NEideal (Ring, List) := (R, L) -> (
     neIdeal := ideal fullGeneratingSet;
     neIdeal
 )
+
+needsPackage "Polyhedra"
+
+directProductList = method()
+directProductList List := L -> (
+    if #L == 0 then error "Empty list of polytopes";
+    P := L#0;
+    for i from 1 to (#L - 1) do (
+        P = directProduct(P, L#i);
+    );
+    P
+)
+
+DeltaList = method()
+DeltaList List := d -> (
+    n := #d;
+    result := {};
+    for i from 0 to (n - 1) do (
+        polyFactors = for j from 0 to (n - 1) list (
+            if j == i then (
+                convexHull(matrix(apply(d#i - 1, k -> {0})))
+            ) else (
+                simplex(d#j - 1)
+            )
+        );
+        P := directProductList(polyFactors);
+        for rep from 1 to (d#i - 1) do (
+            result = append(result, P)
+        );
+    );
+    result
+)
+
+--Input the list of the dimension of the game, returning the mixed volume.
+MaxNumberEquilibria = method()
+MaxNumberEquilibria List := d -> (
+    myTuple = DeltaList d;
+    mv = mixedVolume(myTuple);
+    print("The maximum number of totally mixed Nash equilibria for a " | toString(d) |
+          " game is " | toString(mv));
+    mv
+)
+
+-- Example usage:
+d = {2,2,2}
+MaxNumberEquilibria d
