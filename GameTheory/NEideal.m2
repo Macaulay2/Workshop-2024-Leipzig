@@ -62,7 +62,7 @@ NEideal (Ring, List) := (R, L) -> (
     indexSet := format first L;
     probabilityRing := R;
     completeGeneratingSet := flatten(apply(pairs L, (i,T) -> NEpolynomials(T,i,probabilityRing)));
-    linearRelations := apply(pairs indexSet, (i,j)-> sum(j, k->p_{i,k}) - 1);
+    linearRelations := apply(pairs indexSet, (i,j)-> sum(j, k->p_{i,k}_probabilityRing) - 1);
     fullGeneratingSet := join(completeGeneratingSet, linearRelations);
     neIdeal := ideal fullGeneratingSet;
     neIdeal
