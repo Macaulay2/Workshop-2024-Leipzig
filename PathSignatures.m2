@@ -19,11 +19,12 @@ export {
     "signedVolume",
     "shuffle",
     "halfshuffle",
-    "letterFormat",
+    "wordFormat",
     -- symbols
     "GroundField",
     "BaseRing",
-    "adjointWord"
+    "adjointWord",
+    "tensorArray"
 };
 exportMutable {
     "Lt"
@@ -57,10 +58,25 @@ sig(Path,NCRingElement) := QQ => opts -> (X,f) -> (
     return(linExt(w->sig(X,w,BaseRing => opts.BaseRing),f));
 )
 
--- TODO: implement method to compute all signature values of X up to fixed level
--- sigAll(Path) := NCRingElement => (X) -> (
+sig(Path,ZZ,NCRing) := QQ => opts -> (X, h, R) -> (
+    nop := X.numberOfPieces;
+    d := X.dimension;
+    if(h == 0) then return 1_R;
+    if(nop == 0) then return 0;
+    if(nop == 1) then (
+        ws = toList(apply((h:1)..(h:d), toList));
+        return(sum(ws,w-> polySigGen(X.pieces#0,w,opts.BaseRing)*(new Array from w)_R));
+    );
+    sum(h+1, i -> (
+        sig(X_(0..nop-2), i, R, BaseRing => opts.BaseRing)*sig(X_(nop-1),h-i, R, BaseRing => opts.BaseRing))
+    )
+)
 
--- )
+sig(Path,ZZ) := opts -> (X,h) ->
+(
+    R := wordAlgebra(X.dimension);
+    sig(X,h,R,BaseRing => opts.BaseRing)
+)
 
 --globalAssignment Path
 
@@ -683,8 +699,8 @@ NCRingElement << NCRingElement := (f,g) -> (
     halfshuffle(f,g)
 )
 
-letterFormat = method();
-letterFormat NCRingElement := f -> (
+wordFormat = method();
+wordFormat NCRingElement := f -> (
    if #(f.terms) == 0 then return net "0";
    
    firstTerm := true;
@@ -715,6 +731,69 @@ letterFormat NCRingElement := f -> (
    );
    myNet
 )
+
+wordString = method();
+wordString NCRingElement := f -> (
+   if #(f.terms) == 0 then return "0";
+   
+   firstTerm := true;
+   myString := "";
+   isZp := (class coefficientRing ring f === QuotientRing and ambient coefficientRing ring f === ZZ);
+   for t in sort pairs coefficientHTable f do (
+      tempString := toString(t#1) | " ";
+      printParens := ring t#1 =!= QQ and
+  		     ring t#1 =!= ZZ and
+                     not isZp and
+		     (size t#1 > 1 or (isField ring t#1 and 
+			               numgens coefficientRing ring t#1 > 0 and
+				       size sub(t#1, coefficientRing ring t#1) > 1));
+      myString = myString |
+              (if isZp and tempString#0#0 != " - " and not firstTerm then " + "
+	       else if not firstTerm and t#1 > 0 then
+                  " + "
+               else 
+                 "") |
+              (if printParens then "(" else "") | 
+              (if t#1 != 1 and t#1 != -1 then
+                 tempString
+               else if t#1 == -1 then " - "
+               else "") |
+              (if printParens then ")" else "") |
+              (if t#0 === {} and (t#1 == 1 or t#1 == -1) then "1" else (toString new Array from ncMonToList(t#0)));
+      firstTerm = false;
+   );
+   myString
+)
+
+applyDeep = method();
+applyDeep (Thing, FunctionClosure) := (l,f) -> (
+    if(class l === List) then (
+        l1 := apply(l,i->applyDeep(i,f));
+        return(l1);
+    );
+    f(l)
+)
+
+tensorArray = method();
+tensorArray NCRingElement := f -> (
+    H := coefficientHTable f;
+    R := ring f;
+    genv := gens R;
+    k := degree leadTerm f;
+    toList apply(1..k,
+        i -> applyDeep(product(i,k->genv),w->(if(H#?w) then H#w else 0)
+        )
+    )
+)
+
+tensorArray(NCRingElement,ZZ) := (f,h) -> (
+    H := coefficientHTable f;
+    R := ring f;
+    genv := gens R;
+    applyDeep(product(h,k->genv),w->(if(H#?w) then H#w else 0))
+)
+
+NCRingElement @ ZZ := (f,h) -> tensorArray(f,h);
 
 Array _ NCPolynomialRing := (a, R) -> (
     if(max(toList a)>length(gens R)) then (error(toString(net "Not enough letters in ring " | net R | ".")));
