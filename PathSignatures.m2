@@ -78,6 +78,17 @@ sig(Path,ZZ) := opts -> (X,h) ->
     sig(X,h,R,BaseRing => opts.BaseRing)
 )
 
+TEST ///
+R = QQ{symbol s_1..symbol s_5};
+f = 1/2*(s_1*s_2 - s_2*s_1);
+A = QQ[symbol x_1..symbol x_3]
+
+pR = A[t];
+X = polyPath({0,x_2*t^2}) ** polyPath({x_3*t^3 + 3*t, t^2 - 1})
+--The issue with 0 components was fixed by changing the polyPath generator
+<<<<<<< HEAD
+r = sig(X,f,BaseRing => A)
+///
 
 TEST ///
 bR = QQ[t]
@@ -123,10 +134,11 @@ polyPath = method();
 polyPath List := (polyPathList) -> (
     if(polyPathList === {}) then return new Path from {type => "PPolynomial", pieces => {}, dimension => -1, numberOfPieces => 0};
 
-    if (instance(polyPathList#0, RingElement)) then (
+    if (instance(product(polyPathList), RingElement)) then (
+        bR := class product(polyPathList); --Consider taking this as input
         P := new Path from{
             type => "PPolynomial",
-            pieces => {apply(polyPathList,listForm)},
+            pieces => {apply(polyPathList,i-> listForm (i*1_bR))},
             dimension => length polyPathList,
             numberOfPieces => 1
         };
@@ -206,18 +218,6 @@ net Path := (X) ->
 -- foo(Path,List) := (l,g)->(l_g);
 
 -- The general method for computing the signature of a piecewise polynomial path
-
-TEST ///
-R = QQ{symbol s_1..symbol s_5};
-f = 1/2*(s_1*s_2 - s_2*s_1);
-A = QQ[symbol x_1..symbol x_3]
-
-pR = A[t];
-X = polyPath({0,x_2*t^2}) ** polyPath({x_3*t^3 + 3*t, t^2 - 1})
-
-<<<<<<< HEAD
-r = sig(X,f,BaseRing => A)
-///
 
 
 --Constructs the linear polynomial path t*v for a vector v
@@ -437,6 +437,7 @@ polySigGen = method()
 
 polySigGen (List, List, Ring) := RingElement => (l, w, bR) ->(
     if(w == {}) then return 1;
+
     k:= length w;
     x := getSymbol("x");
     R := bR monoid([x_1..x_k]);
