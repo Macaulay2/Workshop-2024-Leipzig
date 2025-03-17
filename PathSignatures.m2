@@ -26,9 +26,7 @@ export {
     "adjointWord",
     "tensorArray"
 };
-exportMutable {
-    "Lt"
-}
+
 protect type
 protect pieces
 protect dimension
@@ -581,6 +579,7 @@ createMapFromCoreTensor(NCRingElement, ZZ) := NCRingElement => opts -> (f,ambd) 
 
 wordAlgebra = method(Options=>{BaseRing => QQ});
 wordAlgebra (List) := opts -> (l) -> (
+    Lt := getSymbol("Lt");
     myvars := apply(l,i-> (Lt_i));
     return(opts.BaseRing myvars);
 )
@@ -908,16 +907,17 @@ adjointWordMon (NCRingElement, NCPolynomialRing, ZZ, List) := NCRingElement => (
     listAux := (values ((keys word.terms)#0))#1;
     M := transpose phiJacobian(l, T);
     listVars := gens T;
-
+    
+    i := 0;
 
     if length(listAux)==1 then (
-        i:=varIndex(word);
+        i =varIndex(word);
         return sum(d, j-> ((M.matrix)_i)_j*listVars_(j))
     );
 
     if length(listAux)>1 then (
         ww := product(length(listAux)-1, i-> value (listAux)#i);
-        i:= varIndex(value (listAux)#-1);
+        i = varIndex(value (listAux)#-1);
 
         return sum(d, j-> shuffle(adjointWordMon(ww, T, d, l), ((M.matrix)_i)_j, T)*listVars_(j))
     );
