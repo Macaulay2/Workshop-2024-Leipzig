@@ -26,9 +26,7 @@ export {
     "adjointWord",
     "tensorArray"
 };
-exportMutable {
-    "Lt"
-}
+
 protect type
 protect pieces
 protect dimension
@@ -580,6 +578,7 @@ createMapFromCoreTensor(NCRingElement, ZZ) := NCRingElement => opts -> (f,ambd) 
 
 wordAlgebra = method(Options=>{BaseRing => QQ});
 wordAlgebra (List) := opts -> (l) -> (
+    Lt := getSymbol("Lt");
     myvars := apply(l,i-> (Lt_i));
     return(opts.BaseRing myvars);
 )
