@@ -78,6 +78,17 @@ sig(Path,ZZ) := opts -> (X,h) ->
     sig(X,h,R,BaseRing => opts.BaseRing)
 )
 
+
+TEST ///
+bR = QQ[t]
+X= linPath({0,0,0,1})
+Y= polyPath({0,0,0,1}) --Gives error
+Z= X**Y
+
+wR = QQ{x_1..x_4}
+w= x_4
+assert(sig(Z, w)==pwlSig(X, w))
+///
 --globalAssignment Path
 
 ------------------------------------------------
@@ -155,6 +166,7 @@ Path _ ZZ := (X, z) -> (
 
 Path ** Path := Path => (X,Y) -> (
     if(X.dimension != Y.dimension) then error("Can not concatenate paths of different ambient dimension.");
+
     P := new Path from{
         type => X.type,
         pieces => X.pieces | Y.pieces,
@@ -201,7 +213,7 @@ f = 1/2*(s_1*s_2 - s_2*s_1);
 A = QQ[symbol x_1..symbol x_3]
 
 pR = A[t];
-X = polyPath({x_1*t,x_2*t^2}) ** polyPath({x_3*t^3 + 3*t, t^2 - 1})
+X = polyPath({0,x_2*t^2}) ** polyPath({x_3*t^3 + 3*t, t^2 - 1})
 
 <<<<<<< HEAD
 r = sig(X,f,BaseRing => A)
@@ -267,6 +279,8 @@ linsig (List, List) := QQ => (u, w)-> (
     if h==0 then (return(1));
     product(h, i-> u#(w#i-1))/(h!)
 )
+
+
 
 -----------------------------------------
 --Signature of a piecewise linear path
@@ -466,7 +480,7 @@ f = 1/2*(s_1*s_2 - s_2*s_1);
 A = QQ[x_1,x_2,x_3]
 
 <<<<<<< HEAD
-r = polysig({ {({1},x_1)} , {({1},x_2),({2},x_3)} },f, BaseRing => A)
+r = polysig({ {({1},0)} , {({1},x_2),({2},x_3)} },f, BaseRing => A)
 assert(r == 1/6*x_1*x_3) 
 ///
 
@@ -935,19 +949,31 @@ Node
 
             We create the ...
 Node
- Key
-  Path
- Headline
-  The type of a piecewise polynomial path. 
- Description
-  Text
-   The type Path inherites from MutableHashTable and it has 4 attributes "dimension", "numberOfPieces", "pieces" and "type". "pieces" contains a list of lists, each one being the components of polynomial path normalForm. "type" is a string, either "PPolynomial" or "PLinear", standing for "piecewise polynomial" and "piecewise linear" respectively.
-  Example
-   R=QQ[t]
-   X = polyPath({t,t^2}) ** polyPath({t^3 + 3*t, t^2 - 1})
- SeeAlso
-  polyPath
-  linPath
+    Key
+        Path
+    Headline
+        The type of a piecewise polynomial path. 
+    Description
+        Text
+            The type Path inherites from MutableHashTable. It has 4 attributes "dimension", "numberOfPieces", "pieces" and "type". "pieces" contains 
+            a list of lists, each one being the components of polynomial path normalForm. "type" is a string, either "PPolynomial" or "PLinear", standing 
+            for "piecewise polynomial" and "piecewise linear" respectively. There are constructors for single piece paths, @TO linPath@ and @TO polyPath@ 
+            and these can be concatenated with @TO (symbol **, Path, Path)@
+        Example
+            R=QQ[t]
+            X = polyPath({t,t^2}) ** polyPath({t^3 + 3*t, t^2 - 1})
+    SeeAlso
+        polyPath
+        linPath
+
+Node 
+    Key
+        (symbol **, Path, Path)
+    Headline
+        Concatenation of paths
+    SeeAlso
+        polyPath
+        linPath
 ///
 
 endPackage;
