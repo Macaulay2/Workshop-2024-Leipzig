@@ -16,11 +16,11 @@ I = sub(ideal(x*dx^2-y*dy^2+2*dx-2*dy,x*dx+y*dy+1),D1)
 
 holonomicRank(I)
 
-C1 = pfaffians(I)
-SM1 = stdMon I
+C1 = connectionMatrices(I)
+SM1 = standardMonomials I
 
-C2 = pfaffians(sub(I,D2))
-SM2 = stdMon sub(I,D2)
+C2 = connectionMatrices(sub(I,D2))
+SM2 = standardMonomials sub(I,D2)
 
 G = flatten entries gens gb I
 changeofvar = gaugeMatrix(w1,G,SM1,SM2)
@@ -40,15 +40,14 @@ h = x*dx+y*dy+z*dz-2*e;
 
 I = ideal(delta1+delta3, delta2+delta3,h)
 r = holonomicRank I
-P = pfaffians I;
+P = connectionMatrices I;
 C = diffConnectionMatrix I;
 G = flatten entries gens gb I;
-SM1 = stdMon I
+SM1 = standardMonomials I
 
 B2 = {1,dx,dy,dx*dy};
-P2 = gaugeTransform(B2,I);
--- changeofvar = gaugeMatrix(w,G,SM1,B2)
--- P2 = gauge(changeofvar,P,D)
+changeofvar = gaugeMatrix(G,SM1,B2)
+P2 = gaugeTransform(changeofvar,P,D)
 
 changeVar = transpose((1/(2*z*e^2))*matrix({{2*z*e^2, -e^2*(x-z), -e^2*(y-z), -e^2*(x+y)},{0,e*(x^2-z^2),0,e*(x+y)*(x+z)},{0,0,e*(y^2-z^2),e*(x+y)*(y+z)},{0,0,0,-(x+y)*(x+z)*(y+z)}}));
 P3 = gaugeTransform(changeVar,P2,D);
