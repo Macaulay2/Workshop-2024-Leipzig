@@ -129,13 +129,24 @@ Node
             w= product(for i from 1 to d list s_i)
         Text
             The word $w$ corresponds to the decomposable tensor $e_1^*\otimes\dots  \otimes e_d^*$, where $e_1^*, \dots, e_d^*$ is the dual of the canonical basis of $\mathbb{R}^d$. 
-            The signature of $X$ on this word can be computed using @TO (sig, Path, NCRingElement)@
+            The signature of $X$ on this word can be computed using @TO (sig, Path, NCRingElement)@.
+        Example 
+            sigma = sig(X, w)
+
+Node
+    Key
+        (sig, Path, List)
 
 Node
     Key 
         (sig, Path, NCRingElement)
     Headline
         Compute the specified component of the signature of an algebraic path 
+    Description
+        Text
+            This method does not appear in the documentation
+
+
 
 ///
 

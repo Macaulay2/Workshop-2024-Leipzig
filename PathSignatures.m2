@@ -45,7 +45,7 @@ Path = new Type of MutableHashTable
 
 sig = method(Options=>{BaseRing => QQ})
 
-sig (Path, List) := QQ => opts -> (X,w) -> (
+sig (Path, List) := QQ => opts -> (X,w) -> ( --This doesn't need to be exposed
     nop := X.numberOfPieces;
     h := length(w);
     if(w == {}) then return 1;
@@ -58,11 +58,11 @@ sig (Path, List) := QQ => opts -> (X,w) -> (
     )
 )
 
-sig(Path,NCRingElement) := QQ => opts -> (X,f) -> (
+sig(Path,NCRingElement) := QQ => opts -> (X,f) -> ( --This needs to be exposed
     return(linExt(w->sig(X,w,BaseRing => opts.BaseRing),f));
 )
 
-sig(Path,ZZ,NCRing) := QQ => opts -> (X, h, R) -> (
+sig(Path,ZZ,NCRing) := QQ => opts -> (X, h, R) -> ( --this need to be exposed?
     nop := X.numberOfPieces;
     d := X.dimension;
     if(h == 0) then return 1_R;
@@ -76,7 +76,7 @@ sig(Path,ZZ,NCRing) := QQ => opts -> (X, h, R) -> (
     )
 )
 
-sig(Path,ZZ) := opts -> (X,h) ->
+sig(Path,ZZ) := opts -> (X,h) ->  --This need to be exposed?
 (
     R := wordAlgebra(X.dimension);
     sig(X,h,R,BaseRing => opts.BaseRing)
