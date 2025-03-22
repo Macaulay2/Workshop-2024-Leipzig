@@ -17,6 +17,9 @@ Node
 Node
     Key
         Path
+        (symbol _, Path, List)
+        (symbol _, Path, ZZ)
+        (symbol _, Path, Sequence)
     Headline
         The type of a piecewise polynomial path. 
     Description
@@ -27,7 +30,16 @@ Node
             and these can be concatenated with @TO (symbol **, Path, Path)@.
         Example
             R=QQ[t]
-            X = polyPath({t,t^2}) ** polyPath({t^3 + 3*t, t^2 - 1})
+            X = polyPath({t,t^2}) ** polyPath({t^3 + 3*t, t^2 - 1}) ** polyPath({t^10, t^11})
+        Text
+            To extract only one piece of the path, for example the first, one can use
+        Example
+             X_0
+        Text
+            While to exctract a subset of pieces, for example the first and last, one can use
+        Example
+            X_{0,2}
+            X_(0,2)
     SeeAlso
         polyPath
         linPath
@@ -76,6 +88,7 @@ Node
 Node 
     Key
         linPath
+        (linPath, List)
     Headline
         Constructor of single piece polynomial path
     Usage
@@ -96,7 +109,33 @@ Node
         Path
         polyPath
         (symbol **, Path, Path)
+Node
+    Key
+        sig
+    Headline
+        Compute the signature of a picewise polynomial path.
+    Description
+        Text
+            Given a path $X(t):[0,1]\rightarrow \mathbb{R}^d$, its signature is the linear form $\sigma: T((\mathbb{R}^d)^*)\rightarrow \mathbb{R}$ on the tensor algebra of the dual of 
+            $\mathbb{R}^d$, whose image on a decomposable tensor $\alpha_1\otimes \dots\otimes \alpha_k$ is the iterated integral $$
+            \alpha_1\otimes \dots\otimes \alpha_k\overset{\sigma}{\mapsto} \int_0^1\int_0^{t_k}\dots\int_0^{t_2}\partial(\alpha_1 X)\dots \partial (\alpha_k X) d t_1\dots dt_k
+            $$
+            In this package the easiest way to represent an element of $T((\mathbb{R}^d)^*)$ is by constructing a non commutative algebra over $d$ symbols
+        Example
+            d=4;
+            R = QQ[t];
+            X=polyPath(for i from 1 to d list t^i)
+            A= QQ{s_1..s_d }
+            w= product(for i from 1 to d list s_i)
+        Text
+            The word $w$ corresponds to the decomposable tensor $e_1^*\otimes\dots  \otimes e_d^*$, where $e_1^*, \dots, e_d^*$ is the dual of the canonical basis of $\mathbb{R}^d$. 
+            The signature of $X$ on this word can be computed using @TO (sig, Path, NCRingElement)@
 
+Node
+    Key 
+        (sig, Path, NCRingElement)
+    Headline
+        Compute the specified component of the signature of an algebraic path 
 
 ///
 
