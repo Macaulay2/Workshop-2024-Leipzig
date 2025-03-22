@@ -25,7 +25,12 @@ export {
     "GroundField",
     "BaseRing",
     "adjointWord",
-    "tensorArray"
+    "tensorArray",
+    "type",
+    "pieces",
+    "dimension",
+    "numberOfPieces",
+
 };
 
 protect type
@@ -940,10 +945,6 @@ load "./PathSignatures/PathSignaturesDoc.m2"
 --------------------------------------------
 
 endPackage;
-
---blueprint for method documentation
-
-
 
 
 
