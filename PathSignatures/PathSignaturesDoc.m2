@@ -66,7 +66,7 @@ Node
     Headline
         Constructor of single piece polynomial path
     Usage
-        polyPath({t,t^2,t^3})
+        polyPath(polyPathList)
     Inputs
         polyPathList: List --A list of elements of the same ring, the components of the polynomial path.
     Outputs
@@ -92,7 +92,7 @@ Node
     Headline
         Constructor of single piece polynomial path
     Usage
-        linPath({0,0,0,1})
+        linPath(v)
     Inputs
         v: List -- A list of elements of a ring, the endpoints of the linear path.
     Outputs
@@ -142,12 +142,35 @@ Node
         (sig, Path, NCRingElement)
     Headline
         Compute the specified component of the signature of an algebraic path 
+
+    SeeAlso
+        sig
+
+
+Node 
+    Key
+        pwLinPath
+    Headline
+        Constructor of a piecewise linear path from a matrix
+    Inputs
+        pwlMatrix: Matrix -- A matrix containing on its columns the articulation points (or increments) of the path
+    Outputs
+        X: Path --A piecewise linear path of dimension the number of rows of the input and with the same number of pieces as the columns of the input
+    Usage
+        pwLinPath(pwlMatrix)
     Description
         Text
-            This method does not appear in the documentation
-
-
-
+            Creates a @TO Path@ of @TO type@ "PLinear".
+        Example
+            M:=id_(QQ^3)
+            pwLinPath(M)
+            oo.type
+    SeeAlso
+        Path
+Node 
+    Key
+        type
+        
 ///
 
 

@@ -11,7 +11,7 @@ export {
     "sig",
     "polyPath",
     "linPath",
-    "pwlinPath",
+    "pwLinPath",
     "matrixAction",
     "CAxisTensor",
     "CMonTensor",
@@ -235,9 +235,9 @@ linPath List := Path => (v) ->(
     }
 )
 
-pwlinPath = method();
+pwLinPath = method();
 --Constructs a pw linear path from a given matrix of increments
-pwlinPath Matrix := (pwlMatrix) -> (
+pwLinPath Matrix := (pwlMatrix) -> (
     pathList := apply(transpose entries pwlMatrix, i-> linPath(i));
     return(fold(pathList,(i,j)->i**j));
 )
