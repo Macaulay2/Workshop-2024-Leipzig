@@ -23,17 +23,17 @@ I = sub(ideal(x*dx^2-y*dy^2+2*dx-2*dy,x*dx+y*dy+1),D1);  -- Ex. 1.4
 -- Compute its holonomic rank
 assert(holonomicRank(I) == 2) 
 
--- Computing the Pfaffian system w.r.t. weight vector w1
-C1 = pfaffians(I);
+-- Computing the system of connection matrices w.r.t. weight vector w1
+C1 = connectionMatrices(I);
 SM1 = stdMon(I);
 
--- Computing the Pfaffian system w.r.t. weight vector w2
-C2 = pfaffians(sub(I,D2));
+-- Computing the system of connection matrices w.r.t. weight vector w2
+C2 = connectionMatrices(sub(I,D2));
 SM2 = stdMon(sub(I,D2));
 
 -- Compute Groebner Basis
 G = flatten entries gens gb I; 
 changeofvar = gaugeMatrix(G,SM1,SM2);
 
--- Now transform the Pfaffian system C1 into the Pfaffian System C2 via Gauge transform
+-- Now transform the system of connection matrices C1 into the system of connection matrices C2 via Gauge transform
 assert(C2 == gaugeTransform(changeofvar,C1,D1)) -- TODO: Need to remove the weight information.   // Fails so far.

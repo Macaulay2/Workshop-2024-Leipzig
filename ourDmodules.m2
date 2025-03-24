@@ -25,7 +25,7 @@ newPackage(
 -- Dmodules
 --------------------------------------------------------------------------------
 
--- Pfaffians basic files
+-- ConnectionMatrices basic files
 load "./AlgebraicAnalysis/reduce.m2"
 export {
     --"makeWeylAlgebra",

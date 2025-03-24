@@ -16,7 +16,7 @@ h = x*dx+y*dy+z*dz-2*e
 I = ideal(delta1+delta3, delta2+delta3,h)
 
 
-P = pfaffians I;    -- Weird: Computing Pfaffians first does not work.  (in the demo file the holonomic rank is computed first.)
+P = connectionMatrices I;  
 r = holonomicRank I;  
 
 assert(holonomicRank I == 4)
@@ -37,5 +37,5 @@ P2 = gauge(changeofvar,P,D);
 -- Change of basis to go from P2 into epsilon factorized form:
 changeofvar2 = transpose((1/(2*z*e^2))*matrix({{2*z*e^2, -e^2*(x-z), -e^2*(y-z), -e^2*(x+y)},{0,e*(x^2-z^2),0,e*(x+y)*(x+z)},{0,0,e*(y^2-z^2),e*(x+y)*(y+z)},{0,0,0,-(x+y)*(x+z)*(y+z)}}));
 P3 = gauge(changeofvar2,P2,D);
--- P3 is an epsilon-factorized pfaffian system, changeofvar2 is the matrix from equation (13)
+-- P3 is an epsilon-factorized system of connection matrices, changeofvar2 is the matrix from equation (13)
 1/e*connectionMatrix(P3);

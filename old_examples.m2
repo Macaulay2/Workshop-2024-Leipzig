@@ -1,5 +1,5 @@
 ----------------------------------------------------
---pfaffians.m2
+--connectionMatrices.m2
 ----------------------------------------------------
 
 
@@ -7,10 +7,10 @@
 -- ALS notes, Example 7.16
 D = makeWeylAlgebra(QQ[x,y], w = {0,0,1,2});
 I = ideal (x*dx^2 - y*dy^2 + dx-dy, x*dx+y*dy+1); -- doesn't commute
-A = pfaffians(I);
+A = connectionMatrices(I);
 
 -- i2 : D = makeWeylAlgebra(QQ[x,y], w = {0,0,2,1});
--- i3 : A = pfaffians(w, I = ideal (x*dx^2 - y*dy^2 + dx-dy, x*dx+y*dy+1)) -- doesn't commute
+-- i3 : A = connectionMatrices(w, I = ideal (x*dx^2 - y*dy^2 + dx-dy, x*dx+y*dy+1)) -- doesn't commute
 -- Grobner basis:
 -- | xdx+ydy+1 ydxdy+ydy^2+dx+dy xydy^2-y2dy^2+xdy-3ydy-1 |
 -- Standard monomials:
@@ -19,7 +19,7 @@ A = pfaffians(I);
 --       {-1} | (-1)/(x2-xy) (-x-y)/(x2-xy) |  {-1} | 1/(xy-y2) (-x+3y)/(xy-y2) |
 
 -- i4 : D = makeWeylAlgebra(QQ[x,y], w = {0,0,1,1});
--- i5 : A = pfaffians(w, I = ideal (x*dx^2 - y*dy^2 + dx-dy, x*dx+y*dy+1)) -- doesn't commute
+-- i5 : A = connectionMatrices(w, I = ideal (x*dx^2 - y*dy^2 + dx-dy, x*dx+y*dy+1)) -- doesn't commute
 -- Grobner basis:
 -- | xdx+ydy+1 ydxdy+ydy^2+dx+dy xydy^2-y2dy^2+xdy-3ydy-1 |
 -- Standard monomials:
@@ -28,7 +28,7 @@ A = pfaffians(I);
 --       {-1} | (-1)/(x2-xy) (-x-y)/(x2-xy) |  {-1} | 1/(xy-y2) (-x+3y)/(xy-y2) |
 
 -- i6 : D = makeWeylAlgebra(QQ[x,y], w = {0,0,1,2});
--- i7 : A = pfaffians(w, I = ideal (x*dx^2 - y*dy^2 + dx-dy, x*dx+y*dy+1)) -- doesn't commute
+-- i7 : A = connectionMatrices(w, I = ideal (x*dx^2 - y*dy^2 + dx-dy, x*dx+y*dy+1)) -- doesn't commute
 -- Grobner basis:
 -- | ydy+xdx+1 xdxdy+xdx^2+dy+dx x2dx^2-xydx^2+3xdx-ydx+1 |
 -- Standard monomials:
@@ -40,8 +40,8 @@ A = pfaffians(I);
 --------------------------------------------------------
 -- Example: GKZ system 1                                -- Q: Over which matrix (before {{1,2,3}} stated.)
 D = makeWeylAlgebra(QQ[x,y], w = {0,0,1,1})
-pfaffians(w, ideal (x*dx+2*y*dy-1, dx^2-dy))             -- Checked in Mathematica
--- i6 : pfaffians ideal (x*dx+2*y*dy-1, dx^2-dy)
+connectionMatrices(w, ideal (x*dx+2*y*dy-1, dx^2-dy))             -- Checked in Mathematica
+-- i6 : connectionMatrices ideal (x*dx+2*y*dy-1, dx^2-dy)
 -- Grobner basis:
 -- | xdx+2ydy-1 4y2dy^2-x2dy+2ydy 2ydxdy+xdy dx^2-dy |
 -- Standard monomials:
@@ -49,15 +49,15 @@ pfaffians(w, ideal (x*dx+2*y*dy-1, dx^2-dy))             -- Checked in Mathemati
 -- o6 = {{-1} | 1/x (-2y)/x |, {-1} | 0 1           |}
 --      {-1} | 0   (-x)/2y |  {-1} | 0 (x2-2y)/4y2 |
 
-pfaffians ideal (x*dx+2*y*dy-1, dx^2-dy)            -- Shortcut for: pfaffians({0,0,1,1},  ideal (x*dx+2*y*dy-1, dx^2-dy))
+connectionMatrices ideal (x*dx+2*y*dy-1, dx^2-dy)            -- Shortcut for: connectionMatrices({0,0,1,1},  ideal (x*dx+2*y*dy-1, dx^2-dy))
 
 --------------------------------------------------------
 
 --------------------------------------------------------
 -- Example:                                         -- Q: What is this the example for?
 -- permutation matrices?
-pfaffians ideal (dy^2-1, dx^5-dy)                   -- Output (??)
-pfaffians ideal (dy^3-1, dx^2-dy)                   -- Output (??)
+connectionMatrices ideal (dy^2-1, dx^5-dy)                   -- Output (??)
+connectionMatrices ideal (dy^3-1, dx^2-dy)                   -- Output (??)
 --------------------------------------------------------
 
 
@@ -68,13 +68,13 @@ D = makeWA(QQ[a,b,c,c', DegreeRank => 0][x,y])
 I = ideal(
     dx*(x*dx + c  - 1) - (x*dx + y*dy + a)*(x*dx + y*dy + b),
     dy*(y*dy + c' - 1) - (x*dx + y*dy + a)*(x*dx + y*dy + b))
-A = pfaffians({0,0,1,1}, I);
+A = connectionMatrices({0,0,1,1}, I);
 netList apply(A, mat -> sub(mat, {a => 10, b => 4/5, c => -2, c' => 3/2})) 
 gens gb sub(I, {a => 10, b => 4/5, c => -2, c' => 3/2})         --> Q: How to check this? [SSt, p.40] only contains a statement that one of the basis elements is of a certain form.
 
 checkSystem(D, A)
 
-pfaffians AppellF1 {10,4/5,-2,3/2}   -- Q: What is this? How to confirm the above?
+connectionMatrices AppellF1 {10,4/5,-2,3/2}   -- Q: What is this? How to confirm the above?
 --------------------------------------------------------
 
 -- partially fixed version
@@ -83,13 +83,13 @@ pfaffians AppellF1 {10,4/5,-2,3/2}   -- Q: What is this? How to confirm the abov
                                                                 --> No error with iterative version.
 D = makeWA(frac(QQ[a,b,c,c', DegreeRank => 0])[x,y],{0,0,1,1})
 I = ideal(dx*(x*dx + c  - 1) - (x*dx + y*dy + a)*(x*dx + y*dy + b),dy*(y*dy + c' - 1) - (x*dx + y*dy + a)*(x*dx + y*dy + b))
-A = pfaffians(I);
+A = connectionMatrices(I);
 netList apply(A, mat -> sub(mat, {a => 10, b => 4/5, c => -2, c' => 3/2})) 
 gens gb sub(I, {a => 0, b => 4/5, c => -2, c' => 3/2})         --> Q: How to check this? [SSt, p.40] only contains a statement that one of the basis elements is of a certain form.
 
 checkSystem(D, A)
 
-pfaffians AppellF1 {10,4/5,-2,3/2}   -- Q: What is this? How to confirm the above?
+connectionMatrices AppellF1 {10,4/5,-2,3/2}   -- Q: What is this? How to confirm the above?
 --------------------------------------------------------
 
 
@@ -99,7 +99,7 @@ pfaffians AppellF1 {10,4/5,-2,3/2}   -- Q: What is this? How to confirm the abov
 w={0,0,1,1}
 D = makeWeylAlgebra(QQ[x,y],w)
 I = ideal(x^2*dx^2+2*x*y*dx*dy+(y-1)*y*dy^2+3*x*dx+(3*y-1)*dy+1, x*dx^2-y*dy^2+dx-dy)
-P = pfaffians I
+P = connectionMatrices I
 P_0 
 --------------------------------------------------------
 
@@ -113,7 +113,7 @@ delta3 = (x+z)*(y+z)*dx*dy-e*(x+z)*dx-e*(y+z)*dy+e^2
 h = x*dx+y*dy+z*dz-2*e
 I = ideal(delta1+delta3, delta2+delta3,h)
 r = holonomicRank I;                                        -- WRONG: Gives "infinity" (instead of 4)
-P = pfaffians I;                                            -- (old: ERROR: Does not terminate.)
+P = connectionMatrices I;                                            -- (old: ERROR: Does not terminate.)
 
 --------------------------------------------------------
 
@@ -144,7 +144,7 @@ P = connectionMatrices I;                                            -- (old: ER
 -- Example:
 
 D = makeWA(QQ[x])                                       
-pfaffians ideal (dx^2 - x)                              -- Output (??)
+connectionMatrices ideal (dx^2 - x)                              -- Output (??)
 --------------------------------------------------------
 
 --------------------------------------------------------
@@ -152,7 +152,7 @@ pfaffians ideal (dx^2 - x)                              -- Output (??)
 
 D = makeWA(QQ[x_1,x_2,x_3]) 
 -- FIXME: why zero?
-netList pfaffians stafford ideal (dx_1, dx_2, dx_3)     -- Output (??)
+netList connectionMatrices stafford ideal (dx_1, dx_2, dx_3)     -- Output (??)
 -----------------------------
 
 restart
@@ -186,11 +186,11 @@ netList apply(A, mat -> sub(mat, {a => 1/2, b => 1/2, c => 1}))
 
 --examples from 25/11
 D = makeWA(QQ[a,DegreeRank=>0][x])
-pfaffians ideal (x^5*dx - a)
+connectionMatrices ideal (x^5*dx - a)
 
 
 D = makeWA(QQ[a,b,DegreeRank=>0][x,y])
-pfaffians(I=ideal (x^5*dx^2 - a,y^4*dy^3-b*dx))
+connectionMatrices(I=ideal (x^5*dx^2 - a,y^4*dy^3-b*dx))
 holonomicRank I
 
 f=symbol f
@@ -199,7 +199,7 @@ h=symbol h
 D = makeWA(QQ[f,g,h,DegreeRank=>0][x,y])
 I=ideal(f*dx+g*dy+h,dx^2-dx^3+dy^3)
 characteristicIdeal I
-pfaffians I
+connectionMatrices I
 
 D = makeWA(QQ[x,y])
 g=x*y
@@ -207,7 +207,7 @@ f=x^2+y^2
 h=x+y
 I=ideal(f*dx+g*dy+h,dx^2+dy^3)
 holonomicRank I
-pfaffians I
+connectionMatrices I
 
 
 
@@ -215,7 +215,7 @@ D = QQ[x,y,dx,dy, WeylAlgebra =>{x=>dx,y=>dy}, Weights=>{0,0,2,1}]
 P=x*dx^2-y*dy^2+dx-dy
 Q=x*dx+y*dy+1
 I=ideal(P,Q)
-pfaffians I
+connectionMatrices I
 gens gb I
 leadTerm I
 
@@ -225,7 +225,7 @@ Q=x*dx+y*dy+1
 I'=ideal(P,Q)
 gens gb I'
 leadTerm I'
-pfaffians(I')
+connectionMatrices(I')
 M'=comodule I'
 holonomicRank M'
 peek(M'.cache)
@@ -237,7 +237,7 @@ D = QQ[x,y,dx,dy, WeylAlgebra =>{x=>dx,y=>dy}]
 P=x*dx^2-y*dy^2+2*dx-2*dy
 Q=x*dx+y*dy+1
 I=ideal(P,Q)
-pfaffians I
+connectionMatrices I
 M=comodule I
 holonomicRank M
 peek(M.cache)
@@ -286,7 +286,7 @@ W = QQ[x,y,dx,dy, WeylAlgebra =>{x=>dx,y=>dy}]
 P=x*dx^2-y*dy^2+2*dx-2*dy
 Q=x*dx+y*dy+1
 I=ideal(P,Q)
-C = pfaffians I
+C = connectionMatrices I
 G = matrix{{x,0},{0,y}}
 gaugeTransform(G,C,D)
 
