@@ -130,6 +130,18 @@ assert(sig(Z, w)==pwlSig(X, w))
 -- I think 'pairs' does what you want!
 enumerate = L -> toList apply(0..(#L - 1), i -> {i, L#i});
 
+--Basic checks to verify if a list is the listForm of a polynomial
+isListForm = method(); 
+isListForm Thing := (L) ->(
+    if not(instance(L, List)) or not(instance(L#0, Sequence)) or not(instance(L#0#0, List))  then return false;
+    l := length(L#0#0);
+    c := L#0#(-1);
+    if not(instance(c, Number)) and not(instance(c, RingElement)) then return false;
+    apply(L, i-> 
+        if length(i#0)!=l or (not(instance(i#(-1), Number)) and not(instance(#i(-1), RingElement))) then return false);
+    return true
+);
+
 --A piecewise polynomial path
 --polyPath takes a list of polynomials in some variable and constructs the corresponding polynomial path from it
 --the polynomials can be given as actual polynomials or directly in listForm
@@ -137,6 +149,16 @@ enumerate = L -> toList apply(0..(#L - 1), i -> {i, L#i});
 polyPath = method();
 polyPath List := (polyPathList) -> (
     if(polyPathList === {}) then return new Path from {type => "PPolynomial", pieces => {}, dimension => -1, numberOfPieces => 0};
+
+    if isListForm (polyPathList#0) then (
+        apply(polyPathList, i-> if not(isListForm(i)) then error("The input was neither a list of polynomials nor a list of polynomials in listForm"));
+        return new Path from{
+            type => "PPolynomial",
+            pieces => {polyPathList},
+            dimension => length polyPathList,
+            numberOfPieces => 1
+        };
+        );
 
     if (instance(product(polyPathList), RingElement)) then (
         bR := class product(polyPathList); --Consider taking this as input
@@ -149,12 +171,7 @@ polyPath List := (polyPathList) -> (
         return(P);
     );
 
-    new Path from{
-        type => "PPolynomial",
-        pieces => {polyPathList},
-        dimension => length polyPathList,
-        numberOfPieces => 1
-    }
+    
 )
 
 --Take parts of a path

@@ -20,26 +20,40 @@ Node
         (symbol _, Path, List)
         (symbol _, Path, ZZ)
         (symbol _, Path, Sequence)
+        type
+        dimension
+        numberOfPieces
+        pieces
+
     Headline
         The type of a piecewise polynomial path. 
     Description
         Text
-            The type Path inherites from MutableHashTable. It has 4 attributes "dimension", "numberOfPieces", "pieces" and "type". "pieces" contains 
+            The type Path inherits from MutableHashTable. It has 4 attributes @TO dimension@, @TO numberOfPieces@, @TO pieces@ and @TO type@. "pieces" contains 
             a list of lists, each one being the components of polynomial path in normalForm. "type" is a string, either "PPolynomial" or "PLinear", standing 
             for "piecewise polynomial" and "piecewise linear" respectively. There are constructors for single piece paths, @TO linPath@ and @TO polyPath@ 
             and these can be concatenated with @TO (symbol **, Path, Path)@.
+        Text
+            A path can be constructed in different ways. For example a linear path  starting at 0 can constructed by giving the incremenent:
         Example
-            R=QQ[t]
-            X = polyPath({t,t^2}) ** polyPath({t^3 + 3*t, t^2 - 1}) ** polyPath({t^10, t^11})
+            X = linPath({2,3})
+        Text
+            While a polynomial path can be given either in listForm or as an actual polynomial
+        Example
+            R = QQ[t]
+            Y1 = polyPath({t,2*t^2})
+            Y2 = polyPath({{({1},1)},{({2},2)}})
+        Text
+            Path can be concatenated with @TO (symbol **, Path, Path)@:
+        Example
+            Z=Y1**Y2
         Text
             To extract only one piece of the path, for example the first, one can use
         Example
-             X_0
+             Z_0
         Text
             While to exctract a subset of pieces, for example the first and last, one can use
-        Example
-            X_{0,2}
-            X_(0,2)
+        
     SeeAlso
         polyPath
         linPath
@@ -141,7 +155,7 @@ Node
     Key 
         (sig, Path, NCRingElement)
     Headline
-        Compute the specified component of the signature of an algebraic path 
+        Compute the specified component of the signature of a @TO Path@ 
 
     SeeAlso
         sig
@@ -167,10 +181,7 @@ Node
             oo.type
     SeeAlso
         Path
-Node 
-    Key
-        type
-        
+
 ///
 
 
