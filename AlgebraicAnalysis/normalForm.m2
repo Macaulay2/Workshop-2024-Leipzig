@@ -44,7 +44,7 @@ restart
 needs "normalForm.m2"
 -- NEED TO ALSO CHANGE WEIGHTS IN DEFINITION OF R
 
--- Examples for testing with Pfaffian matrices
+-- Examples for testing with connection matrices
 -- Example 1.3: w = (0,0,2,1) ----> DOESNT EQUAL CALCULATIONS
 D = QQ[x,y,dx,dy, WeylAlgebra =>{x=>dx,y=>dy},MonomialOrder=>{Weights=>{0,0,2,1}, RevLex}, Global => false]
 I = ideal(x*dx^2-y*dy^2+dx-dy,x*dx+y*dy+1)
