@@ -51,7 +51,7 @@ P2 = gaugeTransform(changeofvar,P,D)
 
 changeVar = transpose((1/(2*z*e^2))*matrix({{2*z*e^2, -e^2*(x-z), -e^2*(y-z), -e^2*(x+y)},{0,e*(x^2-z^2),0,e*(x+y)*(x+z)},{0,0,e*(y^2-z^2),e*(x+y)*(y+z)},{0,0,0,-(x+y)*(x+z)*(y+z)}}));
 P3 = gaugeTransform(changeVar,P2,D);
--- P3 is an epsilon-factorized pfaffian system, changeofvar2 is the matrix from equation (13)
+-- P3 is an epsilon-factorized system of connection matrices, changeofvar2 is the matrix from equation (13)
 1/e*diffConnectionMatrix(P3)
 
 
@@ -59,7 +59,7 @@ P3 = gaugeTransform(changeVar,P2,D);
 
 
 
--- Examples for testing with Pfaffian matrices
+-- Examples for testing with connection matrices
 -- Example 1.3: w = (0,0,2,1) ----> EQUALS COMPUTATIONS
 D = QQ[x,y,dx,dy, WeylAlgebra =>{x=>dx,y=>dy},MonomialOrder=>{Weights=>{0,0,2,1}, RevLex}, Global => false]
 I = ideal(x*dx^2-y*dy^2+dx-dy,x*dx+y*dy+1)
