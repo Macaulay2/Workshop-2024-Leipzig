@@ -1,9 +1,6 @@
 -- Example based on the equations (11)-(13) in https://arxiv.org/pdf/2410.14757 (v2)
 path = prepend("/home/macaulay/AlgebraicAnalysis", path)
-needs "reduce.m2"
-needs "pfaffians.m2"
-needs "gaugeMatrix.m2"
-needs "changeofbasis.m2"
+needsPackage "ConnectionMatrices"
 
 w = {0,0,0,1,1,1}
 D = makeWeylAlgebra(frac(QQ[e,DegreeRank=>0])[x,y,z],w)    

@@ -5,12 +5,7 @@
 
 
 path = prepend("/home/macaulay/AlgebraicAnalysis", path)
-
-needs "reduce.m2"
-needs "pfaffians.m2"
-needs "gaugeMatrix.m2"
-needs "changeofbasis.m2"
-
+needsPackage "ConnectionMatrices"
 
 w1 = {0,0,2,1};
 w2 = {0,0,1,2};
@@ -25,11 +20,11 @@ assert(holonomicRank(I) == 2)
 
 -- Computing the system of connection matrices w.r.t. weight vector w1
 C1 = connectionMatrices(I);
-SM1 = stdMon(I);
+SM1 = standardMonomials(I);
 
 -- Computing the system of connection matrices w.r.t. weight vector w2
 C2 = connectionMatrices(sub(I,D2));
-SM2 = stdMon(sub(I,D2));
+SM2 = standardMonomials(sub(I,D2));
 
 -- Compute Groebner Basis
 G = flatten entries gens gb I; 
