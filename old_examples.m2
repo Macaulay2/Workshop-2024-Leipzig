@@ -10,7 +10,7 @@ I = ideal (x*dx^2 - y*dy^2 + dx-dy, x*dx+y*dy+1); -- doesn't commute
 A = connectionMatrices(I);
 
 -- i2 : D = makeWeylAlgebra(QQ[x,y], w = {0,0,2,1});
--- i3 : A = connectionMatrices(w, I = ideal (x*dx^2 - y*dy^2 + dx-dy, x*dx+y*dy+1)) -- doesn't commute
+-- i3 : A = connectionMatrices(I = ideal (x*dx^2 - y*dy^2 + dx-dy, x*dx+y*dy+1)) -- doesn't commute
 -- Grobner basis:
 -- | xdx+ydy+1 ydxdy+ydy^2+dx+dy xydy^2-y2dy^2+xdy-3ydy-1 |
 -- Standard monomials:
@@ -19,7 +19,7 @@ A = connectionMatrices(I);
 --       {-1} | (-1)/(x2-xy) (-x-y)/(x2-xy) |  {-1} | 1/(xy-y2) (-x+3y)/(xy-y2) |
 
 -- i4 : D = makeWeylAlgebra(QQ[x,y], w = {0,0,1,1});
--- i5 : A = connectionMatrices(w, I = ideal (x*dx^2 - y*dy^2 + dx-dy, x*dx+y*dy+1)) -- doesn't commute
+-- i5 : A = connectionMatrices(I = ideal (x*dx^2 - y*dy^2 + dx-dy, x*dx+y*dy+1)) -- doesn't commute
 -- Grobner basis:
 -- | xdx+ydy+1 ydxdy+ydy^2+dx+dy xydy^2-y2dy^2+xdy-3ydy-1 |
 -- Standard monomials:
@@ -28,7 +28,7 @@ A = connectionMatrices(I);
 --       {-1} | (-1)/(x2-xy) (-x-y)/(x2-xy) |  {-1} | 1/(xy-y2) (-x+3y)/(xy-y2) |
 
 -- i6 : D = makeWeylAlgebra(QQ[x,y], w = {0,0,1,2});
--- i7 : A = connectionMatrices(w, I = ideal (x*dx^2 - y*dy^2 + dx-dy, x*dx+y*dy+1)) -- doesn't commute
+-- i7 : A = connectionMatrices(I = ideal (x*dx^2 - y*dy^2 + dx-dy, x*dx+y*dy+1)) -- doesn't commute
 -- Grobner basis:
 -- | ydy+xdx+1 xdxdy+xdx^2+dy+dx x2dx^2-xydx^2+3xdx-ydx+1 |
 -- Standard monomials:
@@ -40,7 +40,7 @@ A = connectionMatrices(I);
 --------------------------------------------------------
 -- Example: GKZ system 1                                -- Q: Over which matrix (before {{1,2,3}} stated.)
 D = makeWeylAlgebra(QQ[x,y], w = {0,0,1,1})
-connectionMatrices(w, ideal (x*dx+2*y*dy-1, dx^2-dy))             -- Checked in Mathematica
+connectionMatrices(ideal (x*dx+2*y*dy-1, dx^2-dy))             -- Checked in Mathematica
 -- i6 : connectionMatrices ideal (x*dx+2*y*dy-1, dx^2-dy)
 -- Grobner basis:
 -- | xdx+2ydy-1 4y2dy^2-x2dy+2ydy 2ydxdy+xdy dx^2-dy |
@@ -64,11 +64,11 @@ connectionMatrices ideal (dy^3-1, dx^2-dy)                   -- Output (??)
 --------------------------------------------------------
 -- Example 1.4.24 in SST                                        --> ERROR with recursive version of normalForm (reduce.m2)
                                                                 --> No error with iterative version.
-D = makeWA(QQ[a,b,c,c', DegreeRank => 0][x,y])
+D = makeWA(QQ[a,b,c,c', DegreeRank => 0][x,y], w = {0,0,1,1})
 I = ideal(
     dx*(x*dx + c  - 1) - (x*dx + y*dy + a)*(x*dx + y*dy + b),
     dy*(y*dy + c' - 1) - (x*dx + y*dy + a)*(x*dx + y*dy + b))
-A = connectionMatrices({0,0,1,1}, I);
+A = connectionMatrices(I);
 netList apply(A, mat -> sub(mat, {a => 10, b => 4/5, c => -2, c' => 3/2})) 
 gens gb sub(I, {a => 10, b => 4/5, c => -2, c' => 3/2})         --> Q: How to check this? [SSt, p.40] only contains a statement that one of the basis elements is of a certain form.
 
@@ -82,7 +82,9 @@ connectionMatrices AppellF1 {10,4/5,-2,3/2}   -- Q: What is this? How to confirm
 -- Example 1.4.24 in SST                                        --> ERROR with recursive version of normalForm (reduce.m2)
                                                                 --> No error with iterative version.
 D = makeWA(frac(QQ[a,b,c,c', DegreeRank => 0])[x,y],{0,0,1,1})
-I = ideal(dx*(x*dx + c  - 1) - (x*dx + y*dy + a)*(x*dx + y*dy + b),dy*(y*dy + c' - 1) - (x*dx + y*dy + a)*(x*dx + y*dy + b))
+I = ideal(
+    dx*(x*dx + c  - 1) - (x*dx + y*dy + a)*(x*dx + y*dy + b),
+    dy*(y*dy + c' - 1) - (x*dx + y*dy + a)*(x*dx + y*dy + b))
 A = connectionMatrices(I);
 netList apply(A, mat -> sub(mat, {a => 10, b => 4/5, c => -2, c' => 3/2})) 
 gens gb sub(I, {a => 0, b => 4/5, c => -2, c' => 3/2})         --> Q: How to check this? [SSt, p.40] only contains a statement that one of the basis elements is of a certain form.
@@ -156,7 +158,7 @@ netList connectionMatrices stafford ideal (dx_1, dx_2, dx_3)     -- Output (??)
 -----------------------------
 
 restart
-needs "./pfaffians.m2"
+debug needsPackage "ConnectionMatrices"
 
 -- Example 1.2.9 in SST, pp. 14
 D = makeWA(QQ[a,b,c,DegreeRank => 0][x_1..x_4])
@@ -165,9 +167,12 @@ I = ideal(
     x_1*dx_1 - x_4*dx_4 + 1 - c,
     x_2*dx_2 + x_4*dx_4 + a,
     x_3*dx_3 + x_4*dx_4 + b)
+netList(A = connectionMatrices I)
+
+-- Example 1.4.23 in SST, pp. 39
+netList apply(A, mat -> sub(mat, {a => 1/2, b => 1/2, c => 1}))
+
 I = sub(I, {a => 1/2, b => 1/2, c => 1})
---WeylClosure I
-netList(A = pfaffians I)
 
 -- example
 R = (frac extractVarsAlgebra D)(monoid[D.dpairVars#1])
@@ -179,9 +184,6 @@ last coefficients(sub(dt, R) * s % G, Monomials => B)
 
 << texMath A_1
 checkSystem(D, A)
-
--- Example 1.4.23 in SST, pp. 39
-netList apply(A, mat -> sub(mat, {a => 1/2, b => 1/2, c => 1}))
 
 
 --examples from 25/11
@@ -281,7 +283,7 @@ f = x^2
 g = 3*y^5
 diffratW(P,f,g)
 
-needs "pfaffians.m2"
+needsPackage "ConnectionMatrices"
 W = QQ[x,y,dx,dy, WeylAlgebra =>{x=>dx,y=>dy}]
 P=x*dx^2-y*dy^2+2*dx-2*dy
 Q=x*dx+y*dy+1
