@@ -1,5 +1,5 @@
 needs "reduce.m2"
-needs "pfaffians.m2"
+needs "connectionMatrices.m2"
 needs "gaugeMatrix.m2"
 needs "changeofbasis.m2"
 

@@ -245,7 +245,7 @@ holonomicRank M
 peek(M.cache)
 
 --------------------------------------------------------
--- End of pfaffians.m2 examples
+-- End of connectionMatrices.m2 examples
 --------------------------------------------------------
 
 

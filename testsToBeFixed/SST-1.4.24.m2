@@ -1,5 +1,5 @@
 path = prepend("/home/macaulay/AlgebraicAnalysis", path)
-needs "pfaffians.m2"
+needs "connectionMatrices.m2"
 
 W = makeWA(QQ[a,b,c,c', DegreeRank => 0][x,y])
 I = ideal(
