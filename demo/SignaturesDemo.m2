@@ -98,3 +98,20 @@ adjointWord(l_2, T,L)
 adjointWord(l_3, T,L)
 
 adjointWord(l_3^2, T,L)
+
+
+
+S=QQ[x,y];
+T=QQ{l_1,l_2,l_3}
+
+L={x^2-y,y^3+x,x-y};
+
+R = QQ[t];
+P={t,t^2+3*t^5}
+X = polyPath(P)
+PP=apply(L, q-> sub(q, {x=>P_0, y=>P_1}))
+Y = polyPath(PP)
+w = l_1*l_2
+adw = adjointWord(w, T,L)
+sig(Y, w)
+sig(X, adw)
