@@ -923,10 +923,6 @@ adjointWordMon (NCRingElement, NCPolynomialRing, ZZ, List) := NCRingElement => (
         print("Number of polynomials does not equal number of generators of the NCRing")
     );
 
-    if d> length(gens T) then (
-        print("Degree is bigger than number of generators of the NCRing")
-    );
-
     
     if word==0_T then (
             return 0_T
@@ -952,14 +948,24 @@ adjointWordMon (NCRingElement, NCPolynomialRing, ZZ, List) := NCRingElement => (
 )
 
 --Function M_p applied to polynomials
----Things to do: print message and return error if phi map does not have correct degree, check p(0)=0.
 
 
 adjointWord = method()
-adjointWord (NCRingElement, NCPolynomialRing, ZZ, List) := NCRingElement => (g, T, d, l) -> (
+adjointWord (NCRingElement, NCPolynomialRing, ZZ, List) := NCRingElement => (g, T, L) -> (
+
+    Raux:=ring L_0;
+    d:=length(gens Raux);
+
+    if d>length(gens T) then (
+        error("Number of generators of the NCRing lower than dimension of the polynomial ring")
+    );
+
+    if not all(apply(L, p->part(0,p)), q->q==0) then (
+        error("The image of 0 under the polynomail map is not 0")
+    );
 
     coefTableAux:= coefficientHTable(g);       
-    return sum(#(values coefTableAux), i-> (values coefTableAux)_i* adjointWordMon((keys coefTableAux)_i, T,d,l))
+    return sum(#(values coefTableAux), i-> (values coefTableAux)_i* adjointWordMon((keys coefTableAux)_i, T,d,L))
 
 )
 
