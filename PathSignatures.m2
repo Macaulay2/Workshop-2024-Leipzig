@@ -611,7 +611,8 @@ wordAlgebra (ZZ) := opts -> (z) -> (
 )
 
 
---Returns the shuffle product of two words 
+--Returns the shuffle product of two words using the recursive definition. The words are given as NCMonomials with their respective ring. 
+--There is no need for checks on whether the imputed elements are monomials since this is an auxiliary function that will be called in the function "shuffle" 
 --
 
 shuffleMon = method();
@@ -650,7 +651,7 @@ shuffleMon (NCRingElement, NCRingElement, NCPolynomialRing) := NCRingElement => 
     return (shuffleMon(w1, word2, R)* a) + (shuffleMon(word1, w2, R)* b)
 )
 
---Returns the shuffle product of NCpolynomials of the type (sum f_i x^i) shuffle x^j
+--Auxiliary function that returns the shuffle product of NCpolynomials of the type (sum f_i x^i) shuffle x^j
 --
 
 shuffleMonExtL = method()
@@ -663,7 +664,7 @@ shuffleMonExtL (NCRingElement, NCRingElement, NCPolynomialRing) := (NCRingElemen
 
 
 
---Returns the shuffle product of NCpolynomials of the type (sum f_i x^i) shuffle (sum g_j x^j)
+--Returns the shuffle product of two NCpolynomials of the type (sum f_i x^i) shuffle (sum g_j x^j)
 --
 shuffle = method(); -- is faster than shuffle!
 shuffle (NCRingElement, NCRingElement, NCPolynomialRing) := NCRingElement => (f, g, R) -> (
@@ -845,7 +846,8 @@ signedVolume NCPolynomialRing := (R) -> (
 );
 
 
---Funtion to transform a commutative polynomial into a non-commutative polynomial, with the same ordered variables of a given NCRing
+--Function to transform a commutative polynomial into a non-commutative polynomial, with the same ordered variables of a given NCRing. 
+--Roughly speaking it outputs the given polynomial with the variables replaced by non commutative variables on a given NCRing. It is an auxiliary funtion to be used later. 
 --
 elementToNCElement = method();
 elementToNCElement (RingElement, NCPolynomialRing):= NCRingElement => (f, S) -> (
@@ -855,7 +857,8 @@ elementToNCElement (RingElement, NCPolynomialRing):= NCRingElement => (f, S) -> 
 )
 
 
---Returns the image of a monomial under the map \varphi: R[x_1..x_d] \to T(R^d), x_i\maptso i, x_{i_1},...,x_{i_l}\mapsto x_{i_1}\shuffle .... \shuffle x_{i_l} 
+--Returns the image of a monomial under the map \varphi: R[x_1..x_d] \to T(R^d), x_i\maptso i, x_{i_1},...,x_{i_l}\mapsto x_{i_1}\shuffle .... \shuffle x_{i_l}
+--This function is then extended linearly in "phiMap"  
 
 phiMapMon = method();
 phiMapMon (NCRingElement, NCPolynomialRing):= NCRingElement => (f, S) -> (
@@ -878,6 +881,7 @@ phiMapMon (NCRingElement, NCPolynomialRing):= NCRingElement => (f, S) -> (
 )
 
 --Returns the image of a polynomial under the map \varphi: R[x_1..x_d] \to T(R^d), x_i\maptso i, x_{i_1},...,x_{i_l}\mapsto x_{i_1}\shuffle .... \shuffle x_{i_l} 
+--Extends linearly the previous function.
 
 phiMap = method();
 phiMap (RingElement, NCPolynomialRing) := NCRingElement => (f, S) -> ( 
@@ -892,7 +896,9 @@ phiMap (RingElement, NCPolynomialRing) := NCRingElement => (f, S) -> (
     return sum(#(values coefTableAux), i-> (values coefTableAux)_i* phiMapMon((keys coefTableAux)_i, S))
 )
 
---Returns the image of the jacobian for a list of polynomials
+
+--Given a list of polynomials, it returns the image of their Jacobian under the phi map. 
+--There is no need to check whether the imputed list is made of polynomials since it is an auxiliary function to be called later.  
 
 phiJacobian = method();
 phiJacobian (List, NCPolynomialRing) := NCMatrix => (l, S) -> ( 
@@ -907,9 +913,8 @@ phiJacobian (List, NCPolynomialRing) := NCMatrix => (l, S) -> (
 )
 
 
----Print message if phi map does not have correct degree, check p(0)=0.
---Function M_p applied to words
 
+--Function M_p applied to words
 
 adjointWordMon = method()
 adjointWordMon (NCRingElement, NCPolynomialRing, ZZ, List) := NCRingElement => (word, T, d, l) -> (
@@ -947,6 +952,8 @@ adjointWordMon (NCRingElement, NCPolynomialRing, ZZ, List) := NCRingElement => (
 )
 
 --Function M_p applied to polynomials
+---Things to do: print message and return error if phi map does not have correct degree, check p(0)=0.
+
 
 adjointWord = method()
 adjointWord (NCRingElement, NCPolynomialRing, ZZ, List) := NCRingElement => (g, T, d, l) -> (
