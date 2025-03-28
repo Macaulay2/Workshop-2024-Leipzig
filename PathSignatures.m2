@@ -947,7 +947,7 @@ adjointWordMon (NCRingElement, NCPolynomialRing, ZZ, List) := NCRingElement => (
 
 
 adjointWord = method()
-adjointWord (NCRingElement, NCPolynomialRing, ZZ, List) := NCRingElement => (g, T, L) -> (
+adjointWord (NCRingElement, NCPolynomialRing, List) := NCRingElement => (g, T, L) -> (
 
     Raux:=ring L_0;
     d:=length(gens Raux);
