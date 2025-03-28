@@ -87,14 +87,14 @@ R = QQ[t];
 X = polyPath({t,t})
 Y = polyPath({t^2,t^3,0_R})
 w = l_1*l_2
-adw = adjointWord(w, T,d,L)
+adw = adjointWord(w, T,L)
 sig(Y, w)
 sig(X, adw)
 
 
 
-adjointWord(l_2, T,d,L)
+adjointWord(l_2, T,L)
 
-functionMp(l_3, T,d,L)
+adjointWord(l_3, T,L)
 
-functionMp(l_3^2, T,d,L)
+adjointWord(l_3^2, T,L)
