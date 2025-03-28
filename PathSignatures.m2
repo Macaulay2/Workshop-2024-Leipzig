@@ -919,10 +919,6 @@ phiJacobian (List, NCPolynomialRing) := NCMatrix => (l, S) -> (
 adjointWordMon = method()
 adjointWordMon (NCRingElement, NCPolynomialRing, ZZ, List) := NCRingElement => (word, T, d, l) -> (
 
-    if length(l)!= length(gens T) then (
-        print("Number of polynomials does not equal number of generators of the NCRing")
-    );
-
     
     if word==0_T then (
             return 0_T
@@ -956,6 +952,7 @@ adjointWord (NCRingElement, NCPolynomialRing, ZZ, List) := NCRingElement => (g, 
     Raux:=ring L_0;
     d:=length(gens Raux);
 
+    --Check that number of letters in the given NCRing is enough to compute the image of the word  
     if d>length(gens T) then (
         error("Number of generators of the NCRing lower than dimension of the polynomial ring")
     );
