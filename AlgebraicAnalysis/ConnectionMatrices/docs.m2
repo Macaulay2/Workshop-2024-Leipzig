@@ -113,35 +113,39 @@ Description
 doc ///
 Key
     gaugeMatrix
-    (gaugeMatrix, List, List)
-    (gaugeMatrix, Ideal, List)
+   (gaugeMatrix, List, List)
+   (gaugeMatrix, Ideal, List)
 Headline
-    computes base changes over the field of rational functions
+    computes the base change over the field of rational functions
 Usage
     gaugeMatrix(G, B)
 Inputs
     I:Ideal
       of the Weyl algebra
     G:List
-      of generators for $I$
+      of generators of a Gröbner basis for $I$
     B:List
-      a basis of $R_n/R_nI$ over the field of rational functions
+      of standard monomials for $I$,
+      i.e. any basis of $R_n/R_nI$ over the field of rational functions
 Outputs
     M:Matrix
-      encoding the change of basis wrt. to B
+      encoding the change of basis with regard to to $B$
 Description
   Text
     Let $I = D_n\langle G\rangle$ be a $D_n$-ideal, $B$ basis of $R_n/R_nI$.
     This methods computes the matrix which encodes the change of basis from the set of standard monomials of $R_nI$ to the basis $B$.
   Example
-    w1 = {2,1}; D1 = makeWeylAlgebra(QQ[x,y],w1);
-    I = sub(ideal(x*dx^2-y*dy^2+2*dx-2*dy,x*dx+y*dy+1),D1);
-    SM1 = standardMonomials(I);
-    w2 = {1,2}; D2 = makeWeylAlgebra(QQ[x,y],w2);
-    SM2 = standardMonomials(sub(I,D2)); 
-    gaugeMatrix(I,SM2)
+    D1 = makeWeylAlgebra(QQ[x, y], w1 = {2, 1});
+    I = ideal(x*dx^2-y*dy^2+2*dx-2*dy, x*dx+y*dy+1);
+    SM1 = standardMonomials I
+    --
+    D2 = makeWeylAlgebra(QQ[x, y], w2 = {1, 2});
+    SM2 = standardMonomials sub(I, D2)
+    gaugeMatrix(I, SM2)
 SeeAlso
-
+  standardMonomials
+  gaugeTransform
+  "Examples from particle physics and cosmology"
 ///
 
 doc ///
@@ -166,7 +170,7 @@ Description
   Text
     Let $I$ be an ideal in the Weyl algebra $D_n$ and $B$ a basis over @TO2{baseFractionField, TT "baseFractionField(D)"}@ for $R_n/R_nI$.
 
-    If no basis is provided by the user, the basis is chosen to be the set of standard monomials of a Gröbner basis on $R_nI$ with regards to the weighted 
+    If no basis is provided by the user, the basis is chosen to be the set of standard monomials of a Gröbner basis on $R_nI$ with regards to the weighted
     Lex order $(\partial_1 > \cdots > \partial_n > x_1 > \cdots > x_n)$ on the Weyl algebra.
   Example
     D = makeWeylAlgebra(QQ[x,y], v = {2,1})
@@ -199,18 +203,18 @@ Outputs
 Description
   Text
     This method computes the gauge transform of a system of connection matrices for a given invertible matrix that encodes a change of basis.
-    
+
   Example
     D = makeWeylAlgebra(QQ[x,y]);
-    I = ideal(x*dx^2-y*dy^2+2*dx-2*dy, x*dx+y*dy+1); 
+    I = ideal(x*dx^2-y*dy^2+2*dx-2*dy, x*dx+y*dy+1);
     A = connectionMatrices(I);
     F = baseFractionField D;
     M = matrix(F, {{x,0},{0,y}});
     gaugeTransform(M,A,D)
   -- Text
-  --   It is also possible to compute the gauge transform of a 
-  --   system of connection matrices contatining paramenters. 
-  --   The following example comes from the annihilating $D_n$-ideal 
+  --   It is also possible to compute the gauge transform of a
+  --   system of connection matrices contatining paramenters.
+  --   The following example comes from the annihilating $D_n$-ideal
   --   of a correlation function in cosmology.
   -- Example
   --   D = makeWeylAlgebra(frac(QQ[eps,DegreeRank=>0])[x,y,z],{1,1,1})
@@ -251,7 +255,7 @@ Description
     Its entries are differential one-forms in the variables of the underlying Weyl algebra.
   Example
     D = makeWeylAlgebra(QQ[x,y]);
-    I = ideal(x*dx^2-y*dy^2+2*dx-2*dy, x*dx+y*dy+1); 
+    I = ideal(x*dx^2-y*dy^2+2*dx-2*dy, x*dx+y*dy+1);
     A = connectionMatrices(I);
     connectionMatrix(A)
 Caveat
@@ -280,7 +284,7 @@ Outputs
       of standard monomials
 Description
   Text
-    This method computes the standard monomials of a Gröbner basis of $R_nI$ with respect 
+    This method computes the standard monomials of a Gröbner basis of $R_nI$ with respect
     to the order $\prec'$ on $R_n$ which is induced by the order $\prec$ of the Weyl algebra $D_n$.
   Example
     D = makeWeylAlgebra(QQ[x,y]);
@@ -317,7 +321,7 @@ Description
   Example
     D = makeWeylAlgebra(frac(QQ[eps,DegreeRank=>0])[x]);
     I = ideal(x*(1-x)*dx^2 - eps*(1-x)*dx);
-    B = {sub(1,D),sub(1/eps,D)*dx}; 
+    B = {sub(1,D),sub(1/eps,D)*dx};
     A = connectionMatrices(I, B)
     isEpsilonFactorized(A,eps)
 SeeAlso
