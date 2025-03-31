@@ -10,6 +10,7 @@
 ### gaugeMatrix
 
 - Do we really need an implementation *gaugeMatrix(List,List)* which takes the first list and generates its ideal?
+  - The implementation has changes; we were always assuming that the first input was a GB.
 
 ### holonomicRank
 
