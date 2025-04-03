@@ -61,7 +61,7 @@ baseFractionField PolynomialRing := FractionField => D -> D.baseFractionField ??
     F#"OriginalWeylAlgebra" = D;
     F)
 
--- Infering the WeylAlgebra from the fraction field
+-- Infers the WeylAlgebra from the fraction field
 -- TODO: Make this more standard
 -- Warning: this may forget the weight order!
 inferWeylAlgebra = F -> (
