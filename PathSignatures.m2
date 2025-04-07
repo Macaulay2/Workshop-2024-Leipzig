@@ -163,7 +163,7 @@ polyPath List := (polyPathList) -> (
         );
 
     if (instance(product(polyPathList), RingElement)) then (
-        baseR := class product(polyPathList); --Consider taking this as input
+        baseR := baseRing (class product(polyPathList)); --Consider taking this as input
         P := new Path from{
             type => "PPolynomial",
             bR => baseR,
@@ -254,7 +254,7 @@ net Path := (X) ->
 --Constructs the linear polynomial path t*v for a vector v
 linPath = method();
 linPath List := Path => (v) ->(
-    baseR := class product(v); 
+    baseR := class baseRing product(v); 
     new Path from{
         type => "PLinear", -- PiecewiseLinear
         bR => baseR,
@@ -490,8 +490,8 @@ polySigGen (List, List, Ring) := RingElement => (l,w, baseR) ->(
         res = eval1-eval0;
         );
     res = sub(polyIntegral(res, R_(k-1)),R);
-    use(baseR);
-    res = substitute(res, {R_(k-1) => 1}) - substitute(res, {R_(k-1) =>0});
+    --use(baseR);
+    res = substitute(res, {R_(k-1) => 1_baseR}) - substitute(res, {R_(k-1) =>0_baseR});
     return (if class res === baseR then res else leadCoefficient res)
 );
 
