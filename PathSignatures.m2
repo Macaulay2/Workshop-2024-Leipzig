@@ -218,6 +218,10 @@ Path ** Path := Path => (X,Y) -> (
     return P;
 )
 
+-- TODO: implement path reversal
+Path ^ ZZ := (X,n) -> (
+    fold(n:X, (X,Y) -> X**Y)
+)
 -- TEST ///
 -- pR = QQ[t];
 -- X = polyPath({t,t^2})
