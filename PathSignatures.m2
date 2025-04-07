@@ -3,6 +3,7 @@ newPackage("PathSignatures",
          Authors => {{Name => "Felix Lotter"}, {Name => "Oriol Reig"}, {Name => "Angelo El Saliby"}},
          Headline => "A package for working with signatures of algebraic paths",
          AuxiliaryFiles => true,
+         PackageExports => {"NCAlgebra", "Permutations"}
 );
 export {
     --types
@@ -22,7 +23,6 @@ export {
     "halfshuffle",
     "wordFormat",
     -- symbols
-    "GroundField",
     "BaseRing",
     "adjointWord",
     "tensorArray",
@@ -30,16 +30,18 @@ export {
     "pieces",
     "dimension",
     "numberOfPieces",
-
+    "bR"
 };
+
+exportFrom("NCAlgebra","NCRingElement")
 
 protect type
 protect pieces
 protect dimension
 protect numberOfPieces
+protect bR
 
-needsPackage "NCAlgebra";
-needsPackage "Permutations";
+
 
 Path = new Type of MutableHashTable
 
@@ -58,11 +60,11 @@ sig (Path, List) := QQ => opts -> (X,w) -> ( --This doesn't need to be exposed
     )
 )
 
-sig(Path,NCRingElement) := QQ => opts -> (X,f) -> ( --This needs to be exposed
+sig(Path,NCRingElement) := QQ => opts -> (X,f) -> (
     return(linExt(w->sig(X,w,BaseRing => opts.BaseRing),f));
 )
 
-sig(Path,ZZ,NCRing) := QQ => opts -> (X, h, R) -> ( --this need to be exposed?
+sig(Path,ZZ,NCRing) := QQ => opts -> (X, h, R) -> (
     nop := X.numberOfPieces;
     d := X.dimension;
     if(h == 0) then return 1_R;
@@ -76,9 +78,9 @@ sig(Path,ZZ,NCRing) := QQ => opts -> (X, h, R) -> ( --this need to be exposed?
     )
 )
 
-sig(Path,ZZ) := opts -> (X,h) ->  --This need to be exposed?
+sig(Path,ZZ) := opts -> (X,h) ->
 (
-    R := wordAlgebra(X.dimension);
+    R := wordAlgebra(X.dimension, BaseRing => opts.BaseRing);
     sig(X,h,R,BaseRing => opts.BaseRing)
 )
 
@@ -161,10 +163,11 @@ polyPath List := (polyPathList) -> (
         );
 
     if (instance(product(polyPathList), RingElement)) then (
-        bR := class product(polyPathList); --Consider taking this as input
+        baseR := class product(polyPathList); --Consider taking this as input
         P := new Path from{
             type => "PPolynomial",
-            pieces => {apply(polyPathList,i-> listForm (i*1_bR))},
+            bR => baseR,
+            pieces => {apply(polyPathList,i-> listForm (i*1_baseR))},
             dimension => length polyPathList,
             numberOfPieces => 1
         };
@@ -197,11 +200,16 @@ Path _ ZZ := (X, z) -> (
 
 -- Concatenation of paths
 
+sub(Path,Ring) := (X,R) -> (
+    -- TODO
+);
+
 Path ** Path := Path => (X,Y) -> (
     if(X.dimension != Y.dimension) then error("Can not concatenate paths of different ambient dimension.");
-
+    if((X.bR === Y.bR)==false) then error("Paths have coefficients over different base rings.");
     P := new Path from{
         type => X.type,
+        bR => X.bR,
         pieces => X.pieces | Y.pieces,
         dimension => X.dimension,
         numberOfPieces => X.numberOfPieces + Y.numberOfPieces
@@ -218,11 +226,12 @@ Path ** Path := Path => (X,Y) -> (
 -- X**Y
 -- ///
 
+
 net Path := (X) ->
 (
     myNet := net ("Path in " | X.dimension | "-dimensional space with " | X.numberOfPieces | (if(X.numberOfPieces == 1) then " polynomial segment:" else " polynomial segments:") );
     t:= getSymbol("t");
-    locR := ring((X.pieces)#0#0#0#1)[local t];
+    locR := X.bR [local t];
     pieces := apply(X.pieces,l->
         apply(l,
             p-> sum(p, 
@@ -310,7 +319,7 @@ linsig (List, List) := QQ => (u, w)-> (
 --w is a word, as in linsig
 -----------------------------------------
 pwlsigw = method()
-pwlsigw (List, List) := QQ => (M, w, bR)-> (
+pwlsigw (List, List) := QQ => (M, w, baseR)-> (
     h := length (w); 
     m := length(M);
 
@@ -401,13 +410,13 @@ toNCMon (List, NCRing) := (w,R) -> (
 -- The coefficients of these monomials in f are stored in vals, in such a way that the index of v_m in R agrees with the position of the coefficient of m in vals
 -- (TODO: add option for different variable name in wR.)
 --------------------------------
-wordRingAndValues = method(Options => {GroundField => QQ})
+wordRingAndValues = method(Options => {BaseRing => QQ})
 wordRingAndValues(NCRingElement) := (Ring,List) => opts -> f -> (
         htable := coefficientHTable(f);
         whtable := applyKeys(htable, ncMonToList);
         v := getSymbol("v");
         vs := new Array from apply(keys whtable, i-> v_(toSequence(i)));
-        wR := opts.GroundField vs;
+        wR := opts.BaseRing vs;
         vals := values whtable;
        return((wR,vals))
 )
@@ -456,14 +465,14 @@ polyIntegral (RingElement, RingElement) := RingElement => (f, xn) ->(
 -------------------------------------
 polySigGen = method()
 
-polySigGen (List, List, Ring) := RingElement => (l, w, bR) ->(
+polySigGen (List, List, Ring) := RingElement => (l,w, baseR) ->(
     if(w == {}) then return 1;
 
     k:= length w;
     x := getSymbol("x");
-    R := bR monoid([x_1..x_k]);
+    R := baseR monoid([x_1..x_k]);
     s := getSymbol("s");
-    S := bR monoid([s]);
+    S := baseR monoid([s]);
     X := apply(l, i-> sum(0..length(i)-1, j -> ((i#j)#1)_S * (S_0)^((i#j)#0#0)));
 
     res:= product for i from 1 to k list (
@@ -478,9 +487,9 @@ polySigGen (List, List, Ring) := RingElement => (l, w, bR) ->(
         res = eval1-eval0;
         );
     res = sub(polyIntegral(res, R_(k-1)),R);
-    use(bR);
+    use(baseR);
     res = substitute(res, {R_(k-1) => 1}) - substitute(res, {R_(k-1) =>0});
-    return (if class res === bR then res else leadCoefficient res)
+    return (if class res === baseR then res else leadCoefficient res)
 );
 
 ---------------------------------------------
@@ -584,16 +593,16 @@ CMonTensor(ZZ, NCPolynomialRing) := NCRingElement => (k,r) -> (
 --dimension and constructs the associated map of varieties
 -----------------------------------------------------------------------
 
-createMapFromCoreTensor = method(Options=>{GroundField => QQ});
+createMapFromCoreTensor = method(Options=>{BaseRing => QQ});
 createMapFromCoreTensor(NCRingElement, ZZ) := NCRingElement => opts -> (f,ambd) -> (
     a := getSymbol "a";
     lamb := getSymbol "lamb";
     ctd := #gens f.ring; -- if core tensor is element of (R^d)^{tensor k}, this is d
-    mR := (opts.GroundField)[a_(1,1)..a_(ctd,ambd)]; -- create coordinate ring of matrix space
+    mR := (opts.BaseRing)[a_(1,1)..a_(ctd,ambd)]; -- create coordinate ring of matrix space
     A := genericMatrix(mR,ambd,ctd); -- create generic matrix
     ncR2 := mR{(lamb)_1..(lamb)_ambd}; -- create tensor algebra over ambient vector space
     genTensor := matrixAction(A, f, ncR2); -- create generic tensor
-    (wR,rmap) := wordRingAndValues(genTensor,GroundField=>opts.GroundField); -- get target ring and components of ring map
+    (wR,rmap) := wordRingAndValues(genTensor,BaseRing=>opts.BaseRing); -- get target ring and components of ring map
     map(mR, wR, rmap) -- create the map from word ring to matrix ring via rmap
 )
 
