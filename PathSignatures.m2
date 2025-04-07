@@ -254,8 +254,10 @@ net Path := (X) ->
 --Constructs the linear polynomial path t*v for a vector v
 linPath = method();
 linPath List := Path => (v) ->(
+    baseR := class product(v); 
     new Path from{
         type => "PLinear", -- PiecewiseLinear
+        bR => baseR,
         pieces => {apply(v,i->{({1},i)})},
         dimension => #v,
         numberOfPieces => 1

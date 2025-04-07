@@ -23,7 +23,7 @@ R = wordAlgebra(2) -- create a free associative algebra over two letters Lt_1, L
 
 f= [1,2]_R -- [i_1,...,i_k]_R defines a word.
 
-letterFormat f -- write the polynomial in word notation
+wordFormat f -- write the polynomial in word notation
 
 -- words can be shuffled and half-shuffled
 
@@ -38,9 +38,9 @@ sig(Z**Z,[1,2]_R**[1,2]_R) == (sig(Z**Z,[1,2]_R))^2
 
 S = QQ[a_1..a_4]
 A = genericMatrix(S,2,2)
-X = pwlinPath(A) -- creates a piecewise linear path from a matrix with increments given by columns
-Lev2 = matrix table(2,2,(i,j) -> sig(X, [i+1,j+1]_R, BaseRing => S)) -- 2nd level signature tensor
-sig(X, signedVolume(R), BaseRing => S) -- the signed volume of X
+X = pwLinPath(A) -- creates a piecewise linear path from a matrix with increments given by columns
+Lev2 = matrix (sig(X, 2)@2) -- 2nd level signature tensor
+sig(X, signedVolume(R)) -- the signed volume of X
 
 -- Polynomial and piecewise linear paths turn out to generate interesting classes of paths through
 -- equivariance (i.e. the natural action of a matrix on the tensors), namely the classes of piecewise 
@@ -87,7 +87,7 @@ R = QQ[t];
 X = polyPath({t,t})
 Y = polyPath({t^2,t^3,0_R})
 w = l_1*l_2
-adw = adjointWord(w, T,L)
+adw = adjointWord(w,T,L)
 sig(Y, w)
 sig(X, adw)
 
@@ -99,6 +99,14 @@ adjointWord(l_3, T,L)
 
 adjointWord(l_3^2, T,L)
 
+
+R = QQ{symbol s_1..symbol s_5};
+f = 1/2*(s_1*s_2 - s_2*s_1);
+A = QQ[symbol x_1..symbol x_3]
+
+pR = A[t];
+X = polyPath({t,x_2*t^2})
+r = sig(X,2)
 
 
 S=QQ[x,y];
@@ -115,3 +123,11 @@ w = l_1*l_2
 adw = adjointWord(w, T,L)
 sig(Y, w)
 sig(X, adw)
+
+
+-- Tensor components
+
+R = QQ[t]
+X = polyPath({t,t^2})
+sig(X,2)@2 -- get signature matrix
+sig(X,3)@3 -- get third level signature as multi-dimensional array
