@@ -45,43 +45,43 @@ protect bR
 
 Path = new Type of MutableHashTable
 
-sig = method(Options=>{BaseRing => QQ})
+sig = method()
 
-sig (Path, List) := QQ => opts -> (X,w) -> ( --This doesn't need to be exposed
+sig (Path, List) := QQ => (X,w) -> ( --This doesn't need to be exposed
     nop := X.numberOfPieces;
     h := length(w);
     if(w == {}) then return 1;
     if(nop == 0) then return 0;
     if(nop == 1) then (
-        return(polySigGen(X.pieces#0,w,opts.BaseRing))
+        return(polySigGen(X.pieces#0,w,X.bR))
     );
     sum(h+1, i -> (
-        sig(X_(0..nop-2), w_{0..i-1}, BaseRing => opts.BaseRing)*sig(X_(nop-1),w_{i..h-1}, BaseRing => opts.BaseRing))
+        sig(X_(0..nop-2), w_{0..i-1})*sig(X_(nop-1),w_{i..h-1}))
     )
 )
 
-sig(Path,NCRingElement) := QQ => opts -> (X,f) -> (
-    return(linExt(w->sig(X,w,BaseRing => opts.BaseRing),f));
+sig(Path,NCRingElement) := QQ => (X,f) -> (
+    return(linExt(w->sig(X,w),f));
 )
 
-sig(Path,ZZ,NCRing) := QQ => opts -> (X, h, R) -> (
+sig(Path,ZZ,NCRing) := QQ => (X, h, R) -> (
     nop := X.numberOfPieces;
     d := X.dimension;
     if(h == 0) then return 1_R;
     if(nop == 0) then return 0;
     if(nop == 1) then (
         ws := toList(apply((h:1)..(h:d), toList));
-        return(sum(ws,w-> polySigGen(X.pieces#0,w,opts.BaseRing)*(new Array from w)_R));
+        return(sum(ws,w-> polySigGen(X.pieces#0,w,X.bR)*(new Array from w)_R));
     );
     sum(h+1, i -> (
-        sig(X_(0..nop-2), i, R, BaseRing => opts.BaseRing)*sig(X_(nop-1),h-i, R, BaseRing => opts.BaseRing))
+        sig(X_(0..nop-2), i, R)*sig(X_(nop-1),h-i, R))
     )
 )
 
-sig(Path,ZZ) := opts -> (X,h) ->
+sig(Path,ZZ) := (X,h) ->
 (
-    R := wordAlgebra(X.dimension, BaseRing => opts.BaseRing);
-    sig(X,h,R,BaseRing => opts.BaseRing)
+    R := wordAlgebra(X.dimension, BaseRing => X.bR);
+    sig(X,h,R)
 )
 
 TEST ///
@@ -183,6 +183,7 @@ Path _ List := (X, l) -> (
     if(l === {}) then return polyPath({});
     P := new Path from{
         type => X.type,
+        bR => X.bR,
         pieces => (X.pieces)_l,
         dimension => X.dimension,
         numberOfPieces => length(l)
