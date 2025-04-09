@@ -182,6 +182,22 @@ Node
     SeeAlso
         Path
 
+Node
+    Key
+        adjointWord
+    Headline
+        Image of a word thorugh the shuffle algebras homomorphism induced by a polynomial map 
+    Inputs 
+        g : NCRingElement --The word to compute the image of
+        T : NCPolynomialRing --The shuffle algebra of the image
+        L : List -- The compoenents of the polynomial map. Each entry should be a polynomial
+    Usage
+        adjointWord (g, T, L)
+    Description
+        Text
+            Based on 
+    References
+        Signatures of paths transformed by polynomial maps (see https://arxiv.org/abs/1812.05962 )
 ///
 
 
