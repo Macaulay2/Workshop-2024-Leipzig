@@ -965,7 +965,7 @@ adjointWordMon (NCRingElement, NCPolynomialRing, ZZ, List) := NCRingElement => (
 adjointWord = method()
 adjointWord (NCRingElement, NCPolynomialRing, List) := NCRingElement => (g, T, L) -> (
 
-    Raux:=ring L_0;
+    Raux:=ring product(L);
     d:=length(gens Raux);
 
     --Check that number of letters in the given NCRing is enough to compute the image of the word  
