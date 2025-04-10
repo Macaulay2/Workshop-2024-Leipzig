@@ -1,7 +1,9 @@
 needsPackage "GraphicalModels";
 
--- makes the corresponding markovRing from the GraphicalModels package
--- to a given probabilityRing from the DependencyEquilibria.m2 file
+------------------------------------------------------------------------
+-- toMarkovRing Ring
+-- input must be a probabilityRing
+------------------------------------------------------------------------
 
 toMarkovRing=method()
 toMarkovRing Ring := R -> (
@@ -17,7 +19,11 @@ toMarkovRing Ring := R -> (
 	)
     )
 
--- these two methods make RingMaps giving the isomorphisms between the two different types of Ring
+---------------------------------------------------------------------------------------------------
+-- mapToMarkovRing Ring
+-- mapToProbabilityRing Ring
+-- inputs to both methods must be rings created with probabilityRing
+---------------------------------------------------------------------------------------------------
 
 mapToMarkovRing=method()
 mapToMarkovRing Ring := R -> (
@@ -32,6 +38,17 @@ mapToProbabilityRing Ring := R -> (
     F := map(R, markovR, gens(R));
     F
     )
+
+------------------------------------------------------------------------
+-- ciIdeal (PR, Stmts, PlayerNames)
+-- ciIdeal (PR, Stmts)
+-- ciIdeal (PR, G, PlayerNames)
+-- ciIdeal (PR, G)
+-- gives conditional independence ideal associated to a graogh G
+-- or a set of conditional independence statements Stmts
+-- as an ideal of the given probabilityRing
+--------------------------------------------------------------------------------
+
 
 
 ciIdeal = method()
@@ -56,10 +73,12 @@ ciIdeal (Ring, Graph) := (PR, G) -> (
     ciIdeal (PR, Stmts)
     )
 
-----------------------------------
+-----------------------------------------------
+-- intersectWithCImodel (V, Stmts, PlayerNames)
 -- intersectWithCImodel (V, Stmts)
+-- intersectWithCImodel (V, G, PlayerNames)
 -- intersectWithCImodel (V, G)
---------------------------------
+-----------------------------------------------
 
 
 intersectWithCImodel = method(Options => {Verbose => false})
@@ -108,6 +127,13 @@ intersectWithCImodel (Ideal, Graph) := o -> (V, G) -> (
     PlayerNames := toList (1..#d);
     intersectWithCImodel (V, G, PlayerNames, Verbose=>v)
     )
+
+--------------------------------------
+-- spohnCI (PR, X, G)
+-- spohnCI (PR, X, G, PlayerNames)
+-- spohnCI (PR, X, Stmts)
+-- spohnCI (PR, X, Stmts, PlayerNames)
+--------------------------------------
 
 
 spohnCI = method(Options => {Verbose => false})
