@@ -146,10 +146,17 @@ Node
             The signature of $X$ on this word can be computed using @TO (sig, Path, NCRingElement)@.
         Example 
             sigma = sig(X, w)
+        Text
+            One can also comupute all the coefficients of the signature tensor {\em up to order k} for $k\in \mathbb{N}$ by using @TO (sig, Path, ZZ)@. 
 
 Node
     Key
         (sig, Path, List)
+Node 
+    Key 
+        (sig, Path, ZZ)
+    Headline 
+        Signature of a piecewise polynomial path up to a given order
 
 Node
     Key 
@@ -202,6 +209,7 @@ Node
     Key
         shuffle
         (symbol **, NCRingElement, NCRingElement)
+        (shuffle, NCRingElement, NCRingElement)
     Headline
         Shuffle product of two words
     Inputs
@@ -223,7 +231,7 @@ Node
             and 
             $$(w_1\bullet a) \char"29E2 (w_2\bullet b) = (w_1 \char"29E2 (w_2\bullet b))\bullet a + ((w_1\bullet a)\char"29E2 w_2)\bullet b$$
         Text
-            The easiest way to compute a shuffle product is through @TO (symbol **, NCRingElement, NCRingElement)@
+            The easiest way to compute a shuffle product is through @TO (symbol **, NCRingElement, NCRingElement)@ which is equivalent to @TO (shuffle, NCRingElement, NCRingElement)@:
         Example
             R = wordAlgebra(2); -- create a free associative algebra over two letters Lt_1, Lt_2
             f= [1,2]_R; -- [i_1,...,i_k]_R defines a word
