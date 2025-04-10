@@ -162,11 +162,11 @@ Node
     Key 
         (sig, Path, NCRingElement)
     Headline
-        Compute the specified component of the signature of a @TO Path@ 
+        Compute the specified component of the signature of a path 
 
     SeeAlso
         sig
-
+        (sig, Path, ZZ)
 
 Node 
     Key
