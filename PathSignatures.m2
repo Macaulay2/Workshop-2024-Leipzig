@@ -164,7 +164,7 @@ polyPath List := (polyPathList) -> (
         );
 
     if (instance(product(polyPathList), RingElement)) then (
-        baseR := baseRing (class product(polyPathList)); --Consider taking this as input
+        baseR := coefficientRing (class product(polyPathList)); --Consider taking this as input
         P := new Path from{
             type => "PPolynomial",
             bR => baseR,
@@ -259,7 +259,8 @@ net Path := (X) ->
 --Constructs the linear polynomial path t*v for a vector v
 linPath = method();
 linPath List := Path => (v) ->(
-    baseR := class baseRing product(v); 
+    baseR := class product(v); 
+    if(baseR === ZZ) then (baseR = QQ);
     new Path from{
         type => "PLinear", -- PiecewiseLinear
         bR => baseR,
@@ -458,11 +459,9 @@ polyIntegral (RingElement, RingElement) := RingElement => (f, xn) ->(
     R := ring f;
     indexn := index xn;
     termsf := terms f;
-    return sum(apply(termsf, i->(
-        i = i/((((exponents(i))#0)#(indexn)+1));
-        i = i* xn
-    )))
+    return sum(termsf, i->(1_R/(((((exponents(i))#0)#(indexn)+1))) * i * xn))
 );
+
 
 -------------------------------------
 --polySigGen computes the signature of a polynomial path for words
@@ -483,21 +482,21 @@ polySigGen (List, List, Ring) := RingElement => (l,w, baseR) ->(
     S := baseR monoid([s]);
     X := apply(l, i-> sum(0..length(i)-1, j -> ((i#j)#1)_S * (S_0)^((i#j)#0#0)));
 
-    res:= product for i from 1 to k list (
+    resd := product for i from 1 to k list (
         comp := X#(w#(i-1)-1);
-        if(comp == 0) then 0_R else sub(diff(S_0,comp), {S_0 => R_(i-1)})
+        if(comp == 0) then 0_R else sub(sub(diff(S_0,comp),S), {S_0 => R_(i-1)})
         );
     
     for i from 1 to k-1 do (
-        indefinite := sub(polyIntegral(res, R_(i-1)),R);
+        indefinite := sub(polyIntegral(resd, R_(i-1)),R);
         eval0 := substitute(indefinite, {R_(i-1) => 0_QQ});
         eval1:= substitute (indefinite, {R_(i-1) => R_(i)}); --(if i<n then t_{i+1} else 1_R)
-        res = eval1-eval0;
+        resd = eval1-eval0;
         );
-    res = sub(polyIntegral(res, R_(k-1)),R);
+    resd = sub(polyIntegral(resd, R_(k-1)),R);
     --use(baseR);
-    res = substitute(res, {R_(k-1) => 1_baseR}) - substitute(res, {R_(k-1) =>0_baseR});
-    return (if class res === baseR then res else leadCoefficient res)
+    resd = substitute(resd, {R_(k-1) => 1_baseR}) - substitute(resd, {R_(k-1) =>0_baseR});
+    return (if class resd === baseR then resd else leadCoefficient resd)
 );
 
 ---------------------------------------------
@@ -612,6 +611,18 @@ createMapFromCoreTensor(NCRingElement, ZZ) := NCRingElement => opts -> (f,ambd) 
     genTensor := matrixAction(A, f, ncR2); -- create generic tensor
     (wR,rmap) := wordRingAndValues(genTensor,BaseRing=>opts.BaseRing); -- get target ring and components of ring map
     map(mR, wR, rmap) -- create the map from word ring to matrix ring via rmap
+)
+
+tensorImplicitization = method(Options=>{BaseRing => QQ})
+tensorImplicitization(NCRingElement) := opts -> (f) -> (
+    t := terms f;
+    lc := t / leadCoefficient;
+    lm := t / leadMonomial;
+    b := getSymbol("b");
+    varis := apply(lm, i -> b_(wordString i));
+    bR := coefficientRing (class f);
+    R := opts.BaseRing new Array from varis;
+    return(map(bR,R,lc));
 )
 
 
