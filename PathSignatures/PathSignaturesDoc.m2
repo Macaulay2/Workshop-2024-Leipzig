@@ -195,7 +195,41 @@ Node
         adjointWord (g, T, L)
     Description
         Text
-            Based on 
+            TO BE COMPLETED
+    References
+        Signatures of paths transformed by polynomial maps (see https://arxiv.org/abs/1812.05962 )
+Node
+    Key
+        shuffle
+        (symbol **, NCRingElement, NCRingElement)
+    Headline
+        Shuffle product of two words
+    Inputs
+        w1: NCRingElement 
+        w2: NCRingElement
+        R: NCPolynomialRing --The non-commutative polynomial where the operation ought to be carried out
+    Outputs
+        v: NCRingElement --The shuffle product of w1 and w2
+    Usage
+        v = shuffle(w1, w2, R)ù
+    Description
+        Text
+            We start with the mathematical definition of this operation, based on the reference. 
+            Consider $T(\mathbb{R}^d)$, the free algebra on the symbols $1,\dots, d$. Denote 
+            by $\bullet$ its concatenation product and by $e$ the neutral element with respect to the concatenation (the empty word). The shuffle product of two words is defined 
+            recursively as follows. Let $w, w_1, w_2$ be three words and $a, b$ bet two letters, i.e.
+            $w, w_1, w_2\in T(\mathbb{R}^d)$ and $a,b\in \{1,\dots, d\}$. Then the shuffle product $\char"29E2$ is defined to be
+            $$ e \char"29E2 w := w =: w\char"29E2 e$$
+            and 
+            $$(w_1\bullet a) \char"29E2 (w_2\bullet b) = (w_1 \char"29E2 (w_2\bullet b))\bullet a + ((w_1\bullet a)\char"29E2 w_2)\bullet b$$
+        Text
+            The easiest way to compute a shuffle product is through @TO (symbol **, NCRingElement, NCRingElement)@
+        Example
+            R = wordAlgebra(2); -- create a free associative algebra over two letters Lt_1, Lt_2
+            f= [1,2]_R; -- [i_1,...,i_k]_R defines a word
+            wordFormat f -- write the polynomial in word notation
+            f = ([1,2]_R ** [1,2]_R); -- compute the shuffle product
+            f // wordFormat --display the result in word notation
     References
         Signatures of paths transformed by polynomial maps (see https://arxiv.org/abs/1812.05962 )
 ///
