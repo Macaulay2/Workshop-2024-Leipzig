@@ -17,6 +17,7 @@ export {
     "CAxisTensor",
     "CMonTensor",
     "createMapFromCoreTensor",
+    "tensorImplicitization",
     "wordAlgebra",
     "signedVolume",
     "shuffle",
@@ -621,7 +622,7 @@ tensorImplicitization(NCRingElement) := opts -> (f) -> (
     b := getSymbol("b");
     varis := apply(lm, i -> b_(wordString i));
     bR := coefficientRing (class f);
-    R := opts.BaseRing new Array from varis;
+    R := opts.BaseRing monoid(new Array from varis);
     return(map(bR,R,lc));
 )
 
@@ -865,6 +866,22 @@ tensorArray(NCRingElement,ZZ) := (f,h) -> (
 )
 
 NCRingElement @ ZZ := (f,h) -> tensorArray(f,h);
+
+ -- the inner product on tensor space
+inner = method();
+inner(List, NCRingElement) := (l,f) -> (
+    H := coefficientHTable f;
+    mon := (new Array from l)_(ring f);
+    return(if(H#?mon) then H#mon else 0);
+)
+
+-- the first argument is to be viewed as an element of the dual space
+inner(NCRingElement, NCRingElement) := (fv,f) -> (
+    return(linExt(w->inner(w,f),fv));
+)
+
+
+NCRingElement @ NCRingElement := (f,m) -> ;
 
 Array _ NCPolynomialRing := (a, R) -> (
     if(max(toList a)>length(gens R)) then (error(toString(net "Not enough letters in ring " | net R | ".")));
