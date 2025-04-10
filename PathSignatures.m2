@@ -633,90 +633,92 @@ wordAlgebra (ZZ) := opts -> (z) -> (
 --
 
 -- need to rewrite shuffleMon; causes bugs when working with different NCRings, see below
-shuffleMon = method();
-shuffleMon (NCRingElement, NCRingElement, NCPolynomialRing) := NCRingElement => (word1, word2, R) -> (
+-- shuffleMon = method();
+-- shuffleMon (NCRingElement, NCRingElement, NCPolynomialRing) := NCRingElement => (word1, word2, R) -> (
 
-    list1Aux:=(values ((keys word1.terms)#0))#1; --List of factors in the monomial
-    list2Aux:=(values ((keys word2.terms)#0))#1;
+--     list1Aux:=(values ((keys word1.terms)#0))#1; --List of factors in the monomial
+--     list2Aux:=(values ((keys word2.terms)#0))#1;
 
-    if (word1==0_R or word2==0_R ) then (return 0_R);
+--     if (word1==0_R or word2==0_R ) then (return 0_R);
 
-    if (word1==1_R) then (return word2);
+--     if (word1==1_R) then (return word2);
 
-    if (word2==1_R) then (return word1);
+--     if (word2==1_R) then (return word1);
 
-    if (length(list1Aux)==1) and (length(list2Aux)==1) then (return word2*word1 + word1*word2);
+--     if (length(list1Aux)==1) and (length(list2Aux)==1) then (return word2*word1 + word1*word2);
 
-    if (length(list1Aux)==1) and (length(list2Aux)>1) then (
-        ww2:= product(length(list2Aux)-1, i-> value (list2Aux)#i); -- CALLING value PUTS VARIABLE INTO THE WRONG RING
-        bb:= value (list2Aux)#-1; -- SAME PROBLEM HERE!
-        return word2*word1 + shuffleMon(word1, ww2, R)*bb
-    );
+--     if (length(list1Aux)==1) and (length(list2Aux)>1) then (
+--         ww2:= product(length(list2Aux)-1, i-> value (list2Aux)#i); -- CALLING value PUTS VARIABLE INTO THE WRONG RING
+--         bb:= value (list2Aux)#-1; -- SAME PROBLEM HERE!
+--         return word2*word1 + shuffleMon(word1, ww2, R)*bb
+--     );
 
-    if (length(list1Aux)>1) and (length(list2Aux)==1) then (
-        return  shuffleMon(word2, word1, R)
-    );
+--     if (length(list1Aux)>1) and (length(list2Aux)==1) then (
+--         return  shuffleMon(word2, word1, R)
+--     );
 
 
-    w1:= product(length(list1Aux)-1, i-> value (list1Aux)#i);
+--     w1:= product(length(list1Aux)-1, i-> value (list1Aux)#i);
 
-    w2:= product(length(list2Aux)-1, i-> value (list2Aux)#i);
+--     w2:= product(length(list2Aux)-1, i-> value (list2Aux)#i);
 
-    a:= value (list1Aux)#-1;
+--     a:= value (list1Aux)#-1;
 
-    b:= value (list2Aux)#-1;
+--     b:= value (list2Aux)#-1;
 
-    return (shuffleMon(w1, word2, R)* a) + (shuffleMon(word1, w2, R)* b)
-)
+--     return (shuffleMon(w1, word2, R)* a) + (shuffleMon(word1, w2, R)* b)
+-- )
 
---Auxiliary function that returns the shuffle product of NCpolynomials of the type (sum f_i x^i) shuffle x^j
---
+-- --Auxiliary function that returns the shuffle product of NCpolynomials of the type (sum f_i x^i) shuffle x^j
+-- --
 
-shuffleMonExtL = method()
-shuffleMonExtL (NCRingElement, NCRingElement, NCPolynomialRing) := (NCRingElement) => (g , word, R) -> (
+-- shuffleMonExtL = method()
+-- shuffleMonExtL (NCRingElement, NCRingElement, NCPolynomialRing) := (NCRingElement) => (g , word, R) -> (
 
-    coefTableAux:= coefficientHTable(g);       
-    return sum(#(values coefTableAux), i-> (values coefTableAux)_i* shuffleMon((keys coefTableAux)_i, word, R))
+--     coefTableAux:= coefficientHTable(g);       
+--     return sum(#(values coefTableAux), i-> (values coefTableAux)_i* shuffleMon((keys coefTableAux)_i, word, R))
 
+-- );
+
+
+
+-- --Returns the shuffle product of two NCpolynomials of the type (sum f_i x^i) shuffle (sum g_j x^j)
+-- --
+-- shuffle = method();
+-- shuffle (NCRingElement, NCRingElement) := NCRingElement => (f, g) -> (
+--     R1 := class f; R2 := class g;
+--     if(not R1 === R2) then error("Can not shuffle words from different algebras.");
+--     coefTableAux:= coefficientHTable(g);       
+--     return sum(#(values coefTableAux), i-> (values coefTableAux)_i* shuffleMonExtL(f, (keys coefTableAux)_i, R1))
+
+-- )
+
+
+-- updated shuffle method:
+shuffle = method();
+shuffle (List,List,NCRing) := (w1,w2,R) -> (
+    l1 := length(w1);
+    l2 := length(w2);
+    if(l1 == 0 and l2 == 0) then return 1_R;
+    if(l1 == 0) then return (new Array from w2)_R;
+    if(l2 == 0) then return (new Array from w1)_R;
+    w1l := w1_{0..l1-2};
+    w2l := w2_{0..l2-2};
+    i := w1#-1;
+    j := w2#-1;
+
+    return(shuffle(w1,w2l,R)*[j]_R + shuffle(w1l,w2,R)*[i]_R);
 );
 
+shuffle (NCRingElement, List) := (f,w2) -> linExt(i->shuffle(i,w2,ring f),f);
 
-
---Returns the shuffle product of two NCpolynomials of the type (sum f_i x^i) shuffle (sum g_j x^j)
---
-shuffle = method();
-shuffle (NCRingElement, NCRingElement) := NCRingElement => (f, g) -> (
-    R1 := class f; R2 := class g;
-    if(not R1 === R2) then error("Can not shuffle words from different algebras.");
-    coefTableAux:= coefficientHTable(g);       
-    return sum(#(values coefTableAux), i-> (values coefTableAux)_i* shuffleMonExtL(f, (keys coefTableAux)_i, R1))
-
+shuffle (NCRingElement, NCRingElement) := (f,g) -> (
+    if(ring f === ring g) then (
+        return(linExt(i->shuffle(f,i),g));)
+    else (
+        error "Can not apply shuffle to polynomials from different rings";
+    )
 )
-
-
-
------ old shuffle function, depracated
--- shuffle = method();
--- shuffle (List,List,NCRing) := (w1,w2,R) -> (
---     l1 := length(w1);
---     l2 := length(w2);
---     perms := select(permutations(toList(0..l1+l2-1)), i->sort(i_{0..l1-1}) == i_{0..l1-1} and sort(i_{l1..l1+l2-1}) == i_{l1..l1+l2-1});
---     idp := toList(0..l1+l2-1);
---     invperms := apply(transpose {perms, toList(length(perms):idp)}, i -> values hashTable(transpose i));
---     w := join(w1,w2);
---     words := apply(invperms, i-> w_i);
---     sum(words,i->toNCMon(i,R))
--- )
-
--- shuffle (NCRingElement, List) := (f,w2) -> linExt(i->shuffle(i,w2,ring f),f);
-
--- shuffle (NCRingElement, NCRingElement) := (f,g) -> (
---     if(ring f === ring g) then (
---         return(linExt(i->shuffle(f,i),g));)
---     else (
---         error "Can not apply shuffle to polynomials from different rings";
---     )
--- )
 
 NCRingElement ** NCRingElement := (f,g) -> (
     shuffle(f,g)
@@ -724,35 +726,34 @@ NCRingElement ** NCRingElement := (f,g) -> (
 
 -- define halfshuffle product. Define operator << as halfshuffle product in NCAlgebra
 
-halfshuffle = method();
-halfshuffle (NCRingElement, NCRingElement) := NCRingElement => (word1, word2) -> (
+-- halfshuffle = method();
+-- halfshuffle (NCRingElement, NCRingElement) := NCRingElement => (word1, word2) -> (
   
-    if (length((values ((keys word2.terms)#0))#1)==1) then (
-    return word1*word2
-    );
+--     if (length((values ((keys word2.terms)#0))#1)==1) then (
+--     return word1*word2
+--     );
 
 
-    w2:= product(length((values ((keys word2.terms)#0))#1)-1, i-> value ((values ((keys word2.terms)#0))#1)#i);
-    b:= value ((values ((keys word2.terms)#0))#1)#-1;
+--     w2:= product(length((values ((keys word2.terms)#0))#1)-1, i-> value ((values ((keys word2.terms)#0))#1)#i);
+--     b:= value ((values ((keys word2.terms)#0))#1)#-1;
 
-    return (halfshuffle(word1, w2) + halfshuffle(w2, word1))*b
+--     return (halfshuffle(word1, w2) + halfshuffle(w2, word1))*b
+-- )
+
+halfshuffle = method();
+halfshuffle(NCRingElement, List) := (f,w) -> (
+    wl := w_(toList(0..length(w)-2));
+    wr := w_(-1);
+    return( shuffle(f,wl) * (ring f)_(wr-1) );
 )
 
------- old halfshuffle methods, depracated ----
--- halfshuffle = method();
--- halfshuffle(NCRingElement, List) := (f,w) -> (
---     wl := w_(toList(0..length(w)-2));
---     wr := w_(-1);
---     return( shuffle(f,wl) * (ring f)_(wr-1) );
--- )
-
--- halfshuffle (NCRingElement, NCRingElement) := (f,g) -> (
---     if(ring f === ring g) then (
---         return(linExt(i->halfshuffle(f,i),g));)
---     else (
---         error "Can not apply halfshuffle to polynomials from different rings";
---     )
--- )
+halfshuffle (NCRingElement, NCRingElement) := (f,g) -> (
+    if(ring f === ring g) then (
+        return(linExt(i->halfshuffle(f,i),g));)
+    else (
+        error "Can not apply halfshuffle to polynomials from different rings";
+    )
+)
 
 NCRingElement << NCRingElement := (f,g) -> (
     halfshuffle(f,g)

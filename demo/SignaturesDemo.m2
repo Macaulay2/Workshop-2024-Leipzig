@@ -146,7 +146,7 @@ Y = polyPath(PP)
 vol = signedVolume(wA3); vol // wordFormat
 -- it transforms to a word in 2 letters
 adw = adjointWord(vol, wA2, p); adw // wordFormat
-sig(Y, w) -- the signed volume of the transformed path...
+sig(Y, vol) -- the signed volume of the transformed path...
 sig(X, adw) -- is given by evaluating at adw for the original path.
 
 -- Tensor components
