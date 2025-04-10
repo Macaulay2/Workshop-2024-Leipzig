@@ -22,6 +22,7 @@ export {
     "shuffle",
     "halfshuffle",
     "wordFormat",
+    "wordString",
     -- symbols
     "BaseRing",
     "adjointWord",
