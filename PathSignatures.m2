@@ -632,6 +632,7 @@ wordAlgebra (ZZ) := opts -> (z) -> (
 --There is no need for checks on whether the imputed elements are monomials since this is an auxiliary function that will be called in the function "shuffle" 
 --
 
+-- need to rewrite shuffleMon; causes bugs when working with different NCRings, see below
 shuffleMon = method();
 shuffleMon (NCRingElement, NCRingElement, NCPolynomialRing) := NCRingElement => (word1, word2, R) -> (
 
@@ -647,8 +648,8 @@ shuffleMon (NCRingElement, NCRingElement, NCPolynomialRing) := NCRingElement => 
     if (length(list1Aux)==1) and (length(list2Aux)==1) then (return word2*word1 + word1*word2);
 
     if (length(list1Aux)==1) and (length(list2Aux)>1) then (
-        ww2:= product(length(list2Aux)-1, i-> value (list2Aux)#i);
-        bb:= value (list2Aux)#-1;
+        ww2:= product(length(list2Aux)-1, i-> value (list2Aux)#i); -- CALLING value PUTS VARIABLE INTO THE WRONG RING
+        bb:= value (list2Aux)#-1; -- SAME PROBLEM HERE!
         return word2*word1 + shuffleMon(word1, ww2, R)*bb
     );
 
@@ -683,13 +684,16 @@ shuffleMonExtL (NCRingElement, NCRingElement, NCPolynomialRing) := (NCRingElemen
 
 --Returns the shuffle product of two NCpolynomials of the type (sum f_i x^i) shuffle (sum g_j x^j)
 --
-shuffle = method(); -- is faster than shuffle!
-shuffle (NCRingElement, NCRingElement, NCPolynomialRing) := NCRingElement => (f, g, R) -> (
-
+shuffle = method();
+shuffle (NCRingElement, NCRingElement) := NCRingElement => (f, g) -> (
+    R1 := class f; R2 := class g;
+    if(not R1 === R2) then error("Can not shuffle words from different algebras.");
     coefTableAux:= coefficientHTable(g);       
-    return sum(#(values coefTableAux), i-> (values coefTableAux)_i* shuffleMonExtL(f, (keys coefTableAux)_i, R))
+    return sum(#(values coefTableAux), i-> (values coefTableAux)_i* shuffleMonExtL(f, (keys coefTableAux)_i, R1))
 
 )
+
+
 
 ----- old shuffle function, depracated
 -- shuffle = method();
@@ -894,7 +898,7 @@ phiMapMon (NCRingElement, NCPolynomialRing):= NCRingElement => (f, S) -> (
     fw:= product(length(ListAux)-1, i-> value (ListAux)#i);
     b:= value (ListAux)#-1;
 
-    return shuffle(phiMapMon(fw, S), b, S)
+    return (phiMapMon(fw, S) ** b)
 )
 
 --Returns the image of a polynomial under the map \varphi: R[x_1..x_d] \to T(R^d), x_i\maptso i, x_{i_1},...,x_{i_l}\mapsto x_{i_1}\shuffle .... \shuffle x_{i_l} 
@@ -936,8 +940,9 @@ phiJacobian (List, NCPolynomialRing) := NCMatrix => (l, S) -> (
 adjointWordMon = method()
 adjointWordMon (NCRingElement, NCPolynomialRing, ZZ, List) := NCRingElement => (word, T, d, l) -> (
 
+    S := class word;
     
-    if word==0_T then (
+    if word==0_S then (
             return 0_T
         );
     
@@ -956,7 +961,7 @@ adjointWordMon (NCRingElement, NCPolynomialRing, ZZ, List) := NCRingElement => (
         ww := product(length(listAux)-1, i-> value (listAux)#i);
         i = varIndex(value (listAux)#-1);
 
-        return sum(d, j-> shuffle(adjointWordMon(ww, T, d, l), ((M.matrix)_i)_j, T)*listVars_(j))
+        return sum(d, j-> (adjointWordMon(ww, T, d, l) ** ((M.matrix)_i)_j )*listVars_(j))
     );
 )
 
@@ -975,7 +980,7 @@ adjointWord (NCRingElement, NCPolynomialRing, List) := NCRingElement => (g, T, L
     );
 
     if not all(apply(L, p->part(0,p)), q->q==0) then (
-        error("The image of 0 under the polynomail map is not 0")
+        error("The image of 0 under the polynomial map is not 0")
     );
 
     coefTableAux:= coefficientHTable(g);       

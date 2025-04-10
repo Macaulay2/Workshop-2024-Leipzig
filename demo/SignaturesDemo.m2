@@ -125,6 +125,30 @@ sig(Y, w)
 sig(X, adw)
 
 
+-- another demo
+
+-- define a transformation of affine spaces:
+S=QQ[x,y]; 
+p = {x^2,x*y,y^2} -- the degree 2 Veronese R^2 -> R^3
+
+-- create word algebras
+wA2 = wordAlgebra(2); -- functions on R^2 path space
+wA3 = wordAlgebra(3); -- functions on R^3 path space
+
+-- create a path in 2 dimensional space
+R = QQ[t]
+X = polyPath({t,t^2})
+-- create the transformed path in 3 dimensional space
+PP= apply(p, q -> sub(q, {x=>t, y=>t^2}))
+Y = polyPath(PP)
+
+-- consider the signed volume in R^3
+vol = signedVolume(wA3); vol // wordFormat
+-- it transforms to a word in 2 letters
+adw = adjointWord(vol, wA2, p); adw // wordFormat
+sig(Y, w) -- the signed volume of the transformed path...
+sig(X, adw) -- is given by evaluating at adw for the original path.
+
 -- Tensor components
 
 R = QQ[t]
