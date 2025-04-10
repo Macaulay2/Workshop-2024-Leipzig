@@ -79,6 +79,7 @@ sig(Path,ZZ,NCRing) := QQ => (X, h, R) -> (
     )
 )
 
+--Compute the 
 sig(Path,ZZ) := (X,h) ->
 (
     R := wordAlgebra(X.dimension, BaseRing => X.bR);
@@ -159,7 +160,8 @@ polyPath List := (polyPathList) -> (
             type => "PPolynomial",
             pieces => {polyPathList},
             dimension => length polyPathList,
-            numberOfPieces => 1
+            numberOfPieces => 1,
+            bR => polyPathList#0#(-1)
         };
         );
 
@@ -208,7 +210,10 @@ sub(Path,Ring) := (X,R) -> (
 
 Path ** Path := Path => (X,Y) -> (
     if(X.dimension != Y.dimension) then error("Can not concatenate paths of different ambient dimension.");
-    if((X.bR === Y.bR)==false) then error("Paths have coefficients over different base rings.");
+    R := if((X.bR === Y.bR)) then X.bR else if (isMember(Y.bR, (X.bR).baseRings)) then X.bR
+    else if (isMember(X.bR, (Y.bR).baseRings)) then Y.bR
+    else if (baseRing X.bR == baseRing Y.bR) then  (baseRing X.bR)(monoid union(set gens X.bR, set gens Y.bR))
+    else error("The base rings 'bR' of the two paths were different, namely they were X.bR=", X.bR, " and Y.bR", Y.bR, ". Moreover no trivial relation between them was found.");
     P := new Path from{
         type => X.type,
         bR => X.bR,
@@ -259,7 +264,8 @@ net Path := (X) ->
 --Constructs the linear polynomial path t*v for a vector v
 linPath = method();
 linPath List := Path => (v) ->(
-    baseR := class baseRing product(v); 
+    L:= (class product(v)).baseRings;
+    baseR := if L==={} then ZZ else L#0; 
     new Path from{
         type => "PLinear", -- PiecewiseLinear
         bR => baseR,
