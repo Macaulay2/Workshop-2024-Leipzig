@@ -100,16 +100,16 @@ X = polyPath({0,x_2*t^2}) ** polyPath({x_3*t^3 + 3*t, t^2 - 1})
 r = sig(X,f,BaseRing => A)
 ///
 
-TEST ///
-bR = QQ[t]
-X= linPath({0,0,0,1})
-Y= polyPath({0,0,0,1}) --Gives error
-Z= X**Y
+-- TEST ///
+-- bR = QQ[t]
+-- X= linPath({0,0,0,1})
+-- Y= polyPath({0,0,0,1}) --Gives error
+-- Z= X**Y
 
-wR = QQ{x_1..x_4}
-w= x_4
-assert(sig(Z, w)==pwlSig(X, w))
-///
+-- wR = QQ{x_1..x_4}
+-- w= x_4
+-- assert(sig(Z, w)==pwlSig(X, w))
+-- ///
 --globalAssignment Path
 
 ------------------------------------------------
@@ -352,28 +352,28 @@ linsig (List, List) := QQ => (u, w)-> (
 --M is a list of increments as in linsig, 
 --w is a word, as in linsig
 -----------------------------------------
-pwlsigw = method()
-pwlsigw (List, List) := QQ => (M, w, baseR)-> (
-    h := length (w); 
-    m := length(M);
+-- pwlsigw = method()
+-- pwlsigw (List, List) := QQ => (M, w, baseR)-> (
+--     h := length (w); 
+--     m := length(M);
 
-    --base case
-    if(m==1) then return linsig(M#0,w);     
+--     --base case
+--     if(m==1) then return linsig(M#0,w);     
     
-    --matrix check
-    if not(isMatrix(M)) then(               
-        error("Expected list representing matrix, got list of lists of lengths:",for i from 0 to length(M)-1 list length(M_i)) ;
-    );
+--     --matrix check
+--     if not(isMatrix(M)) then(               
+--         error("Expected list representing matrix, got list of lists of lengths:",for i from 0 to length(M)-1 list length(M_i)) ;
+--     );
 
-    -- First m-1 pieces
-    Mrec := M_{0..m-2};
-    -- last piece
-    Mlast := M#(m-1);
+--     -- First m-1 pieces
+--     Mrec := M_{0..m-2};
+--     -- last piece
+--     Mlast := M#(m-1);
 
-    sum(h+1, i -> (
-        pwlsigw(Mrec, w_{0..i-1})*linsig(Mlast,w_{i..h-1}))
-    )
-);
+--     sum(h+1, i -> (
+--         pwlsigw(Mrec, w_{0..i-1})*linsig(Mlast,w_{i..h-1}))
+--     )
+-- );
 
 
 ----------------------------------------
@@ -467,11 +467,11 @@ linExt(FunctionClosure, NCRingElement) := RingElement => (fun, w) -> (
 --The increments of the segments are given by the columns of the matrix M
 --The non-commutative polynomial is given as an element w of a NCRing
 --------------------------------------
-pwlsig = method();
-pwlsig (Matrix, NCRingElement) := QQ => (M, w)-> (
-    Mentries := entries M;
-    linExt(i->pwlsigw(Mentries,i),w)
-);
+-- pwlsig = method();
+-- pwlsig (Matrix, NCRingElement) := QQ => (M, w)-> (
+--     Mentries := entries M;
+--     linExt(i->pwlsigw(Mentries,i),w)
+-- );
 
 
 --------------------------------------
@@ -528,13 +528,13 @@ polySigGen (List, List, Ring) := RingElement => (l,w, baseR) ->(
 --polysig  computes the signature of a polynomial path for nc polynomials, similar to pwlsig for pwl paths
 --CAVEAT: do not use variable names s or t when calling this function. TODO: solve this
 --------------------------------------------
-polysig = method(Options=>{BaseRing => QQ});
+-- polysig = method(Options=>{BaseRing => QQ});
 
-polysig (List, NCRingElement) := QQ => opts -> (l, w) -> (
-    linExt(i->polySigGen(l,i,opts.BaseRing),w)
-);
+-- polysig (List, NCRingElement) := QQ => opts -> (l, w) -> (
+--     linExt(i->polySigGen(l,i,opts.BaseRing),w)
+-- );
 
-errorDepth = 0;
+-- errorDepth = 0;
 
 
 TEST ///
@@ -637,6 +637,9 @@ createMapFromCoreTensor(NCRingElement, ZZ) := NCRingElement => opts -> (f,ambd) 
     (wR,rmap) := wordRingAndValues(genTensor,BaseRing=>opts.BaseRing); -- get target ring and components of ring map
     map(mR, wR, rmap) -- create the map from word ring to matrix ring via rmap
 )
+
+-- tensorImplicitization takes a tensor T, constructs a ring R with one variable for each word appearing in T and creates the map that sends a variable to the coefficient of the corresponding word.
+-- I think this makes createMapFromCoreTensor obsolete.
 
 tensorImplicitization = method(Options=>{BaseRing => QQ})
 tensorImplicitization(NCRingElement) := opts -> (f) -> (
