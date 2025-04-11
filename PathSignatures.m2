@@ -36,7 +36,7 @@ export {
     "bR"
 };
 
-exportFrom("NCAlgebra","NCRingElement")
+exportFrom("NCAlgebra",{"NCRingElement", "NCPolynomialRing"})
 
 protect type
 protect pieces
