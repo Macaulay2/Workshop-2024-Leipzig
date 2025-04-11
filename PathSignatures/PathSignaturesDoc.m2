@@ -240,6 +240,13 @@ Node
             f // wordFormat --display the result in word notation
     References
         Signatures of paths transformed by polynomial maps (see https://arxiv.org/abs/1812.05962 )
+Node
+    Key
+        NCRingElement
+    Description
+        Text
+            In this package tensors are represented as elements of free associative polynomial algebras, using
+            the package @TO2 {"NCAlgebra :: NCAlgebra", "NCAlgebra"}@.
 ///
 
 
