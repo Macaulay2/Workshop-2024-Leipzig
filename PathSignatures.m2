@@ -886,7 +886,7 @@ inner(NCRingElement, NCRingElement) := (fv,f) -> (
 )
 
 
-NCRingElement @ NCRingElement := (f,m) -> ;
+NCRingElement @ NCRingElement := (f,m) -> ();
 
 Array _ NCPolynomialRing := (a, R) -> (
     if(max(toList a)>length(gens R)) then (error(toString(net "Not enough letters in ring " | net R | ".")));
