@@ -10,8 +10,8 @@ integrals of some of the derivatives of X over a k-dimensional simplex.
 ///
 
 -- A path can be constructed in different ways
-
-X = linPath({2,3}) -- a linear path with increment {2,3}
+R=QQ[s]
+X = linPath({2*s,3*s}) -- a linear path with increment {2,3}
 Y = polyPath({{({1},1)},{({2},2)}}) -- polynomials can be given in list form...
 R = QQ[t]
 Y = polyPath({t,2*t^2}) --or as actual polynomials
@@ -28,7 +28,7 @@ wordFormat f -- write the polynomial in word notation
 -- words can be shuffled and half-shuffled
 
 f = ([1,2]_R ** [1,2]_R) -- shuffle product
-f // letterFormat
+f // wordFormat
 
 -- Finally, to compute the signature of a path, use sig.
 
