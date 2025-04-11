@@ -155,3 +155,18 @@ R = QQ[t]
 X = polyPath({t,t^2})
 sig(X,2)@2 -- get signature matrix
 sig(X,3)@3 -- get third level signature as multi-dimensional array
+
+-- Path base ring conversion
+
+R = QQ[t]
+A = QQ[a]
+B = A[t]
+C = QQ[u][t]
+use R;
+X = polyPath({t,t^2}) ** polyPath({t^2,t^3})
+use B;
+Y = polyPath({2*a*t,3*a^2*t})
+use C;
+Z = polyPath({u*t,u+t})
+Y ** X -- automatically performs substitution into larger ring
+Y ** Z -- puts both paths in the product ring

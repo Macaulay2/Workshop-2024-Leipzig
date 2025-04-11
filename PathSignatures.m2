@@ -207,15 +207,33 @@ Path _ ZZ := (X, z) -> (
 -- Concatenation of paths
 
 sub(Path,Ring) := (X,R) -> (
-    -- TODO
+    npieces := X.pieces;
+    npieces = apply(npieces, polvec -> apply(polvec, pol -> apply(pol, mon -> (mon#0, sub(mon#1,R)))));
+    P := new Path from{
+        type => X.type,
+        bR => R,
+        pieces => npieces,
+        dimension => X.dimension,
+        numberOfPieces => X.numberOfPieces
+    };
+    return(P);
 );
 
 Path ** Path := Path => (X,Y) -> (
     if(X.dimension != Y.dimension) then error("Can not concatenate paths of different ambient dimension.");
-    R := if((X.bR === Y.bR)) then X.bR else if (isMember(Y.bR, (X.bR).baseRings)) then X.bR
-    else if (isMember(X.bR, (Y.bR).baseRings)) then Y.bR
-    else if (baseRing X.bR == baseRing Y.bR) then  (baseRing X.bR)(monoid union(set gens X.bR, set gens Y.bR))
-    else error("The base rings 'bR' of the two paths were different, namely they were X.bR=", X.bR, " and Y.bR", Y.bR, ". Moreover no trivial relation between them was found.");
+    R := if((X.bR === Y.bR)) then X.bR else (
+        if (isMember(Y.bR, (X.bR).baseRings)) then (
+            Y = sub(Y,X.bR); return(X ** Y);
+        ) else if (isMember(X.bR, (Y.bR).baseRings)) then (
+            X = sub(X, Y.bR); return(X ** Y);
+        ) else if (coefficientRing X.bR === coefficientRing Y.bR) then  (
+            nR := X.bR ** Y.bR;
+            return(sub(X,nR)**sub(Y,nR));
+         )
+        else error("The base rings 'bR' of the two paths were different, namely they were X.bR = ", toString X.bR, " and Y.bR = ", toString Y.bR, ". Moreover no trivial relation between them was found.");
+    );
+    -- -- 
+    
     P := new Path from{
         type => X.type,
         bR => X.bR,
