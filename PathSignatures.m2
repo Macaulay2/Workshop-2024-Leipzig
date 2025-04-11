@@ -1023,6 +1023,43 @@ adjointWord (NCRingElement, NCPolynomialRing, List) := NCRingElement => (g, T, L
 
 )
 
+-- alternative implementation of adjointWord via half-shuffle -- let's discuss
+
+phiMapMon2 = method();
+phiMapMon2(List, NCPolynomialRing) := (l, A) -> (
+    L := flatten apply(length(l), i -> toList((l#i : [i+1]_A)));
+    fold(L, (i,j) -> i**j)
+)
+
+phiMap2 = method();
+phiMap2(RingElement,NCPolynomialRing) := (p, A) -> (
+    sum(listForm p, i-> (i#1)_A * phiMapMon2(i#0,A))
+)
+
+adjWord2 = method();
+adjWord2 (List, NCPolynomialRing, List) := (w, A, P) -> (
+
+    w2 := {1_A} | w;
+    fold((i,j) -> i << (phiMap2(P#(j-1),A)), w2)
+)
+
+adjWord2 (NCRingElement, NCPolynomialRing, List) := (f, A, P) -> (
+    Raux:=ring product(P);
+    d:=length(gens Raux);
+
+    --Check that number of letters in the given NCRing is enough to compute the image of the word  
+    if d>length(gens A) then (
+        error("Number of generators of the NCRing lower than dimension of the polynomial ring")
+    );
+    if not (length(P) == length(gens ring f)) then error("The polynomial transformation does not map to the space underlying the input word.");
+
+    if not all(apply(P, p->part(0,p)), q->q==0) then (
+        error("The image of 0 under the polynomial map is not 0");
+    );
+    if(f == 0_(ring f)) then return 0_A;
+    return(linExt(w->adjWord2(w,A,P), f));
+)
+
 --------------------------------------------
 --Include documentation
 load "./PathSignatures/PathSignaturesDoc.m2"
