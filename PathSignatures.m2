@@ -17,7 +17,7 @@ export {
     "CAxisTensor",
     "CMonTensor",
     "createMapFromCoreTensor",
-    "tensorImplicitization",
+    "tensorParametrization",
     "wordAlgebra",
     "signedVolume",
     "shuffle",
@@ -29,11 +29,11 @@ export {
     "adjointWord",
     "tensorArray",
     "inner",
-    "type",
-    "pieces",
-    "dimension",
-    "numberOfPieces",
-    "bR"
+    -- "type",
+    -- "pieces",
+    -- "dimension",
+    -- "numberOfPieces",
+    -- "bR"
 };
 
 exportFrom("NCAlgebra",{"NCRingElement", "NCPolynomialRing"})
@@ -81,7 +81,7 @@ sig(Path,ZZ,NCRing) := QQ => (X, h, R) -> (
     )
 )
 
---Compute the 
+--Compute the signature in level h of a path X
 sig(Path,ZZ) := (X,h) ->
 (
     R := wordAlgebra(X.dimension, BaseRing => X.bR);
@@ -154,12 +154,11 @@ isListForm Thing := (L) ->(
 
 polyPath = method();
 polyPath List := (polyPathList) -> (
-    if(polyPathList === {}) then return new Path from {type => "PPolynomial", pieces => {}, dimension => -1, numberOfPieces => 0};
+    if(polyPathList === {}) then return new Path from {pieces => {}, dimension => -1, numberOfPieces => 0};
 
     if isListForm (polyPathList#0) then (
         apply(polyPathList, i-> if not(isListForm(i)) then error("The input was neither a list of polynomials nor a list of polynomials in listForm"));
         return new Path from{
-            type => "PPolynomial",
             pieces => {polyPathList},
             dimension => length polyPathList,
             numberOfPieces => 1,
@@ -168,9 +167,10 @@ polyPath List := (polyPathList) -> (
         );
 
     if (instance(product(polyPathList), RingElement)) then (
-        baseR := coefficientRing (class product(polyPathList)); --Consider taking this as input
+        tR := class product(polyPathList);
+        if(#gens(tR) != 1) then error("Expected a vector of polynomials in one variable.");
+        baseR := coefficientRing (tR); --Consider taking this as input
         P := new Path from{
-            type => "PPolynomial",
             bR => baseR,
             pieces => {apply(polyPathList,i-> listForm (i*1_baseR))},
             dimension => length polyPathList,
@@ -178,8 +178,6 @@ polyPath List := (polyPathList) -> (
         };
         return(P);
     );
-
-    
 )
 
 --Take parts of a path
@@ -187,7 +185,6 @@ polyPath List := (polyPathList) -> (
 Path _ List := (X, l) -> (
     if(l === {}) then return polyPath({});
     P := new Path from{
-        type => X.type,
         bR => X.bR,
         pieces => (X.pieces)_l,
         dimension => X.dimension,
@@ -210,7 +207,6 @@ sub(Path,Ring) := (X,R) -> (
     npieces := X.pieces;
     npieces = apply(npieces, polvec -> apply(polvec, pol -> apply(pol, mon -> (mon#0, sub(mon#1,R)))));
     P := new Path from{
-        type => X.type,
         bR => R,
         pieces => npieces,
         dimension => X.dimension,
@@ -235,7 +231,6 @@ Path ** Path := Path => (X,Y) -> (
     -- -- 
     
     P := new Path from{
-        type => X.type,
         bR => X.bR,
         pieces => X.pieces | Y.pieces,
         dimension => X.dimension,
@@ -287,7 +282,6 @@ linPath List := Path => (v) ->(
     baseR := class product(v); 
     if(baseR === ZZ) then (baseR = QQ);
     new Path from{
-        type => "PLinear", -- PiecewiseLinear
         bR => baseR,
         pieces => {apply(v,i->{({1},i)})},
         dimension => #v,
@@ -638,11 +632,11 @@ createMapFromCoreTensor(NCRingElement, ZZ) := NCRingElement => opts -> (f,ambd) 
     map(mR, wR, rmap) -- create the map from word ring to matrix ring via rmap
 )
 
--- tensorImplicitization takes a tensor T, constructs a ring R with one variable for each word appearing in T and creates the map that sends a variable to the coefficient of the corresponding word.
+-- tensorParametrization takes a tensor T, constructs a ring R with one variable for each word appearing in T and creates the map that sends a variable to the coefficient of the corresponding word.
 -- I think this makes createMapFromCoreTensor obsolete.
 
-tensorImplicitization = method(Options=>{BaseRing => QQ})
-tensorImplicitization(NCRingElement) := opts -> (f) -> (
+tensorParametrization = method(Options=>{BaseRing => QQ})
+tensorParametrization(NCRingElement) := opts -> (f) -> (
     t := terms f;
     lc := t / leadCoefficient;
     lm := t / leadMonomial;
@@ -1065,6 +1059,7 @@ adjWord2 (List, NCPolynomialRing, List) := (w, A, P) -> (
     fold((i,j) -> i << (phiMap2(P#(j-1),A)), w2)
 )
 
+-- f is the input nc polynomial, A is the output nc ring and P is the polynomial transformation, given as a list of polynomials
 adjWord2 (NCRingElement, NCPolynomialRing, List) := (f, A, P) -> (
     Raux:=ring product(P);
     d:=length(gens Raux);
