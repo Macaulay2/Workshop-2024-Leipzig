@@ -163,7 +163,7 @@ polyPath List := (polyPathList) -> (
             pieces => {polyPathList},
             dimension => length polyPathList,
             numberOfPieces => 1,
-            bR => polyPathList#0#(-1)
+            bR => class (product apply(polyPathList, i -> i#0#(-1)))
         };
         );
 
