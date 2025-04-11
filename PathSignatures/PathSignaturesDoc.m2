@@ -193,11 +193,11 @@ Node
     Key
         adjointWord
     Headline
-        Image of a word thorugh the shuffle algebras homomorphism induced by a polynomial map 
+        Image of a word through the shuffle algebras homomorphism induced by a polynomial map 
     Inputs 
         g : NCRingElement --The word to compute the image of
         T : NCPolynomialRing --The shuffle algebra of the image
-        L : List -- The compoenents of the polynomial map. Each entry should be a polynomial
+        L : List -- The components of the polynomial map. Each entry should be a polynomial
     Usage
         adjointWord (g, T, L)
     Description
