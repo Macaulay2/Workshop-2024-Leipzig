@@ -29,6 +29,10 @@ export {
     "adjointWord",
     "tensorArray",
     "inner",
+    "lyndonWords",
+    "lie",
+    "lieBasis",
+    "tensorExp"
     -- "type",
     -- "pieces",
     -- "dimension",
@@ -1075,6 +1079,87 @@ adjWord2 (NCRingElement, NCPolynomialRing, List) := (f, A, P) -> (
     );
     if(f == 0_(ring f)) then return 0_A;
     return(linExt(w->adjWord2(w,A,P), f));
+)
+
+-- given d and k, nextLyndon(w,d,k) creates the next Lyndon word of length at most k in d letters after w in lexicographical order
+nextLyndonWord = method();
+nextLyndonWord(List,ZZ,ZZ) := (l,d,k) -> (
+    nl := fold((ceiling(k/length(l))):l, (i,j)->i|j);
+    if(length(nl)>k) then (nl = nl_{0..k-1});
+    while(nl_(-1) == d and length(nl)>1) do (
+        nl = nl_{0..length(nl)-2};
+    );
+    if(nl != {d}) then nl = nl + toList(((length(nl)-1):0) | (1:1));
+    return(nl)
+);
+
+-- lyndonWords(d,k) returns a list of all Lyndon words of length at most k in d letters
+lyndonWords = method();
+lyndonWords (ZZ,ZZ) := (d,k) -> (
+    if(d <= 0) then error("d must be a positive integer in lyndonWords(d,k).");
+    if(k <= 0) then error("k must be a positive integer in lyndonWords(d,k).");
+    l:={{1}};
+    while(l_(-1) != {d}) do (
+        l = l | {nextLyndonWord(l_(-1),d,k)};
+    );
+    return(l);
+)
+
+-- lie(a,b) returns the lie bracket of a and b
+lie = (a,b) -> (a*b - b*a);
+
+-- isLyndon(l) checks if l is a Lyndon word
+isLyndon = method();
+isLyndon List := (l) -> (
+    out := true;
+    scan(1..length(l)-1, i->( out = (l < l_{i..(length(l)-1)})));
+    return(out)
+)
+
+-- lyndonFact(l) computes the standard decomposition of l
+lyndonDecomposition = method();
+lyndonDecomposition List := (l) -> (
+    i := length(l)-1;
+    ls := apply(0..length(l)-2,i-> {l_{0..i},l_{i+1..length(l)-1}});
+    cand := select(ls,i-> isLyndon(i_0) and isLyndon(i_1));
+    return cand_(-1)
+)
+
+-- lieBasis(l, A) yields the basis element corresponding to the Lyndon word l in the free Lie algebra, realized in A
+lieBasis = method();
+lieBasis(List, NCPolynomialRing) := (l,R) -> (
+    if(length(l) == 0) then error("lieBasis expected a non-empty list as input.");
+    if(length(l) == 1) then return R_(l_(-1) - 1);
+    fact := apply(lyndonDecomposition(l),i-> lieBasis(i,R));
+    return(lie(fact_0,fact_1))
+)
+
+-- auxiliary functions for tensorExp
+expTermCoef = (t) -> (
+    m := max t;
+    counts := new MutableList from (m : 0);
+    for i from 0 to length(t)-1 do(
+       if(t#i > 0) then counts#(t#i - 1) = counts#(t#i - 1) + 1;
+    );
+    counts = toList(counts);
+    facs := apply(counts, i -> i!);
+    binom := product(facs);
+    return(1/binom);
+);
+
+expTerm = (tl,l) -> (
+    expTermCoef(l)*product(l,i->(tl_i))
+)
+
+-- Given a tensor p with constant term 0, tensorExp(p,k) returns the k-th level component of exp(p)
+
+tensorExp = method();
+tensorExp (NCRingElement, ZZ) := (p,k) -> (
+    if(length (select(terms p, j-> degree j == 0)) > 0) then error("tensorExp expects a nc polynomial with constant term 0.");
+    s := {1} | toList apply(1..k, i-> sum(select(terms p, j->((degree j) == i))));
+    comp := unique apply(compositions k, i->delete(0,i));
+    t := sum(apply(comp, i-> expTerm(s,i)));
+    return(t);
 )
 
 --------------------------------------------
