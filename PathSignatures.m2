@@ -1033,7 +1033,8 @@ phiMapMon2(List, NCPolynomialRing) := (l, A) -> (
 
 phiMap2 = method();
 phiMap2(RingElement,NCPolynomialRing) := (p, A) -> (
-    sum(listForm p, i-> (i#1)_A * phiMapMon2(i#0,A))
+    cA := coefficientRing A;
+    sum(listForm p, i-> sub(i#1,cA) * phiMapMon2(i#0,A))
 )
 
 adjWord2 = method();
