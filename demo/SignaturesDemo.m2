@@ -155,3 +155,16 @@ R = QQ[t]
 X = polyPath({t,t^2})
 sig(X,2)@2 -- get signature matrix
 sig(X,3)@3 -- get third level signature as multi-dimensional array
+
+-- demo of Chen's identity
+
+R = QQ[t]
+A2 = wordAlgebra(2);
+X = polyPath({t,t^2})
+Y = polyPath({2*t,3*t})
+Z = X ** Y; -- the concatenation of X and Y
+Sz1 = sig(Z,3)@3 -- the third level signature of Z
+Sx = sum(0..3,i->sig(X,i,A2)) -- the signature of X up to level 3 as a nc polynomial in A2
+Sy = sum(0..3,i->sig(Y,i,A2)) -- the signature of Y up to level 3 as a nc polynomial in A2
+Sz2 = (Sx*Sy)@3 -- the third level component of the tensor obtained by multiplying the nc polynomials
+Sz1 == Sz2 -- the tensors agree!
