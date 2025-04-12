@@ -170,3 +170,15 @@ use C;
 Z = polyPath({u*t,u+t})
 Y ** X -- automatically performs substitution into larger ring
 Y ** Z -- puts both paths in the product ring
+
+-- demo path reversal adjoint to antipode
+
+R = QQ[t];
+X = polyPath({t,t^2,t^3}) ** linPath({0,0,1}) -- a path with two pieces
+X^(-1) -- the time-reversed path
+A3 = wordAlgebra(3);
+sig(X,[1,2]_A3) -- the signature of X at [1,2] ...
+sig(X^(-1), antipode [1,2]_A3) -- ... agrees with the signature of X^(-1) at (antipode [1,2]) = [2,1]
+sig(X,3,A3) == antipode sig(X^(-1),3,A3) -- this yields true: the third level signature of the reversed path is obtained from the signature of the original path under the signature
+
+sig(X**(X^(-1)),3,A3) -- this yields 0: the signature of X ** X^(-1) is the signature of the zero path by Chen's relation and invariance under tree-like excursions.

@@ -245,7 +245,23 @@ Path ** Path := Path => (X,Y) -> (
 
 -- TODO: implement path reversal
 Path ^ ZZ := (X,n) -> (
-    fold(n:X, (X,Y) -> X**Y)
+    if(n > 0) then return(fold(n:X, (X,Y) -> X**Y));
+    if(n == -1) then (
+        rpath := X.pieces;
+        s := getSymbol("s");
+        S := X.bR monoid([s]);
+        rpath = apply(rpath, polyvec -> apply(polyvec, pol -> sum(pol, mon -> ((mon)#1)_S * (S_0)^((mon)#0#0)))); -- transform pieces back to polynomial vectors in variable s
+        rpath = apply(rpath,polyvec -> apply(polyvec, pol -> sub(pol,S_0 => (1 - S_0)))); -- replace s by 1-s
+        rpath = reverse(rpath); -- reverse order of pieces
+        rpath = apply(rpath, P-> polyPath(P));
+        return(fold(rpath,(i,j)->i**j));
+    );
+    if(n < 1) then (
+        return((X^(-1))^(abs(n)))
+    );
+    t:= getSymbol("t");
+    auxR := X.bR [t];
+    return(polyPath(toList(X.dimension:(0_(auxR)))))
 )
 -- TEST ///
 -- pR = QQ[t];
@@ -756,6 +772,11 @@ shuffle (NCRingElement, NCRingElement) := (f,g) -> (
         error "Can not apply shuffle to polynomials from different rings";
     )
 )
+
+antipode NCRingElement := (f) -> (
+    R := ring f;
+    linExt(w -> (-1)^(length(w)) * (new Array from reverse(w))_R, f)
+);
 
 NCRingElement ** NCRingElement := (f,g) -> (
     shuffle(f,g)
