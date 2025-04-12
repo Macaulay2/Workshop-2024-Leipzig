@@ -921,150 +921,150 @@ signedVolume NCPolynomialRing := (R) -> (
 );
 
 
---Function to transform a commutative polynomial into a non-commutative polynomial, with the same ordered variables of a given NCRing. 
---Roughly speaking it outputs the given polynomial with the variables replaced by non commutative variables on a given NCRing. It is an auxiliary funtion to be used later. 
---
-elementToNCElement = method();
-elementToNCElement (RingElement, NCPolynomialRing):= NCRingElement => (f, S) -> (
-    R:=ring f;
-    phi:=ncMap(S ,R , apply(length(gens S), i->(gens S)_i));
-    return phi(f)
-)
+-- --Function to transform a commutative polynomial into a non-commutative polynomial, with the same ordered variables of a given NCRing. 
+-- --Roughly speaking it outputs the given polynomial with the variables replaced by non commutative variables on a given NCRing. It is an auxiliary funtion to be used later. 
+-- --
+-- elementToNCElement = method();
+-- elementToNCElement (RingElement, NCPolynomialRing):= NCRingElement => (f, S) -> (
+--     R:=ring f;
+--     phi:=ncMap(S ,R , apply(length(gens S), i->(gens S)_i));
+--     return phi(f)
+-- )
 
 
---Returns the image of a monomial under the map \varphi: R[x_1..x_d] \to T(R^d), x_i\maptso i, x_{i_1},...,x_{i_l}\mapsto x_{i_1}\shuffle .... \shuffle x_{i_l}
---This function is then extended linearly in "phiMap"  
+-- --Returns the image of a monomial under the map \varphi: R[x_1..x_d] \to T(R^d), x_i\maptso i, x_{i_1},...,x_{i_l}\mapsto x_{i_1}\shuffle .... \shuffle x_{i_l}
+-- --This function is then extended linearly in "phiMap"  
 
-phiMapMon = method();
-phiMapMon (NCRingElement, NCPolynomialRing):= NCRingElement => (f, S) -> (
+-- phiMapMon = method();
+-- phiMapMon (NCRingElement, NCPolynomialRing):= NCRingElement => (f, S) -> (
   
-    if f==1_S then (
-        return 1_S
-    );
+--     if f==1_S then (
+--         return 1_S
+--     );
 
-    ListAux:=(values ((keys f.terms)#0))#1;
+--     ListAux:=(values ((keys f.terms)#0))#1;
 
-    if (length(ListAux)==1) then (
-        return f
-    );
-
-
-    fw:= product(length(ListAux)-1, i-> value (ListAux)#i);
-    b:= value (ListAux)#-1;
-
-    return (phiMapMon(fw, S) ** b)
-)
-
---Returns the image of a polynomial under the map \varphi: R[x_1..x_d] \to T(R^d), x_i\maptso i, x_{i_1},...,x_{i_l}\mapsto x_{i_1}\shuffle .... \shuffle x_{i_l} 
---Extends linearly the previous function.
-
-phiMap = method();
-phiMap (RingElement, NCPolynomialRing) := NCRingElement => (f, S) -> ( 
+--     if (length(ListAux)==1) then (
+--         return f
+--     );
 
 
-    if f==0 then (
-        return 0_S
-    );
+--     fw:= product(length(ListAux)-1, i-> value (ListAux)#i);
+--     b:= value (ListAux)#-1;
 
-    ncomf:= elementToNCElement(f, S);
-    coefTableAux:= coefficientHTable(ncomf);
-    return sum(#(values coefTableAux), i-> (values coefTableAux)_i* phiMapMon((keys coefTableAux)_i, S))
-)
+--     return (phiMapMon(fw, S) ** b)
+-- )
 
+-- --Returns the image of a polynomial under the map \varphi: R[x_1..x_d] \to T(R^d), x_i\maptso i, x_{i_1},...,x_{i_l}\mapsto x_{i_1}\shuffle .... \shuffle x_{i_l} 
+-- --Extends linearly the previous function.
 
---Given a list of polynomials, it returns the image of their Jacobian under the phi map. 
---There is no need to check whether the imputed list is made of polynomials since it is an auxiliary function to be called later.  
-
-phiJacobian = method();
-phiJacobian (List, NCPolynomialRing) := NCMatrix => (l, S) -> ( 
-
-    M:=matrix{l};
-    J:=jacobian M;
-
-    m := table(numgens target J, numgens source J, (i,j)->phiMap(J_(i,j), S));
-
-    return ncMatrix(apply(numgens target J, i->apply(numgens source J, j->m#i#j)))
-
-)
+-- phiMap = method();
+-- phiMap (RingElement, NCPolynomialRing) := NCRingElement => (f, S) -> ( 
 
 
+--     if f==0 then (
+--         return 0_S
+--     );
 
---Function M_p applied to words
+--     ncomf:= elementToNCElement(f, S);
+--     coefTableAux:= coefficientHTable(ncomf);
+--     return sum(#(values coefTableAux), i-> (values coefTableAux)_i* phiMapMon((keys coefTableAux)_i, S))
+-- )
 
-adjointWordMon = method()
-adjointWordMon (NCRingElement, NCPolynomialRing, ZZ, List) := NCRingElement => (word, T, d, l) -> (
 
-    S := class word;
+-- --Given a list of polynomials, it returns the image of their Jacobian under the phi map. 
+-- --There is no need to check whether the imputed list is made of polynomials since it is an auxiliary function to be called later.  
+
+-- phiJacobian = method();
+-- phiJacobian (List, NCPolynomialRing) := NCMatrix => (l, S) -> ( 
+
+--     M:=matrix{l};
+--     J:=jacobian M;
+
+--     m := table(numgens target J, numgens source J, (i,j)->phiMap(J_(i,j), S));
+
+--     return ncMatrix(apply(numgens target J, i->apply(numgens source J, j->m#i#j)))
+
+-- )
+
+
+
+-- --Function M_p applied to words
+
+-- adjointWordMon = method()
+-- adjointWordMon (NCRingElement, NCPolynomialRing, ZZ, List) := NCRingElement => (word, T, d, l) -> (
+
+--     S := class word;
     
-    if word==0_S then (
-            return 0_T
-        );
+--     if word==0_S then (
+--             return 0_T
+--         );
     
-    listAux := (values ((keys word.terms)#0))#1;
-    M := transpose phiJacobian(l, T);
-    listVars := gens T;
+--     listAux := (values ((keys word.terms)#0))#1;
+--     M := transpose phiJacobian(l, T);
+--     listVars := gens T;
     
-    i := 0;
+--     i := 0;
 
-    if length(listAux)==1 then (
-        i =varIndex(word);
-        return sum(d, j-> ((M.matrix)_i)_j*listVars_(j))
-    );
+--     if length(listAux)==1 then (
+--         i =varIndex(word);
+--         return sum(d, j-> ((M.matrix)_i)_j*listVars_(j))
+--     );
 
-    if length(listAux)>1 then (
-        ww := product(length(listAux)-1, i-> value (listAux)#i);
-        i = varIndex(value (listAux)#-1);
+--     if length(listAux)>1 then (
+--         ww := product(length(listAux)-1, i-> value (listAux)#i);
+--         i = varIndex(value (listAux)#-1);
 
-        return sum(d, j-> (adjointWordMon(ww, T, d, l) ** ((M.matrix)_i)_j )*listVars_(j))
-    );
-)
+--         return sum(d, j-> (adjointWordMon(ww, T, d, l) ** ((M.matrix)_i)_j )*listVars_(j))
+--     );
+-- )
 
---Function M_p applied to polynomials
+-- --Function M_p applied to polynomials
 
 
-adjointWord = method()
-adjointWord (NCRingElement, NCPolynomialRing, List) := NCRingElement => (g, T, L) -> (
+-- adjointWord = method()
+-- adjointWord (NCRingElement, NCPolynomialRing, List) := NCRingElement => (g, T, L) -> (
 
-    Raux:=ring product(L);
-    d:=length(gens Raux);
+--     Raux:=ring product(L);
+--     d:=length(gens Raux);
 
-    --Check that number of letters in the given NCRing is enough to compute the image of the word  
-    if d>length(gens T) then (
-        error("Number of generators of the NCRing lower than dimension of the polynomial ring")
-    );
+--     --Check that number of letters in the given NCRing is enough to compute the image of the word  
+--     if d>length(gens T) then (
+--         error("Number of generators of the NCRing lower than dimension of the polynomial ring")
+--     );
 
-    if not all(apply(L, p->part(0,p)), q->q==0) then (
-        error("The image of 0 under the polynomial map is not 0")
-    );
+--     if not all(apply(L, p->part(0,p)), q->q==0) then (
+--         error("The image of 0 under the polynomial map is not 0")
+--     );
 
-    coefTableAux:= coefficientHTable(g);       
-    return sum(#(values coefTableAux), i-> (values coefTableAux)_i* adjointWordMon((keys coefTableAux)_i, T,d,L))
+--     coefTableAux:= coefficientHTable(g);       
+--     return sum(#(values coefTableAux), i-> (values coefTableAux)_i* adjointWordMon((keys coefTableAux)_i, T,d,L))
 
-)
+-- )
 
 -- alternative implementation of adjointWord via half-shuffle -- let's discuss
 
-phiMapMon2 = method();
-phiMapMon2(List, NCPolynomialRing) := (l, A) -> (
+phiMapMon = method();
+phiMapMon(List, NCPolynomialRing) := (l, A) -> (
     L := flatten apply(length(l), i -> toList((l#i : [i+1]_A)));
     fold(L, (i,j) -> i**j)
 )
 
-phiMap2 = method();
-phiMap2(RingElement,NCPolynomialRing) := (p, A) -> (
+phiMap = method();
+phiMap(RingElement,NCPolynomialRing) := (p, A) -> (
     cA := coefficientRing A;
-    sum(listForm p, i-> sub(i#1,cA) * phiMapMon2(i#0,A))
+    sum(listForm p, i-> sub(i#1,cA) * phiMapMon(i#0,A))
 )
 
-adjWord2 = method();
-adjWord2 (List, NCPolynomialRing, List) := (w, A, P) -> (
+adjointWord = method();
+adjointWord (List, NCPolynomialRing, List) := (w, A, P) -> (
 
     w2 := {1_A} | w;
-    fold((i,j) -> i << (phiMap2(P#(j-1),A)), w2)
+    fold((i,j) -> i << (phiMap(P#(j-1),A)), w2)
 )
 
 -- f is the input nc polynomial, A is the output nc ring and P is the polynomial transformation, given as a list of polynomials
-adjWord2 (NCRingElement, NCPolynomialRing, List) := (f, A, P) -> (
+adjointWord (NCRingElement, NCPolynomialRing, List) := (f, A, P) -> (
     Raux:=ring product(P);
     d:=length(gens Raux);
 
@@ -1078,7 +1078,7 @@ adjWord2 (NCRingElement, NCPolynomialRing, List) := (f, A, P) -> (
         error("The image of 0 under the polynomial map is not 0");
     );
     if(f == 0_(ring f)) then return 0_A;
-    return(linExt(w->adjWord2(w,A,P), f));
+    return(linExt(w->adjointWord(w,A,P), f));
 )
 
 -- given d and k, nextLyndon(w,d,k) creates the next Lyndon word of length at most k in d letters after w in lexicographical order
