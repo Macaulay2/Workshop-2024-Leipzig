@@ -126,6 +126,10 @@ Node
 Node
     Key
         sig
+        (sig, Path, List)
+        (sig, Path, NCRingElement)
+        (sig, Path, ZZ)
+        (sig, Path, ZZ, NCRing)
     Headline
         Compute the signature of a picewise polynomial path.
     Description
@@ -138,35 +142,30 @@ Node
         Example
             d = 4;
             R = QQ[t];
-            X = polyPath(for i from 1 to d list t^i)
-            A = QQ{s_1..s_d }
-            w = product(for i from 1 to d list s_i)
+            X = polyPath(for i from 1 to d list t^i) -- the moment path in dimension d
+            A = wordAlgebra(d) -- create the free associative algebra over d letters
+            w = (new Array from (1..d))_A -- the word 1..d
         Text
             The word $w$ corresponds to the decomposable tensor $e_1^*\otimes\dots  \otimes e_d^*$, where $e_1^*, \dots, e_d^*$ is the dual of the canonical basis of $\mathbb{R}^d$. 
             The signature of $X$ on this word can be computed using @TO (sig, Path, NCRingElement)@.
         Example 
-            sigma = sig(X, w)
+            sig(X, w)
+            sig(X,[1]_A)
+            sig(X,[2,3]_A)
         Text
-            One can also comupute all the coefficients of the signature tensor {\em up to order k} for $k\in \mathbb{N}$ by using @TO (sig, Path, ZZ)@. 
-
-Node
-    Key
-        (sig, Path, List)
-Node 
-    Key 
-        (sig, Path, ZZ)
-    Headline 
-        Signature of a piecewise polynomial path up to a given order
-
-Node
-    Key 
-        (sig, Path, NCRingElement)
-    Headline
-        Compute the specified component of the signature of a path 
-
-    SeeAlso
-        sig
-        (sig, Path, ZZ)
+            One can also compute the {\em k-th level} signature tensor for $k\in \mathbb{N}$ by using @TO (sig, Path, ZZ)@. This returns the tensor as a non-commutative polynomial in symbols Lt_1, ..., Lt_d.
+        Example
+            T = sig(X, 2)
+            T // wordFormat
+        Text
+            Note however that neither the symbols nor the ring of this polynomial are made available to the user, in particular they can not be added or multiplied. To obtain the tensor as a NCPolynomial in a given NCRing, use @TO (sig, Path, ZZ,  NCRing)@ instead:
+        Example
+            T = 1 + sig(X, 1, A) + sig(X, 2, A);
+            S = T * T;
+            Ma = matrix (S@2) -- the second component of S as a matrix
+            Y = X ** X -- X concatenated with itself
+            Mb = matrix (sig(Y, 2, A)@2) -- the signature matrix of Y
+            (Ma == Mb)
 
 Node 
     Key
@@ -271,7 +270,7 @@ Node
         Text
             In this package tensors are represented as elements of free associative algebras, 
             using the package @TO2 {"NCAlgebra :: NCAlgebra", "NCAlgebra"}@. The easiest way to create 
-            such an algebra is thorugh @TO wordAlgebra@. For example, by using @TO (wordAlgebra, ZZ)@ we 
+            such an algebra is through @TO wordAlgebra@. For example, by using @TO (wordAlgebra, ZZ)@ we 
             can create the free algebra on $d$ letters:
         Example
             d = 5;
