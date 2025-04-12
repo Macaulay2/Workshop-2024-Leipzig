@@ -16,7 +16,6 @@ export {
     "matrixAction",
     "CAxisTensor",
     "CMonTensor",
-    "createMapFromCoreTensor",
     "tensorParametrization",
     "wordAlgebra",
     "signedVolume",
@@ -232,7 +231,6 @@ Path ** Path := Path => (X,Y) -> (
          )
         else error("The base rings 'bR' of the two paths were different, namely they were X.bR = ", toString X.bR, " and Y.bR = ", toString Y.bR, ". Moreover no trivial relation between them was found.");
     );
-    -- -- 
     
     P := new Path from{
         bR => X.bR,
@@ -243,7 +241,6 @@ Path ** Path := Path => (X,Y) -> (
     return P;
 )
 
--- TODO: implement path reversal
 Path ^ ZZ := (X,n) -> (
     if(n > 0) then return(fold(n:X, (X,Y) -> X**Y));
     if(n == -1) then (
@@ -351,12 +348,12 @@ assert(pp#"dimension" === 2, "pp should be 2-dimensional");
 --u is a vector correspongding to the increment of the path
 --w is a list representing a word
 -----------------------------------------
-linsig = method()
-linsig (List, List) := QQ => (u, w)-> (
-    h := length (w);
-    if h==0 then (return(1));
-    product(h, i-> u#(w#i-1))/(h!)
-)
+-- linsig = method()
+-- linsig (List, List) := QQ => (u, w)-> (
+--     h := length (w);
+--     if h==0 then (return(1));
+--     product(h, i-> u#(w#i-1))/(h!)
+-- )
 
 
 
@@ -401,7 +398,6 @@ isMatrix (List) := Boolean => M ->(
     );
     return true
 )
-
 
 ncMonToVar = method()
 ncMonToVar (NCRingElement) := List => f -> (
@@ -458,16 +454,16 @@ toNCMon (List, NCRing) := (w,R) -> (
 -- The coefficients of these monomials in f are stored in vals, in such a way that the index of v_m in R agrees with the position of the coefficient of m in vals
 -- (TODO: add option for different variable name in wR.)
 --------------------------------
-wordRingAndValues = method(Options => {BaseRing => QQ})
-wordRingAndValues(NCRingElement) := (Ring,List) => opts -> f -> (
-        htable := coefficientHTable(f);
-        whtable := applyKeys(htable, ncMonToList);
-        v := getSymbol("v");
-        vs := new Array from apply(keys whtable, i-> v_(toSequence(i)));
-        wR := opts.BaseRing vs;
-        vals := values whtable;
-       return((wR,vals))
-)
+-- wordRingAndValues = method(Options => {BaseRing => QQ})
+-- wordRingAndValues(NCRingElement) := (Ring,List) => opts -> f -> (
+--         htable := coefficientHTable(f);
+--         whtable := applyKeys(htable, ncMonToList);
+--         v := getSymbol("v");
+--         vs := new Array from apply(keys whtable, i-> v_(toSequence(i)));
+--         wR := opts.BaseRing vs;
+--         vals := values whtable;
+--        return((wR,vals))
+-- )
 
 --This is used to extend functions on words to the whole non commutative polynomial algebra
 linExt = method();
@@ -639,18 +635,18 @@ CMonTensor(ZZ, NCPolynomialRing) := NCRingElement => (k,r) -> (
 --dimension and constructs the associated map of varieties
 -----------------------------------------------------------------------
 
-createMapFromCoreTensor = method(Options=>{BaseRing => QQ});
-createMapFromCoreTensor(NCRingElement, ZZ) := NCRingElement => opts -> (f,ambd) -> (
-    a := getSymbol "a";
-    lamb := getSymbol "lamb";
-    ctd := #gens f.ring; -- if core tensor is element of (R^d)^{tensor k}, this is d
-    mR := (opts.BaseRing)[a_(1,1)..a_(ctd,ambd)]; -- create coordinate ring of matrix space
-    A := genericMatrix(mR,ambd,ctd); -- create generic matrix
-    ncR2 := mR{(lamb)_1..(lamb)_ambd}; -- create tensor algebra over ambient vector space
-    genTensor := matrixAction(A, f, ncR2); -- create generic tensor
-    (wR,rmap) := wordRingAndValues(genTensor,BaseRing=>opts.BaseRing); -- get target ring and components of ring map
-    map(mR, wR, rmap) -- create the map from word ring to matrix ring via rmap
-)
+-- createMapFromCoreTensor = method(Options=>{BaseRing => QQ});
+-- createMapFromCoreTensor(NCRingElement, ZZ) := NCRingElement => opts -> (f,ambd) -> (
+--     a := getSymbol "a";
+--     lamb := getSymbol "lamb";
+--     ctd := #gens f.ring; -- if core tensor is element of (R^d)^{tensor k}, this is d
+--     mR := (opts.BaseRing)[a_(1,1)..a_(ctd,ambd)]; -- create coordinate ring of matrix space
+--     A := genericMatrix(mR,ambd,ctd); -- create generic matrix
+--     ncR2 := mR{(lamb)_1..(lamb)_ambd}; -- create tensor algebra over ambient vector space
+--     genTensor := matrixAction(A, f, ncR2); -- create generic tensor
+--     (wR,rmap) := wordRingAndValues(genTensor,BaseRing=>opts.BaseRing); -- get target ring and components of ring map
+--     map(mR, wR, rmap) -- create the map from word ring to matrix ring via rmap
+-- )
 
 -- tensorParametrization takes a tensor T, constructs a ring R with one variable for each word appearing in T and creates the map that sends a variable to the coefficient of the corresponding word.
 -- I think this makes createMapFromCoreTensor obsolete.
