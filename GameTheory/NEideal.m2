@@ -4,6 +4,7 @@ needsPackage "GameTheory"
 --mixedProbabilityRing; 
 mixedProbabilityRing = method()
 mixedProbabilityRing List := L ->(
+    p := getSymbol "p";
     probabilityRing := QQ[flatten apply(#L, i -> apply(L#i, j->p_{i,j}))];
     probabilityRing
 )
@@ -12,26 +13,17 @@ mixedProbabilityRing Tensor := T ->(
     mixedProbabilityRing indexSet
 )
 
-mixedProbabilityRing2 = method()
-mixedProbabilityRing2 List := L ->(
-    probabilityRing := CC[flatten apply(#L, i -> apply(L#i, j->p_{i,j}))];
-    probabilityRing
-)
-mixedProbabilityRing2 Tensor := T ->(
-    indexSet := format T;
-    mixedProbabilityRing2 indexSet
-)
-
 differencesFromFirst = L -> (apply(toList(1..#L-1), i->L#i-L#0))
 
-monomialfromIndex = method()
-monomialfromIndex (List, ZZ, Ring):= (L, i, R) ->(
-    monomial := product toList apply(pairs L, (j,r)->(s = if j >= i then j + 1 else j; p_{s,r}_R));
+monomialFromIndex = method()
+monomialFromIndex (List, ZZ, Ring):= (L, i, R) ->(
+    p := getSymbol "p";
+    monomial := product toList apply(pairs L, (j,r)->(s := if j >= i then j + 1 else j; p_{s,r}_R));
     monomial
 )
 
-NEpolynomials = method()
-NEpolynomials (Tensor, ZZ, Ring) := (T, u, R)->(
+equilibriumPolynomials = method()
+equilibriumPolynomials (Tensor, ZZ, Ring) := (T, u, R)->(
     indexSet := format T;
     tensorIndices := T#"indexes";
     nStrategies := indexSet#u;
@@ -44,28 +36,28 @@ NEpolynomials (Tensor, ZZ, Ring) := (T, u, R)->(
         accumulatedHash#monomialIndex#thisStrategy = newCoefficient;
     );
     polynomials := apply(pairs accumulatedHash, (k,v)->(
-        monomial := monomialfromIndex(k, u, R);
+        monomial := monomialFromIndex(k, u, R);
         apply(differencesFromFirst v, i-> i_R * monomial)
     ));
     sum polynomials
 )
 
-NERing = method()
-NERing List := L -> (
+nashEquilibriumRing = method()
+nashEquilibriumRing List := L -> (
     -- L is a list consisting of n- tensors; requires them to be of the same dimension/shape
     indexSet := format first L;
-    polyring := mixedProbabilityRing indexSet;
-    polyring
+    polyRing := mixedProbabilityRing indexSet;
+    polyRing
 )
-NEideal = method()
-NEideal (Ring, List) := (R, L) -> (
+nashEquilibriumIdeal = method()
+nashEquilibriumIdeal (Ring, List) := (R, L) -> (
     indexSet := format first L;
     probabilityRing := R;
-    completeGeneratingSet := flatten(apply(pairs L, (i,T) -> NEpolynomials(T,i,probabilityRing)));
+    completeGeneratingSet := flatten(apply(pairs L, (i,T) -> equilibriumPolynomials(T,i,probabilityRing)));
+    p := getSymbol "p";
     linearRelations := apply(pairs indexSet, (i,j)-> sum(j, k->p_{i,k}_probabilityRing) - 1);
     fullGeneratingSet := join(completeGeneratingSet, linearRelations);
-    neIdeal := ideal fullGeneratingSet;
-    neIdeal
+    ideal fullGeneratingSet
 )
 
 needsPackage "Polyhedra"
@@ -80,12 +72,12 @@ directProductList List := L -> (
     P
 )
 
-DeltaList = method()
-DeltaList List := d -> (
+deltaList = method()
+deltaList List := d -> (
     n := #d;
     result := {};
     for i from 0 to (n - 1) do (
-        polyFactors = for j from 0 to (n - 1) list (
+        polyFactors := for j from 0 to (n - 1) list (
             if j == i then (
                 convexHull(matrix(apply(d#i - 1, k -> {0})))
             ) else (
@@ -100,16 +92,13 @@ DeltaList List := d -> (
     result
 )
 
---Input the list of the dimension of the game, returning the mixed volume.
-MaxNumberEquilibria = method()
-MaxNumberEquilibria List := d -> (
-    myTuple = DeltaList d;
-    mv = mixedVolume(myTuple);
+maxNumberEquilibria = method()
+maxNumberEquilibria List := d -> (
+    myTuple := deltaList d;
+    mv := mixedVolume(myTuple);
     print("The maximum number of totally mixed Nash equilibria for a " | toString(d) |
           " game is " | toString(mv));
     mv
 )
 
--- Example usage:
-d = {2,2,2}
-MaxNumberEquilibria d
+
