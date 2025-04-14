@@ -373,6 +373,25 @@ Node
     SeeAlso
         wordAlgebra
         wordFormat
+Node 
+    Key 
+        wordFormat
+        (wordFormat, NCRingElement)
+    Headline
+        Display a tensor in word notation
+    Description
+        Text
+            A more readable display of tensors can be obtained through the following convention. Let $Lt_1,\dots, Lt_d$ be the generators of $R$, then an array of 
+            integers $[i_1,\dots, i_k]$ such that $0<i_l<d+1, \forall 1\leq l\leq k$ yields the decomposable tensor
+            $$Lt_{i_1} Lt_{i_2}\cdot\dots\cdot Lt_{i_{k-1}} Lt_{i_k}$$
+            of $R$. This notation can then be extended linearly to any tensor.
+        Example
+            R = wordAlgebra(2);
+            f = ([1,2]_R ** [1,2]_R) -- shuffle product of Lt_1*Lt_1 with itself displayed as a non commutative polynomial
+            f // wordFormat -- f displayed in the above notation
+    SeeAlso
+        wordAlgebra
+        (symbol _, Array, NCPolynomialRing)
 
         
 
