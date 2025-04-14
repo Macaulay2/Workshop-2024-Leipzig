@@ -20,40 +20,59 @@ Node
         (symbol _, Path, List)
         (symbol _, Path, ZZ)
         (symbol _, Path, Sequence)
-        type
-        dimension
-        numberOfPieces
-        pieces
-
+        (getDimension, Path)
+        getDimension
+        (getNumberOfPieces, Path)
+        getNumberOfPieces
+        (getPieces, Path)
+        getPieces
+        (getBaseRing, Path)
+        getBaseRing
     Headline
         The type of a piecewise polynomial path. 
     Description
         Text
-            The type Path inherits from MutableHashTable. It has 4 attributes @TO dimension@, @TO numberOfPieces@, @TO pieces@ and @TO type@. "pieces" contains 
-            a list of lists, each one being the components of polynomial path in normalForm. "type" is a string, either "PPolynomial" or "PLinear", standing 
-            for "piecewise polynomial" and "piecewise linear" respectively. There are constructors for single piece paths, @TO linPath@ and @TO polyPath@ 
+            The type Path inherits from @TO2 {"Macaulay2Doc :: MutableHashTable", "MutableHashTable"} @. There are constructors for single piece paths, @TO linPath@ and @TO polyPath@ 
             and these can be concatenated with @TO (symbol **, Path, Path)@.
         Text
-            A path can be constructed in different ways. For example a linear path  starting at 0 can constructed by giving the incremenent:
+            A path can be constructed in different ways. For example a linear path starting at 0 can constructed by giving the incremenent:
         Example
             X = linPath({2,3})
         Text
-            While a polynomial path can be given either in listForm or as an actual polynomial
+            While a polynomial path can be given either in @TO2 {"Macaulay2Doc :: listForm", "listForm"}@ or as an actual polynomial
         Example
             R = QQ[t]
             Y1 = polyPath({t,2*t^2})
             Y2 = polyPath({{({1},1)},{({2},2)}})
         Text
-            Path can be concatenated with @TO (symbol **, Path, Path)@:
+            The coefficients of the polynomials can be any ring, but there must be only one top level variable
         Example
-            Z = Y1**Y2
+            R2 = QQ[a][t]; --QQ[a,t] will not work!
+            Y3 = polyPath({a*t,2*a*t^2}) 
         Text
-            To extract only one piece of the path, for example the first, one can use
+            Paths can be concatenated with @TO (symbol **, Path, Path)@:
+        Example
+            Z = Y1**Y3
+        Text
+            To extract only one piece of the path, for example the first, one can use @TO (symbol _, Path, ZZ)@
         Example
              Z_0
         Text
-            While to exctract a subset of pieces, for example the first and last, one can use
-        
+            While to exctract a subset of pieces, for example the first and last, one can use either @TO (symbol _, Path, List)@ or @TO (symbol _, Path, Sequence)@
+        Example
+            Z2 = Z**Z
+            Z2_{0,-1}
+        Text
+            Finally, there are getters @TO (getDimension, Path)@, @TO (getPieces, Path)@, @TO (getBaseRing, Path)@ and @TO (getNumberOfPieces, Path)@ to read the attributes of a path
+        Example
+            getDimension(Z) --The ambient dimension of the path
+            getPieces(Z) --The polynomial pieces of the path, in listForm
+            getBaseRing(Z) -- The coefficients ring of the polynomial components of the path
+            getNumberOfPieces(Z) -- The number of polynomial pieces of the path
+        Text
+            Remark that the polynomials are stored in their @TO2 {"Macaulay2Doc :: listForm", "listForm"}@ and that the concatenation @TO (symbol **, Path, Path)@ will automatically
+            select a bigger base ring when an obvious choice is available.
+
     SeeAlso
         polyPath
         linPath
