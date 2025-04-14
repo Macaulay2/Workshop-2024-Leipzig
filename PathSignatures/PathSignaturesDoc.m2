@@ -201,9 +201,40 @@ Node
         adjointWord (g, T, L)
     Description
         Text
-            TO BE COMPLETED
+            This computes the image of g through the map $M_p$ described in Theorem 1 and Theorem 7 of the paper: Laura Colmenarejo and Rosa Preiß, {\em Signatures of
+             paths transformed by polynomial maps}, Beitr Algebra Geom 61, 695–717 (2020). https://doi.org/10.1007/s13366-020-00493-9. It's importance is evidenced by
+            Theorem 2 of the same paper: 
+        Text
+            Let $X:[0,1]\rightarrow \mathbb{R}^d$ be a piecewise continuously differentiable path
+            with $X(0) = 0$ and let $p : \mathbb{R}^n \rightarrow \mathbb{R}^m$ be a polynomial map with $p(0) = 0$. Then, for
+            all $w ∈ T(\mathbb{R}^m)$ one has $$  \sigma(p(X)) = M_p^*(\sigma(X))$$
+            (where $\sigma(X)$ is the signature of $X$ and $M_p^*$ is the dual map of $M_p$).
+        Text 
+            As a use example, we verify this in a particular case. First we define a transformation of affine spaces and create the word algebra
+            where our tensors live
+        Example
+            S = QQ[x,y]; 
+            p = {x^2,x*y,y^2} -- A map of affine spaces, the degree 2 Veronese morphism R^2 -> R^3
+
+            wA2 = wordAlgebra(2); -- signatures of paths in dimension 2 
+            wA3 = wordAlgebra(3); -- signatures of paths in dimension 3
+        Text
+            Then we define a path in the domain space and explicitely compute it's image through the above polynomial map
+        Example
+            R = QQ[t];
+            X = polyPath({t,t^2}) -- A path in 2 dimensional space
+            PP = apply(p, q -> sub(q, {x=>t, y=>t^2})); 
+            Y = polyPath(PP) -- the transformed path in 3 dimensional space
+        Text
+            Finally we compute the signature of the transformed path along the @TO signedVolume@ tensor of $\mathbb{R}^3$ and verify the formula in Theorem 2 above
+        Example
+            vol = signedVolume(wA3); vol // wordFormat -- consider the signed volume in R^3 and display it in word format
+            adw = adjointWord(vol, wA2, p); adw // wordFormat -- we compute its image through the induced homomorphism on algebras
+            sig(Y, vol)  -- the signed volume of the transformed path
+            sig(X, adw)  -- is given by evaluating at adw for the original path.
+
     References
-        Signatures of paths transformed by polynomial maps (see https://arxiv.org/abs/1812.05962 )
+        @HREF {"https://doi.org/10.1007/s13366-020-00493-9","Signatures of paths transformed by polynomial maps (doi.org/10.1007/s13366-020-00493-9)"} @
 Node
     Key
         shuffle
@@ -238,7 +269,7 @@ Node
             f = ([1,2]_R ** [1,2]_R); -- compute the shuffle product
             f // wordFormat --display the result in word notation
     References
-        Signatures of paths transformed by polynomial maps (see https://arxiv.org/abs/1812.05962 )
+        @HREF {"https://doi.org/10.1007/s13366-020-00493-9","Signatures of paths transformed by polynomial maps (doi.org/10.1007/s13366-020-00493-9)"} @
     SeeAlso
         wordAlgebra
         wordFormat
@@ -251,6 +282,8 @@ Node
         BaseRing => Ring -- The coefficients ring, by default the rationals.
     Outputs
         A: NCRing --The associative free polynomial algebra on the letters LT_1, ..., Lt_z
+    Headline
+        Create a free associative algebra on a given number of generators
     Usage
         wordAlgebra(z)
     Description
@@ -266,6 +299,8 @@ Node
     Key
         wordAlgebra
         NCRingElement
+    Headline
+        Create a free algebra representing a tensor
     Description
         Text
             In this package tensors are represented as elements of free associative algebras, 
@@ -283,6 +318,10 @@ Node
             R = wordAlgebra(d); -- create a free associative algebra over two letters Lt_1, Lt_2
             f = [1,d]_R + [2,d]_R  -- [i_1,...,i_k]_R defines a word.
             f === Lt_1*Lt_d+Lt_2*Lt_d 
+        Text
+            To display a tensor in square braket notation above one can use @TO wordFormat@
+        Example
+            f // wordFormat
     SeeAlso
         (symbol _, Array, NCPolynomialRing)
 
@@ -294,6 +333,8 @@ Node
         R : NCPolynomialRing 
     Outputs
         w: NCRingElement -- The element of R corresponding to R_(i_1)*...R_(i_k)
+    Headline
+        Create a word from an array
     Usage
         w = a_R
     Description
@@ -313,7 +354,7 @@ Node
     SeeAlso
         wordAlgebra
         wordFormat
-        
+
         
 
         
