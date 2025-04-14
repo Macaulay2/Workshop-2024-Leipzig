@@ -210,6 +210,7 @@ Node
 Node
     Key
         adjointWord
+        (adjointWord, NCRingElement, NCPolynomialRing, List)
     Headline
         Image of a word through the shuffle algebras homomorphism induced by a polynomial map 
     Inputs 
