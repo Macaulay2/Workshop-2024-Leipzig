@@ -23,6 +23,10 @@ export {
     "halfshuffle",
     "wordFormat",
     "wordString",
+    "getDimension",
+    "getPieces",
+    "getBaseRing",
+    "getNumberOfPieces",
     -- symbols
     "BaseRing",
     "adjointWord",
@@ -203,6 +207,18 @@ Path _ Sequence := (X,l) -> (
 Path _ ZZ := (X, z) -> (
     return X_{z};
 )
+
+getDimension = method();
+getDimension Path := (X) -> X.dimension;
+
+getPieces = method();
+getPieces Path := (X) -> X.pieces;
+
+getBaseRing = method();
+getBaseRing Path := (X) -> X.bR;
+
+getNumberOfPieces = method();
+getNumberOfPieces Path := (X) -> X.numberOfPieces;
 
 -- Concatenation of paths
 
