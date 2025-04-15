@@ -58,7 +58,7 @@ export {
 
 
 --***************************************--
---  Methods for correlated equlilibria   --
+--   METHODS FOR CORRELATED EQUILIBRIA   --
 --***************************************--
 
 
@@ -274,6 +274,10 @@ correlatedEquilibria List := X -> (
 )
 
 
+--***************************************--
+--   METHODS FOR NASH EQUILIBRIA   --
+--***************************************--
+
 
 --mixedProbabilityRing; 
 mixedProbabilityRing = method()
@@ -376,7 +380,7 @@ maxNumberEquilibria List := d -> (
 
 
 --***************************************--
---  Methods for dependency equlilibria   --
+--   METHODS FOR DEPENDENCY EQUILIBRIA   --
 --***************************************--
 
 
@@ -436,10 +440,8 @@ konstanzMatrix (Ring, List) := Matrix => opts -> (PR, X) -> (
 
 
 --****************************************************--
---  Methods for conditional independence equlilibria  --
+--  METHODS FOR CONDITIONAL INDEPENDENCE EQUILIBRIA   --
 --****************************************************--
-
-
 
 ----------------------------------
 -- toMarkovRing Ring
@@ -601,7 +603,7 @@ spohnCI (Ring, List, List, List) := o -> (PR, X, Stmts, PlayerNames) -> (
 
 
 --******************************************--
--- DOCUMENTATION     	       	    	    -- 
+--             DOCUMENTATION                -- 
 --******************************************--
 
 beginDocumentation()
@@ -1446,9 +1448,9 @@ doc ///
     globalMarkov
 ///
 
---------------------------------------------
--- Documentation spohnCI
---------------------------------------------
+---------------------------
+-- Documentation spohnCI --
+---------------------------
 
 doc ///
   Key
@@ -1532,7 +1534,7 @@ doc ///
 
 
 --******************************************--
--- TESTS     	       	    	      	    --
+--              TESTS         	      	    --
 --******************************************--
 
 -----------------------------------
@@ -1868,6 +1870,9 @@ TEST///
      assert(V==I)
 ///
 
+--******************************************--
+--         DEVELOPMENT SECTION	      	    --
+--******************************************--
 
 -------------------------
 -- Development section --
