@@ -1632,30 +1632,35 @@ assert(class CE === Polyhedron)
 assert(#vertices CE > ------
 ///
 
----------------------------------
---- TEST nashEquilibriumIdeal ---
----------------------------------
+--------------------------------
+--- TEST nashEquilibriumRing ---
+--------------------------------
 
 TEST ///
-    -- Test nashEquilibriumRing with a list of tensors
     tensorList = apply(3, i -> randomTensor {2,2,2})
     R5 = nashEquilibriumRing tensorList
     assert(numgens R5 > 0)
+///
 
-    -- Test nashEquilibriumIdeal construction
+---------------------------------
+--- TEST nashEquilibriumIdeal ---
+---------------------------------
+TEST ///
     I = nashEquilibriumIdeal(R5, tensorList)
     assert(isIdeal I)
+///
 
-    -- Test maxNumberEquilibria (prints and returns the mixed volume)
+---------------------------------
+--- TEST maxNumberEquilibria ---
+---------------------------------
+TEST ///
     mv = maxNumberEquilibria {2,2,2}
     assert(mv == 2)
-
     -- Test maxNumberEquilibria using a tensor's format
     T2 = randomTensor {2,2,2}
     mv2 = maxNumberEquilibria format T2
-    assert(mv2 == 2)
+    assert(mv2 == 2)    
 ///
-
 
 ----------------------------
 --- TEST probabilityRing ---
@@ -1727,9 +1732,9 @@ TEST ///
 /// 
 
 
---------------------------------------
--- TEST toMarkovRing
---------------------------------------
+-----------------------
+-- TEST toMarkovRing --
+-----------------------
 
 TEST///
     R = probabilityRing({2,3,4}, CoefficientRing => ZZ/32003, ProbabilityVariableName => "x");
@@ -1742,9 +1747,9 @@ TEST///
 ///
 
 
---------------------------------------
--- TEST mapToMarkovRing
---------------------------------------
+--------------------------
+-- TEST mapToMarkovRing --
+--------------------------
 
 TEST///
     R = probabilityRing({2,3,4}, CoefficientRing => ZZ/32003, ProbabilityVariableName => "x");
@@ -1756,9 +1761,9 @@ TEST///
 ///
 
 
---------------------------------------
--- TEST mapToProbabilityRing
---------------------------------------
+-------------------------------
+-- TEST mapToProbabilityRing --
+-------------------------------
 
 TEST///
     R = probabilityRing({2,3,4}, CoefficientRing => ZZ/32003, ProbabilityVariableName => "x");
@@ -1769,9 +1774,9 @@ TEST///
     assert(isInjective F == true)
 ///
 
---------------------------------------
--- TEST ciIdeal
---------------------------------------
+------------------
+-- TEST ciIdeal --
+------------------
 
 TEST///
      FF = ZZ/32003
@@ -1792,9 +1797,9 @@ TEST///
      assert(I==ideal(-p_{0, 0, 1}*p_{1, 0, 0}+p_{0, 0, 0}*p_{1, 0, 1},-p_{0, 1, 1}*p_{1, 1, 0}+p_{0, 1, 0}*p_{1, 1, 1}))
 ///
 
---------------------------------------
--- TEST intersectWithCImodel
---------------------------------------
+-------------------------------
+-- TEST intersectWithCImodel --
+-------------------------------
 
 TEST///
      FF = ZZ/32003
@@ -1821,9 +1826,9 @@ TEST///
      assert(V==I)
 ///
 
---------------------------------------
--- TEST spohnCI
---------------------------------------
+------------------
+-- TEST spohnCI --
+------------------
 
 TEST///
      FF = ZZ/32003
