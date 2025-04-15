@@ -199,7 +199,7 @@ Node
         pwLinPath(pwlMatrix)
     Description
         Text
-            Creates a piecewise lienar @TO Path@ whose increments are the columns of the fiven matrix.
+            Creates a piecewise lienar @TO Path@ whose increments are the columns of the given matrix.
         Example
             M = id_(QQ^3)
             pwLinPath(M)
