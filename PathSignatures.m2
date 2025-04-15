@@ -939,16 +939,17 @@ tensorArray(NCRingElement,ZZ) := (f,h) -> (
 NCRingElement @ ZZ := (f,h) -> tensorArray(f,h);
 
  -- the inner product on tensor space
-inner = method();
-inner(List, NCRingElement) := (l,f) -> (
+innerHelper = method();
+innerHelper(List, NCRingElement) := (l,f) -> (
     H := coefficientHTable f;
     mon := (new Array from l)_(ring f);
     return(if(H#?mon) then H#mon else 0);
 )
 
+inner = method();
 -- the first argument is to be viewed as an element of the dual space
 inner(NCRingElement, NCRingElement) := (fv,f) -> (
-    return(linExt(w->inner(w,f),fv));
+    return(linExt(w->innerHelper(w,f),fv));
 )
 
 
