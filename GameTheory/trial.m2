@@ -47,6 +47,12 @@ export {
    "assemblePolynomial",
    "assemblePlayeriPolynomials",
    "correlatedEquilibria"
+   "toMarkovRing"
+   "mapToMarkovRing"
+   "mapToProbabilityRing"
+   "ciIdeal"
+   "intersectWithCImodel"
+   "spohnCI"
 }
 
 
