@@ -112,7 +112,7 @@ Node
         Example
             R = QQ[t];
             X = polyPath({t,t^2})
-            X.dimension 
+            X // getDimension 
     SeeAlso
         Path
         linPath
@@ -137,7 +137,7 @@ Node
         Example
             R = QQ[x_1..x_5];
             X = linPath({x_1, x_2, x_3, x_4, x_5^2})
-            X.dimension
+            X // getDimension
     SeeAlso
         Path
         polyPath
@@ -199,11 +199,10 @@ Node
         pwLinPath(pwlMatrix)
     Description
         Text
-            Creates a @TO Path@ of @TO type@ "PLinear".
+            Creates a piecewise lienar @TO Path@ whose increments are the columns of the fiven matrix.
         Example
             M = id_(QQ^3)
             pwLinPath(M)
-            oo.type
     SeeAlso
         Path
 
