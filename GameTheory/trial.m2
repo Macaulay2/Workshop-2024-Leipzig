@@ -1,6 +1,6 @@
 newPackage(
    "GameTheory",
-   Version => "0.1",
+   Version => "1.0",
    Date => "April, 2025",
    Authors => {
       {Name => "Erin Connelly",
@@ -1121,9 +1121,9 @@ doc ///
 
 
 
-----------------------------------------
--- Documentation toMarkovRing         --
-----------------------------------------
+--------------------------------
+-- Documentation toMarkovRing --
+--------------------------------
 
 doc ///
 Key
@@ -1162,9 +1162,9 @@ SeeAlso
 ///
 
 
---------------------------------------
--- Documentation mapToMarkovRing    --
---------------------------------------
+-----------------------------------
+-- Documentation mapToMarkovRing --
+-----------------------------------
 
 doc ///
 
@@ -1202,9 +1202,9 @@ SeeAlso
 
 ///
 
--------------------------------------------
--- Documentation mapToProbabilityRing    --
--------------------------------------------
+----------------------------------------
+-- Documentation mapToProbabilityRing --
+----------------------------------------
 
 doc ///
 Key
@@ -1241,9 +1241,9 @@ SeeAlso
 
 ///
 
---------------------------------
--- Documentation ciIdeal      --
---------------------------------
+---------------------------
+-- Documentation ciIdeal --
+---------------------------
 
 doc ///
 Key
@@ -1332,9 +1332,9 @@ Description
 ///
 
 
---------------------------------------------
--- Documentation intersectWithCImodel     --
---------------------------------------------
+-----------------------------------------
+-- Documentation intersectWithCImodel  --
+-----------------------------------------
 
 doc ///
   Key
@@ -1867,3 +1867,17 @@ TEST///
      I = spohnCI(PR, X, G);
      assert(V==I)
 ///
+
+
+-------------------------
+-- Development section --
+-------------------------
+
+restart
+debug needsPackage "GameTheory"
+check "GameTheory"
+
+uninstallPackage "GraphicalModels"
+restart
+installPackage "GameTheory"
+viewHelp GameTheory
