@@ -665,6 +665,416 @@ doc ///
 ///
 
 
+----------------------------------------
+-- Documentation toMarkovRing         --
+----------------------------------------
+
+doc ///
+Key
+ toMarkovRing
+ (toMarkovRing, Ring)
+Headline
+ ring of joint probability distributions created with the markovRing function from the GraphicalModels package
+Usage
+ toMarkovRing R
+Inputs
+ R:PolynomialRing
+ created using the probabilityRing method
+Outputs
+ :PolynomialRing
+ a polynomial ring isomorphic to the input ring created by the markovRing method from the GraphicalModels pacakge,
+ with variables $q_{(i_1+1, \dots , i_k+1)}$ corresponding to the variables $p_{\{i_1, \ldots, i_k\}}$
+ of the input ring
+Description
+Text
+ Given a ring created with the probabilityRing function, this function creates the canonically isomorphic ring
+ defined by the markovRing function from the GraphicalModels package.
+ The variable name of the output ring is set to be different from the variable name of the input ring:
+ the default variable name of the output ring is "p",
+ and if the variable name of the input ring is "p" then the variable name of the output ring becomes "q".
+
+Example
+ R = probabilityRing({2,3,4}, CoefficientRing => ZZ/32003, ProbabilityVariableName => "x")
+ markovR = toMarkovRing R
+ numgens markovR
+ R_0, R_11, R_23
+
+SeeAlso
+ probabilityRing
+ gaussianRing
+
+///
+
+
+--------------------------------------
+-- Documentation mapToMarkovRing    --
+--------------------------------------
+
+doc ///
+
+Key
+ mapToMarkovRing
+ (mapToMarkovRing, Ring)
+Headline
+ ring isomorphism from the given probabilityRing to the corresponding markovRing
+Usage
+ mapToMarkovRing R
+Inputs
+ R:Ring
+ must be a probabilityRing
+Outputs
+ :RingMap
+ the isomorphism identifying R with toMarkovRing(R).
+ The variable $p_{\{i_1, \ldots, i_k\}}$ is sent to $q_{(i_1+1, \dots , i_k+1)}$.
+ 
+Description
+ Text
+  This function creates the RingMap from a given probabilityRing to its canonically isomorphic
+  markovRing.
+ Example
+  R = probabilityRing {2,3,4}
+  markovR = toMarkovRing R
+  F = mapToMarkovRing R
+  target F
+  source F
+  isInjective F
+  F.matrix
+
+SeeAlso
+ toMarkovRing
+ mapToProbabilityRing
+
+///
+
+-------------------------------------------
+-- Documentation mapToProbabilityRing    --
+-------------------------------------------
+
+doc ///
+Key
+ mapToProbabilityRing
+ (mapToProbabilityRing, Ring)
+Headline
+ ring isomorphism to the given probabilityRing from the corresponding markovRing
+Usage
+ mapToProbabilityRing R
+Inputs
+ R:Ring
+   must be a probabilityRing
+Outputs
+ :RingMap
+ the isomorphism identifying R with toMarkovRing(R).
+ The variable $q_{(i_1+1, \dots , i_k+1)}$ is sent to $p_{\{i_1, \ldots, i_k\}}$.
+ 
+Description
+ Text
+  This function creates the RingMap to a given probabilityRing from its canonically isomorphic
+  markovRing.
+ Example
+  R = probabilityRing {2,3,4}
+  markovR = toMarkovRing R
+  F = mapToProbabilityRing R
+  target F
+  source F
+  isInjective F
+  F.matrix
+
+SeeAlso
+ toMarkovRing
+ mapToProbabilityRing
+
+///
+
+--------------------------------
+-- Documentation ciIdeal      --
+--------------------------------
+
+doc ///
+Key
+ ciIdeal
+ (ciIdeal, Ring, List)
+ (ciIdeal, Ring, Graph)
+ (ciIdeal, Ring, List, List)
+ (ciIdeal, Ring, Graph, List)
+Headline
+ the ideal of a list of conditional independence statements
+Usage
+ ciIdeal (R, Stmts)
+ ciIdeal (R, G)
+ ciIdeal (R, Stmts, PlayerNames)
+ ciIdeal (R, G, PlayerNames)
+Inputs
+ R:Ring
+   must be created using probabilityRing
+ Stmts:List
+   the list of conditional independence statements 
+ G:Graph
+   the graph modelling the conditional dependencies between players
+ PlayerNames:List
+   the ordered list of players - the names of the random variables in the conditional independence
+   statements or vertices of the graph. If PlayerNames is omitted, the players
+   (or the vertices of G) are assumed to be labelled 1..n.
+Outputs
+ :Ideal
+ the ideal in R of conditional independence relations
+Description
+ Text
+  {\tt ciIdeal} computes the ideal of a list of conditional independence statements.
+  The input can be the list of conditional independence statements itself,
+  or a graph modelling the conditional dependencies between players.
+
+  A single conditional independence statement is a list consisting of three disjoint
+  lists of indices for random variables, e.g. $\{ \{1,2\},\{4\}, \{3\} \}$
+  which represents the conditional independence statement ``$(X_1, X_2)$
+  is conditionally independent of $X_4$ given $X_3$''.
+  Given an undirected graph $G$, the conditional independence statements are produced via
+  the globalMarkov function from the GraphicalModels package. A global Markov statement
+  for $G$ is a list $\{A, B, C\}$ of three disjoint lists of vertices of $G$, where the
+  subset $C$ separates the subset $A$ from the subset $B$ in the graph $G$.  
+
+  The output is an ideal of the given ring PR, which must be created using the
+  probabilityRing function. This function computes the ideal using the
+  conditionalIndependenceIdeal function from the GraphicalModels package, then
+  maps it to an ideal of PR via the mapToProbabilityRing function.
+
+ Example
+     FF = ZZ/32003
+     d = {2,3,2};
+     PR = probabilityRing (d, CoefficientRing => FF);
+     G = graph ({}, Singletons => {1,2,3});
+     I = ciIdeal (PR, G)
+
+    Text
+      Here is an example where the vertices of the graph need to be relabeled.
+      
+    Example  
+     FF = ZZ/32003
+     d = {2,3,2};
+     PR = probabilityRing (d, CoefficientRing => FF);
+     G = graph {{John,Matthew},{Matthew,Sarah}};
+     I = ciIdeal (PR, G, {John,Matthew,Sarah})
+     
+    Text
+      Here is an example where the conditional independence relations are given with a List.
+
+    Example
+      FF = ZZ/32003
+      d = {2,3,2};
+      PR = probabilityRing (d, CoefficientRing => FF);
+      G = graph {{1,2},{2,3}};
+      L = {{{1},{3},{2}}}
+      I1 = ciIdeal (PR,G)
+      I2 = ciIdeal (PR,L)
+      I1 == I2
+ 
+  SeeAlso
+    conditionalIndependenceIdeal 
+    mapToProbabilityRing
+    toMarkovRing
+    ciIdeal
+    globalMarkov
+///
+
+
+--------------------------------------------
+-- Documentation intersectWithCImodel     --
+--------------------------------------------
+
+doc ///
+  Key
+    intersectWithCImodel
+    (intersectWithCImodel, Ideal, List)
+    (intersectWithCImodel, Ideal, List, List)
+    (intersectWithCImodel, Ideal, Graph)
+    (intersectWithCImodel, Ideal, Graph, List) 
+  Headline
+    The ideal of the intersection of a given variety with the conditional independence model
+  Usage
+    intersectWithCImodel(V, Stmts)
+    intersectWithCImodel(V, Stmts, PlayerNames)
+    intersectWithCImodel(V, G)
+    intersectWithCImodel(V, G, PlayerNames)
+  Inputs
+    V:Ideal 
+      An ideal of a ring created with probabilityRing 
+    Stmts:List
+      the list of conditional independence statements 
+    G:Graph
+      the graph modelling the conditional dependencies between players
+    PlayerNames:List
+      the ordered list of players - the names of the random variables in the conditional independence
+      statements or vertices of the graph. If PlayerNames is omitted, the players
+      (or the vertices of G) are assumed to be labelled 1..n.    
+  Outputs
+    :Ideal 
+       The ideal of the intersection of the given variety with the conditional independence model
+       determined by the conditional independence statements/graph. 
+  Description
+    Text
+      {\tt intersectWithCImodel} calculates the ideal of the intersection of the given variety V with
+      the conditional independence model determined by a set of conditional probability statements or an undirected graph.
+      More precisely, the output is the ideal of the closure of the variety given by removing the components in
+      the coordinate hyperplanes from the intersection of the variety V and the conditional independence
+      model.
+
+      The input for the conditional independence model can be a set of conditional probability statements or
+      an undirected graph.
+      A single conditional independence statement is a list consisting of three disjoint
+      lists of indices for random variables, e.g. $\{ \{1,2\},\{4\}, \{3\} \}$
+      which represents the conditional independence statement ``$(X_1, X_2)$
+      is conditionally independent of $X_4$ given $X_3$''. In the context of game theory, the variable
+      $X_i$ represents the strategy of player $i$.
+
+      Given an undirected graph $G$, the conditional independence statements are produced via
+      the globalMarkov function from the GraphicalModels package. A global Markov statement
+      for $G$ is a list $\{A, B, C\}$ of three disjoint lists of vertices of $G$, where the
+      subset $C$ separates the subset $A$ from the subset $B$ in the graph $G$.
+    Example
+     FF = ZZ/32003
+     d = {2,2,2};
+     X = randomGame(d, CoefficientRing => FF);
+     PR = probabilityRing(d, CoefficientRing => FF);
+     V = spohnIdeal(PR, X);
+     G1 = graph ({}, Singletons => {1,2,3});
+     G2 = graph ({{1,2}}, Singletons => {3});
+     I1 = intersectWithCImodel(V, G1)
+     I2 = intersectWithCImodel(V, G2)
+
+    Text
+      Here is an example where the vertices of the graph need to be relabeled.
+      
+    Example  
+     FF = ZZ/32003;
+     d = {2,2,2};
+     X = randomGame(d, CoefficientRing => FF);
+     PR = probabilityRing(d, CoefficientRing => FF);
+     V = spohnIdeal(PR, X);
+     G1 = graph {{John,Matthew},{Matthew,Sarah}};
+     G2 = graph {{a,b},{b,c},{c,a}};
+     I1 = intersectWithCImodel(V, G1, {John,Matthew,Sarah})
+     I2 = intersectWithCImodel(V, G2, {a,b,c}) 
+      
+    Text
+      Here is an example where the conditional independence relations are given with a List.
+
+    Example
+      FF = ZZ/32003;
+      d = {2,2,2};
+      X = randomGame(d, CoefficientRing => FF);
+      PR = probabilityRing(d, CoefficientRing => FF);
+      V = spohnIdeal(PR, X);
+      G = graph ({{1,2}},Singletons => {3});
+      L = {{{1,2},{3},{}}};
+      I1 = intersectWithCImodel(V, G)
+      I2 = intersectWithCImodel(V, L)
+      I1 == I2
+
+    Text
+      The Verbose=>true option prints the progress of each step in the saturation process -
+      a message is printed after saturating the ideal $V$, the conditional independence ideal $I$,
+      and the sum $V + I$ with respect to each hyperplane of the probablity simplex.
+    Example
+      FF = ZZ/32003;
+      d = {2,3,2};
+      X = randomGame(d, CoefficientRing => FF);
+      PR = probabilityRing(d, CoefficientRing => FF);
+      V = spohnIdeal(PR, X);
+      L = {{{1,2},{3},{}}};
+      I = intersectWithCImodel(V, L, Verbose=>true);
+ 
+  SeeAlso
+    conditionalIndependenceIdeal 
+    mapToProbabilityRing
+    toMarkovRing
+    ciIdeal
+    globalMarkov
+///
+
+--------------------------------------------
+-- Documentation spohnCI
+--------------------------------------------
+
+doc ///
+  Key
+    spohnCI
+    (spohnCI, Ring, List, Graph)
+    (spohnCI, Ring, List, Graph, List)
+    (spohnCI, Ring, List, List)
+    (spohnCI, Ring, List, List, List) 
+  Headline
+    The ideal of the Spohn conditional independence (CI) variety
+  Usage
+    spohnCI(PR, X, G)
+    spohnCI(PR, X, G, PlayerNames)
+    spohnCI(PR, X, Stmts)
+    spohnCI(PR, X, Stmts, PlayerNames)
+  Inputs
+    PR:Ring 
+      The probability ring (must be created with {\tt probabilityRing})
+    X:List 
+      The game tensor
+    G:Graph
+      The graph specifying the conditional independence conditions
+    Stmts:List
+      A list of lists {L1,L2,L3} corresponding to the relation "L1 and L2 are conditionally independent given L3".    
+    PlayerNames:List
+      the ordered list of players - the names of the random variables in the conditional independence
+      statements or vertices of the graph. If PlayerNames is omitted, the players
+      (or the vertices of G) are assumed to be labelled 1..n.
+  Outputs
+    :Ideal 
+       The ideal of the Spohn CI variety
+  Description
+    Text
+      {\tt spohnCI} computes the ideal of the Spohn conditional independence variety for a game $X$ and
+      conditional independence model determined by an undirected graph $G$ or set of conditional
+      independence statements $Stmts$.
+      
+    Example
+      FF = ZZ/32003
+      d = {2,2,2};
+      X = randomGame(d, CoefficientRing => FF);
+      PR = probabilityRing(d, CoefficientRing => FF);
+      G1 = graph ({}, Singletons => {1,2,3});
+      G2 = graph ({{1,2}}, Singletons => {3});
+      I1 = spohnCI(PR,X,G1)
+      I2 = spohnCI(PR,X,G2)
+      
+    Text
+      Here is an example where the vertices of the graph need to be relabeled.
+      
+    Example  
+      FF = ZZ/32003
+      d = {2,3,2};
+      X = randomGame(d, CoefficientRing => FF);
+      PR = probabilityRing(d, CoefficientRing => FF);
+      G1 = graph {{John,Matthew},{Matthew,Sarah}};
+      G2 = graph {{a,b},{b,c},{c,a}};
+      I1 = spohnCI(PR,X,G1, {John,Matthew,Sarah})
+      I2 = spohnCI(PR,X,G2, {a,b,c}) 
+      
+    Text
+      Here is an example where the conditional independence relations are given with a List.
+
+    Example
+      FF = ZZ/32003
+      d = {2,2,2};
+      X = randomGame(d, CoefficientRing => FF);
+      PR = probabilityRing(d, CoefficientRing => FF);
+      G = graph ({{1,2}},Singletons => {3});
+      L = {{{1,2},{3},{}}};
+      I1 = spohnCI(PR,X,G)
+      I2 = spohnCI(PR,X,L)
+      I1 == I2
+ 
+  SeeAlso
+    spohnIdeal
+    ciIdeal
+    intersectWithCImodel
+    conditionalIndependenceIdeal
+///
+
+
 --******************************************--
 -- TESTS     	       	    	      	    --
 --******************************************--
