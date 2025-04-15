@@ -760,8 +760,14 @@ wordAlgebra (ZZ) := opts -> (z) -> (
 
 
 -- updated shuffle method:
-shuffle = method();
-shuffle (List,List,NCRing) := (w1,w2,R) -> (
+
+---------------------------------------------
+--Intermediate operations for shuffle product 
+--of two words
+---------------------------------------------
+
+shuffleHelper= method();
+shuffleHelper(List,List,NCRing) := (w1,w2,R) -> (
     l1 := length(w1);
     l2 := length(w2);
     if(l1 == 0 and l2 == 0) then return 1_R;
@@ -772,17 +778,27 @@ shuffle (List,List,NCRing) := (w1,w2,R) -> (
     i := w1#-1;
     j := w2#-1;
 
-    return(shuffle(w1,w2l,R)*[j]_R + shuffle(w1l,w2,R)*[i]_R);
+    return(shuffleHelper(w1,w2l,R)*[j]_R + shuffleHelper(w1l,w2,R)*[i]_R);
 );
 
-shuffle (NCRingElement, List) := (f,w2) -> linExt(i->shuffle(i,w2,ring f),f);
+shuffleHelper(NCRingElement, List) := (f,w2) -> linExt(i->shuffleHelper(i,w2,ring f),f);
 
-shuffle (NCRingElement, NCRingElement) := (f,g) -> (
+shuffleHelper(NCRingElement, NCRingElement) := (f,g) -> (
     if(ring f === ring g) then (
-        return(linExt(i->shuffle(f,i),g));)
+        return(linExt(i->shuffleHelper(f,i),g));)
     else (
         error "Can not apply shuffle to polynomials from different rings";
     )
+)
+
+---------------------------------
+-- Exposed versions of shuffle
+---------------------------------
+shuffle = method();
+shuffle (NCRingElement, NCRingElement) := (a, b) -> shuffleHelper(a,b); 
+
+NCRingElement ** NCRingElement := (f,g) -> (
+    shuffle(f,g)
 )
 
 antipode NCRingElement := (f) -> (
@@ -790,9 +806,6 @@ antipode NCRingElement := (f) -> (
     linExt(w -> (-1)^(length(w)) * (new Array from reverse(w))_R, f)
 );
 
-NCRingElement ** NCRingElement := (f,g) -> (
-    shuffle(f,g)
-)
 
 -- define halfshuffle product. Define operator << as halfshuffle product in NCAlgebra
 
@@ -810,16 +823,16 @@ NCRingElement ** NCRingElement := (f,g) -> (
 --     return (halfshuffle(word1, w2) + halfshuffle(w2, word1))*b
 -- )
 
-halfshuffle = method();
-halfshuffle(NCRingElement, List) := (f,w) -> (
+halfshuffleHelper = method();
+halfshuffleHelper(NCRingElement, List) := (f,w) -> (
     wl := w_(toList(0..length(w)-2));
     wr := w_(-1);
-    return( shuffle(f,wl) * (ring f)_(wr-1) );
+    return( shuffleHelper(f,wl) * (ring f)_(wr-1) );
 )
-
+halfshuffle = method();
 halfshuffle (NCRingElement, NCRingElement) := (f,g) -> (
     if(ring f === ring g) then (
-        return(linExt(i->halfshuffle(f,i),g));)
+        return(linExt(i->halfshuffleHelper(f,i),g));)
     else (
         error "Can not apply halfshuffle to polynomials from different rings";
     )
@@ -1089,14 +1102,15 @@ phiMap(RingElement,NCPolynomialRing) := (p, A) -> (
     sum(listForm p, i-> sub(i#1,cA) * phiMapMon(i#0,A))
 )
 
-adjointWord = method();
-adjointWord (List, NCPolynomialRing, List) := (w, A, P) -> (
+adjointWordHelper = method();
+adjointWordHelper (List, NCPolynomialRing, List) := (w, A, P) -> (
 
     w2 := {1_A} | w;
     fold((i,j) -> i << (phiMap(P#(j-1),A)), w2)
 )
 
 -- f is the input nc polynomial, A is the output nc ring and P is the polynomial transformation, given as a list of polynomials
+adjointWord = method();
 adjointWord (NCRingElement, NCPolynomialRing, List) := (f, A, P) -> (
     Raux:=ring product(P);
     d:=length(gens Raux);
@@ -1111,7 +1125,7 @@ adjointWord (NCRingElement, NCPolynomialRing, List) := (f, A, P) -> (
         error("The image of 0 under the polynomial map is not 0");
     );
     if(f == 0_(ring f)) then return 0_A;
-    return(linExt(w->adjointWord(w,A,P), f));
+    return(linExt(w->adjointWordHelper(w,A,P), f));
 )
 
 -- given d and k, nextLyndon(w,d,k) creates the next Lyndon word of length at most k in d letters after w in lexicographical order
