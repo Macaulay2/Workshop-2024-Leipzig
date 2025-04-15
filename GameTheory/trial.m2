@@ -269,6 +269,257 @@ correlatedEquilibria List := X -> (
 
 
 
+--mixedProbabilityRing; 
+mixedProbabilityRing = method()
+mixedProbabilityRing List := L ->(
+    p := getSymbol "p";
+    probabilityRing := QQ[flatten apply(#L, i -> apply(L#i, j->p_{i,j}))];
+    probabilityRing
+)
+mixedProbabilityRing Tensor := T ->(
+    indexSet := format T;
+    mixedProbabilityRing indexSet
+)
+
+adifferencesFromFirst = L -> (apply(toList(1..#L-1), i->L#i-L#0))
+
+monomialFromIndex = method()
+monomialFromIndex (List, ZZ, Ring):= (L, i, R) ->(
+    p := getSymbol "p";
+    monomial := product toList apply(pairs L, (j,r)->(s := if j >= i then j + 1 else j; p_{s,r}_R));
+    monomial
+)
+
+equilibriumPolynomials = method()
+equilibriumPolynomials (Tensor, ZZ, Ring) := (T, u, R)->(
+    indexSet := format T;
+    tensorIndices := T#"indexes";
+    nStrategies := indexSet#u;
+    accumulatedHash := new MutableHashTable;
+    for tensorIndex in tensorIndices do (
+        newCoefficient := T#tensorIndex;
+        thisStrategy := tensorIndex#u;
+        monomialIndex := drop(tensorIndex,{u,u});
+        if not (accumulatedHash #? monomialIndex) then accumulatedHash#monomialIndex = new MutableList from nStrategies: 0;
+        accumulatedHash#monomialIndex#thisStrategy = newCoefficient;
+    );
+    polynomials := apply(pairs accumulatedHash, (k,v)->(
+        monomial := monomialFromIndex(k, u, R);
+        apply(differencesFromFirst v, i-> i_R * monomial)
+    ));
+    sum polynomials
+)
+
+nashEquilibriumRing = method()
+nashEquilibriumRing List := L -> (
+    -- L is a list consisting of n- tensors; requires them to be of the same dimension/shape
+    indexSet := format first L;
+    polyRing := mixedProbabilityRing indexSet;
+    polyRing
+)
+nashEquilibriumIdeal = method()
+nashEquilibriumIdeal (Ring, List) := (R, L) -> (
+    indexSet := format first L;
+    probabilityRing := R;
+    completeGeneratingSet := flatten(apply(pairs L, (i,T) -> equilibriumPolynomials(T,i,probabilityRing)));
+    p := getSymbol "p";
+    linearRelations := apply(pairs indexSet, (i,j)-> sum(j, k->p_{i,k}_probabilityRing) - 1);
+    fullGeneratingSet := join(completeGeneratingSet, linearRelations);
+    ideal fullGeneratingSet
+)
+
+directProductList = method()
+directProductList List := L -> (
+    if #L == 0 then error "Empty list of polytopes";
+    P := L#0;
+    for i from 1 to (#L - 1) do (
+        P = directProduct(P, L#i);
+    );
+    P
+)
+
+deltaList = method()
+deltaList List := d -> (
+    n := #d;
+    result := {};
+    for i from 0 to (n - 1) do (
+        polyFactors := for j from 0 to (n - 1) list (
+            if j == i then (
+                convexHull(matrix(apply(d#i - 1, k -> {0})))
+            ) else (
+                simplex(d#j - 1)
+            )
+        );
+        P := directProductList(polyFactors);
+        for rep from 1 to (d#i - 1) do (
+            result = append(result, P)
+        );
+    );
+    result
+)
+
+maxNumberEquilibria = method()
+maxNumberEquilibria List := d -> (
+    myTuple := deltaList d;
+    mv := mixedVolume(myTuple);
+    print("The maximum number of totally mixed Nash equilibria for a " | toString(d) |
+          " game is " | toString(mv));
+    mv
+)
+
+beginDocumentation()
+
+doc ///
+ Node
+  Key
+   GameTheory
+  Headline
+   a Package 
+  Description
+   Text
+    Computations in game theory.
+  Caveat
+    Nothing here yet.
+  Subnodes
+    "Ideals of Nash equilibria"
+ Node
+  Key
+   "Ideals of Nash equilibria"
+  Headline
+   computing the ideal of a totally mixed Nash equilibria
+  Description
+   Text
+    This package provides methods for constructing the mixed probability polynomial rings and computing the Nash equilibrium polynomials and ideals, as well as the max number of isolated totally mixed Nash Equilibra via polyhedral methods. It depends on the Polyhedra package. An introduction together with the relevant definitions is given in Chapter 6, Sturmfels, Bernd, @EM "Solving Systems of Polynomial Equations"@. American Mathematical Society, 2002. ISBN 978-0-8218-3251-6.
+   Text
+    This package uses the following functions in the @TO Polyhedra@ package:
+   Text
+      @UL { 
+         {TO convexHull},
+         {TO directProduct},
+         {TO mixedVolume},
+         {TO simplex},
+    	}@
+  Subnodes
+   nashEquilibriumRing
+   nashEquilibriumIdeal
+   maxNumberEquilibria
+ Node
+  Key
+   (nashEquilibriumRing, List)
+   nashEquilibriumRing
+  Headline
+    make the Nash Equilibrium ring
+  Usage
+    nashEquilibriumRing L
+  Inputs
+    L:List 
+     a list of n-@TO Tensor@s with uniform dimensions
+  Outputs
+    :Ring
+     a polynomial ring generated from the mixed probabilities
+  Description
+   Text
+    An $n$-player game consists of players labeled with $0,1,\cdots, n-1$. The $i$-th player can choose from $d_i$ pure strategies. Let $p_{i,j}$ be the probablility of the $i$-th player choosing the $j$-the strategy, where $j=0,\cdots, d_j-1$. The ideal of the totally mixed Nash equilibria of the game is defined in the polynomial ring over a field $k$ with generators $\{p_{i,j}:0\leq i\leq n-1, 0\leq j\leq d_j-1\}$.
+    
+    This method computes this ring over $k=\mathbb{Q}$ from a list of tensors representing the payoff matrices of all the $n$ players. The ring generators are ordered lexicographically.
+   Example
+    tensors = apply(3, i -> randomTensor {2,4,3})
+    R = nashEquilibriumRing tensors
+    baseRing R
+    gens R
+ Node
+  Key
+   (nashEquilibriumIdeal, Ring, List)
+   nashEquilibriumIdeal
+  Headline
+    make the Nash Equilibrium ideal
+  Usage
+    nashEquilibriumIdeal(R, L)
+  Inputs
+    R:Ring 
+     the Nash Equilibrium ring. Typically obtained via @TO nashEquilibriumRing@
+    L:List
+     a list of payoff tensors
+  Outputs
+    :Ideal
+      An ideal in the Nash Equilibrium ring R generated by the Nash equilibrium polynomials, along with the linear relations of those probabilities variables, that the probabilities of each players sum to 1
+  Description
+   Text
+    For an $n$-player game, the totally mixed Nash equilibria are the zero loci in the interior of the polytope of a system of polynomials in the variables $\{p_{i,j}:0\leq i\leq n-1, 0\leq j\leq d_j-1\}$. The coefficients of these polynomials are differences of the entries of the payoff matrices. From an algebraic-geometric point of view, these polynomials, together with the linear constraints that $\sum_j p_{i,j}=1$ for each $i$, generate an ideal in the polynomial ring computed by @TO nashEquilibriumRing@.
+
+    This method computes this Nash equilibrium ideal by generating the polynomials from the payoff matrices first, and appending the linear relations that the sum of probabilities for each player is one.
+   Example
+    tensors = apply(3, i -> randomTensor {2,2,2})
+    R = nashEquilibriumRing tensors
+    gens R
+    I = nashEquilibriumIdeal(R, tensors)
+   Text
+    Here the embient ring $R$ is explicitly computed before finding the ideal $I$. Alternatively, one can assign both the ring and the ideal to variables in the same line:
+   Example
+    I2 = nashEquilibriumIdeal(R2 = nashEquilibriumRing tensors, tensors)
+    gens R2
+ Node
+  Key
+   (maxNumberEquilibria, List)
+   maxNumberEquilibria
+  Headline
+    compute the maximum number of totally mixed Nash equilibria
+  Usage
+    maxNumberEquilibria L
+  Inputs
+    L:List
+     a list of integers representing the dimensions of the game
+  Outputs
+    :ZZ
+     an integer value, the mixed volume, representing the maximum number of totally mixed Nash equilibria
+  Description
+   Text
+    For an $n$-player game where the $i$-th player has $d_i$ pure strategies, the maximum number of isolated totally mixed Nash equilibria is given by the mixed volume of the following list of polytopes:
+
+    \[ (\Delta^{(0)}, \cdots, \Delta^{(0)},\Delta^{(1)}, \cdots, \Delta^{(1)}, \cdots, \Delta^{(n-1)}, \cdots, \Delta^{(n-1)}),\]
+
+    where each $\Delta^{(i)}$ repeats $d_i - 1 $ times, and is defined by the direct product of simplices
+
+    \[ \Delta^{(i)} := \Delta_{d_1-1}\times \Delta_{d_2-1} \times \cdots \Delta_{d_{i-2}-1} \times \{0\} \times \Delta_{d_{i}-1} \times \cdots \times \Delta^{d_{i-1}-1}).\]
+
+    This function first generates a tuple of delta polytopes from d, computes their mixed volume, prints a summary message, and returns the mixed volume. The mixed volume is computed via the function @TO mixedVolume@ in the @TO polyhedra@ package. This function currently runs very slow for higher dimension and requires improvement.
+   Example
+    d = {2,2,2}
+    mv = maxNumberEquilibria d
+   Text
+    Alternatively, if you have a tensor $T$, you can compute its maximum number as follows:
+   Example
+    T = randomTensor {2,2,2}
+    mv2 = maxNumberEquilibria format T
+ Node
+  Key
+   Tensor
+  Headline
+    representing the payoff matrices
+///
+
+TEST ///
+    -- Test nashEquilibriumRing with a list of tensors
+    tensorList = apply(3, i -> randomTensor {2,2,2})
+    R5 = nashEquilibriumRing tensorList
+    assert(numgens R5 > 0)
+
+    -- Test nashEquilibriumIdeal construction
+    I = nashEquilibriumIdeal(R5, tensorList)
+    assert(isIdeal I)
+
+    -- Test maxNumberEquilibria (prints and returns the mixed volume)
+    mv = maxNumberEquilibria {2,2,2}
+    assert(mv == 2)
+
+    -- Test maxNumberEquilibria using a tensor's format
+    T2 = randomTensor {2,2,2}
+    mv2 = maxNumberEquilibria format T2
+    assert(mv2 == 2)
+///
+
+end--
+
 
 
 --***************************************--
