@@ -29,7 +29,7 @@ newPackage(
          HomePage => "https://sites.google.com/view/hannah-tillmann-morris"},
       {Name => "Chenyang Zhao",
          Email => "cz2922@ic.ac.uk",
-         HomePage => "https://www.felixzhao.com/"},
+         HomePage => "https://www.felixzhao.com/"}
    },
    Headline => "A package for computing equilibria in game theory",
    Keywords => {"Game Theory","Equilibria","Nash","Correlated","Dependency","Spohn","Conditional Independence"},
@@ -46,12 +46,12 @@ export {
    "getVariableToIndexset",
    "assemblePolynomial",
    "assemblePlayeriPolynomials",
-   "correlatedEquilibria"
-   "toMarkovRing"
-   "mapToMarkovRing"
-   "mapToProbabilityRing"
-   "ciIdeal"
-   "intersectWithCImodel"
+   "correlatedEquilibria",
+   "toMarkovRing",
+   "mapToMarkovRing",
+   "mapToProbabilityRing",
+   "ciIdeal",
+   "intersectWithCImodel",
    "spohnCI"
 }
 
@@ -275,7 +275,7 @@ correlatedEquilibria List := X -> (
 
 
 --***************************************--
---   METHODS FOR NASH EQUILIBRIA   --
+--     METHODS FOR NASH EQUILIBRIA       --
 --***************************************--
 
 
@@ -1640,15 +1640,18 @@ assert(#vertices CE > ------
 
 TEST ///
     tensorList = apply(3, i -> randomTensor {2,2,2})
-    R5 = nashEquilibriumRing tensorList
-    assert(numgens R5 > 0)
+    R = nashEquilibriumRing tensorList
+    L = {p_{0,0}, p_{0,1}, p_{1,0}, p_{1,1}, p_{2,0}, p_{2,1}}
+    assert(gens R == L)
 ///
 
 ---------------------------------
 --- TEST nashEquilibriumIdeal ---
 ---------------------------------
 TEST ///
-    I = nashEquilibriumIdeal(R5, tensorList)
+    tensorList = apply(3, i -> randomTensor {2,2,2})
+    R = nashEquilibriumRing tensorList
+    I = nashEquilibriumIdeal(R, tensorList)
     assert(isIdeal I)
 ///
 
