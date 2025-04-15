@@ -765,3 +765,138 @@ X1#{0,0} = -99; X1#{0,1} = 0; X1#{1,0} = 1; X1#{1,1} = 0;
 assert(class CE === Polyhedron)
 assert(#vertices CE > ------
 ///
+
+
+
+--------------------------------------
+-- TEST toMarkovRing
+--------------------------------------
+
+TEST///
+    R = probabilityRing({2,3,4}, CoefficientRing => ZZ/32003, ProbabilityVariableName => "x");
+    markovR = toMarkovRing R;
+    correctGens = {p_(1,1,1), p_(1,1,2), p_(1,1,3), p_(1,1,4), p_(1,2,1), p_(1,2,2),
+      p_(1,2,3), p_(1,2,4), p_(1,3,1), p_(1,3,2), p_(1,3,3), p_(1,3,4),
+      p_(2,1,1), p_(2,1,2), p_(2,1,3), p_(2,1,4), p_(2,2,1), p_(2,2,2),
+      p_(2,2,3), p_(2,2,4), p_(2,3,1), p_(2,3,2), p_(2,3,3), p_(2,3,4)};
+    assert(gens markovR === correctGens)
+///
+
+
+--------------------------------------
+-- TEST mapToMarkovRing
+--------------------------------------
+
+TEST///
+    R = probabilityRing({2,3,4}, CoefficientRing => ZZ/32003, ProbabilityVariableName => "x");
+    markovR = toMarkovRing R;
+    F = mapToMarkovRing R;
+    assert(target F === markovR)
+    assert(source F === R)
+    assert(isInjective F === true)
+///
+
+
+--------------------------------------
+-- TEST mapToProbabilityRing
+--------------------------------------
+
+TEST///
+    R = probabilityRing({2,3,4}, CoefficientRing => ZZ/32003, ProbabilityVariableName => "x");
+    markovR = toMarkovRing R;
+    F = mapToMarkovRing R;
+    assert(target F == R)
+    assert(source F == markovR)
+    assert(isInjective F == true)
+///
+
+--------------------------------------
+-- TEST ciIdeal
+--------------------------------------
+
+TEST///
+     FF = ZZ/32003
+     PR = probabilityRing(d, CoefficientRing => FF);
+     G1 = graph ({{1,2},{2,3},{1,3}});
+     G2 = graph ({}, Singletons => {1,2,3});
+     I1 = ciIdeal(PR, G1);
+     I2 = ciIdeal(PR, G2);
+     assert(I1_0==0)
+     assert(numcols mingens I2 == 9)
+///
+
+TEST///
+     FF = ZZ/32003
+     PR = probabilityRing(d, CoefficientRing => FF);
+     G = graph ({{1,2},{2,3}});
+     I = ciIdeal(PR, G);
+     assert(I==ideal(-p_{0, 0, 1}*p_{1, 0, 0}+p_{0, 0, 0}*p_{1, 0, 1},-p_{0, 1, 1}*p_{1, 1, 0}+p_{0, 1, 0}*p_{1, 1, 1}))
+///
+
+--------------------------------------
+-- TEST intersectWithCImodel
+--------------------------------------
+
+TEST///
+     FF = ZZ/32003
+     d = {2,3,2};
+     X = randomGame(d, CoefficientRing => FF);
+     PR = probabilityRing(d, CoefficientRing => FF);
+     G = graph ({{1,2}},Singletons => {3});
+     L={{{1,2},{3},{}}};
+     V = spohnIdeal(PR, X);
+     I1 = intersectWithCImodel(V, L);
+     I2 = intersectWithCImodel(V, G);
+     assert(I1==I2)
+     assert(numcols mingens I1 == 20)
+///
+
+TEST///
+     FF = ZZ/32003
+     d = {2,2,2};
+     X = randomGame(d, CoefficientRing => FF);
+     PR = probabilityRing(d, CoefficientRing => FF);
+     G = graph ({{1,2},{2,3},{1,3}});
+     V = spohnIdeal(PR, X);
+     I = intersectWithCImodel(V, G);
+     assert(V==I)
+///
+
+--------------------------------------
+-- TEST spohnCI
+--------------------------------------
+
+TEST///
+     FF = ZZ/32003
+     d = {2,3,2};
+     X = randomGame(d, CoefficientRing => FF);
+     PR = probabilityRing(d, CoefficientRing => FF);
+     G = graph ({{1,2}},Singletons => {3});
+     L={{{1,2},{3},{}}};
+     V = spohnIdeal(PR, X);
+     I1 = spohnCI(PR, X, L);
+     I2 = spohnCI(PR, X, G);
+     assert(I1==I2)
+///
+
+TEST///
+     FF = ZZ/32003
+     d = {2,2,2};
+     X = randomGame(d, CoefficientRing => FF);
+     PR = probabilityRing(d, CoefficientRing => FF);
+     V = spohnIdeal(PR, X);
+     G = graph ({{1,2},{2,3}});
+     I = spohnCI(PR, X, G);
+     assert(numcols mingens I==8))
+///
+
+TEST///
+     FF = ZZ/32003
+     d = {2,2,2};
+     X = randomGame(d, CoefficientRing => FF);
+     PR = probabilityRing(d, CoefficientRing => FF);
+     G = graph ({{1,2},{2,3},{1,3}});
+     V = spohnIdeal(PR, X);
+     I = spohnCI(PR, X, G);
+     assert(V==I)
+///
