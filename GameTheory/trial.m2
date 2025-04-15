@@ -295,7 +295,7 @@ mixedProbabilityRing Tensor := T ->(
     mixedProbabilityRing indexSet
 )
 
-adifferencesFromFirst = L -> (apply(toList(1..#L-1), i->L#i-L#0))
+differencesFromFirst = L -> (apply(toList(1..#L-1), i->L#i-L#0))
 
 monomialFromIndex = method()
 monomialFromIndex (List, ZZ, Ring):= (L, i, R) ->(
@@ -758,21 +758,11 @@ doc ///
 -- Documentation NashEquilibriumIdeal --
 ----------------------------------------
 
-beginDocumentation()
+----------------------------------------
+-- Documentation Ideals of Nash equilibria --
+----------------------------------------
 
 doc ///
- Node
-  Key
-   GameTheory
-  Headline
-   a Package 
-  Description
-   Text
-    Computations in game theory.
-  Caveat
-    Nothing here yet.
-  Subnodes
-    "Ideals of Nash equilibria"
  Node
   Key
    "Ideals of Nash equilibria"
@@ -780,7 +770,7 @@ doc ///
    computing the ideal of a totally mixed Nash equilibria
   Description
    Text
-    This package provides methods for constructing the mixed probability polynomial rings and computing the Nash equilibrium polynomials and ideals, as well as the max number of isolated totally mixed Nash Equilibra via polyhedral methods. It depends on the Polyhedra package. An introduction together with the relevant definitions is given in Chapter 6, Sturmfels, Bernd, @EM "Solving Systems of Polynomial Equations"@. American Mathematical Society, 2002. ISBN 978-0-8218-3251-6.
+    This package provides methods for constructing the mixed probability polynomial rings and computing the Nash equilibrium polynomials and ideals, as well as the max number of isolated totally mixed Nash Equilibria via polyhedral methods. It depends on the Polyhedra package. An introduction together with the relevant definitions is given in Chapter 6, Sturmfels, Bernd, @EM "Solving Systems of Polynomial Equations"@. American Mathematical Society, 2002. ISBN 978-0-8218-3251-6.
    Text
     This package uses the following functions in the @TO Polyhedra@ package:
    Text
@@ -790,10 +780,18 @@ doc ///
          {TO mixedVolume},
          {TO simplex},
     	}@
-  Subnodes
+  SeeAlso
    nashEquilibriumRing
    nashEquilibriumIdeal
+   deltaList
    maxNumberEquilibria
+///
+
+----------------------------------------
+-- Documentation nashEquilibriumRing --
+----------------------------------------
+
+doc ///
  Node
   Key
    (nashEquilibriumRing, List)
@@ -810,7 +808,7 @@ doc ///
      a polynomial ring generated from the mixed probabilities
   Description
    Text
-    An $n$-player game consists of players labeled with $0,1,\cdots, n-1$. The $i$-th player can choose from $d_i$ pure strategies. Let $p_{i,j}$ be the probablility of the $i$-th player choosing the $j$-the strategy, where $j=0,\cdots, d_j-1$. The ideal of the totally mixed Nash equilibria of the game is defined in the polynomial ring over a field $k$ with generators $\{p_{i,j}:0\leq i\leq n-1, 0\leq j\leq d_j-1\}$.
+    An $n$-player game consists of players labeled with $0,1,\cdots, n-1$. The $i$-th player can choose from $d_i$ pure strategies. Let $p_{i,j}$ be the probability of the $i$-th player choosing the $j$-th strategy, where $j=0,\cdots, d_j-1$. The ideal of the totally mixed Nash equilibria of the game is defined in the polynomial ring over a field $k$ with generators $\{p_{i,j}:0\leq i\leq n-1, 0\leq j\leq d_j-1\}$.
     
     This method computes this ring over $k=\mathbb{Q}$ from a list of tensors representing the payoff matrices of all the $n$ players. The ring generators are ordered lexicographically.
    Example
@@ -818,6 +816,17 @@ doc ///
     R = nashEquilibriumRing tensors
     baseRing R
     gens R
+  SeeAlso
+   nashEquilibriumIdeal
+   deltaList
+   maxNumberEquilibria
+///
+
+----------------------------------------
+-- Documentation nashEquilibriumIdeal --
+----------------------------------------
+
+doc ///
  Node
   Key
    (nashEquilibriumIdeal, Ring, List)
@@ -849,6 +858,60 @@ doc ///
    Example
     I2 = nashEquilibriumIdeal(R2 = nashEquilibriumRing tensors, tensors)
     gens R2
+  SeeAlso
+   nashEquilibriumRing
+   deltaList
+   maxNumberEquilibria
+///
+
+----------------------------------------
+-- Documentation deltaList --
+----------------------------------------
+
+doc ///
+ Node
+  Key
+   (deltaList, List)
+   deltaList
+  Headline
+    generates a list of delta polytopes for a game
+  Usage
+    deltaList d
+  Inputs
+    d:List
+     A list of positive integers, representing the numbers of pure strategies of the players
+  Outputs
+    :List
+     A list of polytopes formed by taking the direct product of certain convex sets and simplices.
+  Description
+   Text
+    For an $n$-player game where the $i$-th player has $d_i$ pure strategies, the maximum number of isolated totally mixed Nash equilibria is given by the mixed volume of the following list of polytopes:
+
+    \[ (\Delta^{(0)}, \cdots, \Delta^{(0)},\Delta^{(1)}, \cdots, \Delta^{(1)}, \cdots, \Delta^{(n-1)}, \cdots, \Delta^{(n-1)}),\]
+
+    where each $\Delta^{(i)}$ repeats $d_i - 1 $ times, and is defined by the direct product of simplices
+
+    \[ \Delta^{(i)} := \Delta_{d_1-1}\times \Delta_{d_2-1} \times \cdots \Delta_{d_{i-2}-1} \times \{0\} \times \Delta_{d_{i}-1} \times \cdots \times \Delta_{d_{i-1}-1}.\]
+
+    This function constructs and returns this list of polytopes. Each $\Delta^{(i)}$ is a polytope in an ambient vector space of dimension $d_0+d_1+\cdots+d_{n-1}-n$.
+   Example
+    DL = deltaList {2,2,2}
+   Text
+    Each entries of DL is a polytope of dimension 2, in a $2+2+2-3=3$ dimensional vector space.
+   Example
+    apply(DL, p -> dim p)
+    apply(DL, p -> ambDim p)
+  SeeAlso
+   nashEquilibriumRing
+   nashEquilibriumIdeal
+   maxNumberEquilibria
+///
+
+----------------------------------------
+-- Documentation maxNumberEquilibria --
+----------------------------------------
+
+doc ///
  Node
   Key
    (maxNumberEquilibria, List)
@@ -871,7 +934,7 @@ doc ///
 
     where each $\Delta^{(i)}$ repeats $d_i - 1 $ times, and is defined by the direct product of simplices
 
-    \[ \Delta^{(i)} := \Delta_{d_1-1}\times \Delta_{d_2-1} \times \cdots \Delta_{d_{i-2}-1} \times \{0\} \times \Delta_{d_{i}-1} \times \cdots \times \Delta^{d_{i-1}-1}).\]
+    \[ \Delta^{(i)} := \Delta_{d_1-1}\times \Delta_{d_2-1} \times \cdots \Delta_{d_{i-2}-1} \times \{0\} \times \Delta_{d_{i}-1} \times \cdots \times \Delta_{d_{i-1}-1}.\]
 
     This function first generates a tuple of delta polytopes from d, computes their mixed volume, prints a summary message, and returns the mixed volume. The mixed volume is computed via the function @TO mixedVolume@ in the @TO polyhedra@ package. This function currently runs very slow for higher dimension and requires improvement.
    Example
@@ -882,11 +945,10 @@ doc ///
    Example
     T = randomTensor {2,2,2}
     mv2 = maxNumberEquilibria format T
- Node
-  Key
-   Tensor
-  Headline
-    representing the payoff matrices
+  SeeAlso
+   nashEquilibriumRing
+   nashEquilibriumIdeal
+   deltaList
 ///
 
 
