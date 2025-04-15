@@ -831,6 +831,8 @@ halfshuffleHelper(NCRingElement, List) := (f,w) -> (
 )
 halfshuffle = method();
 halfshuffle (NCRingElement, NCRingElement) := (f,g) -> (
+    --Exlclude one input is 0
+    --fix behaviour for constants
     if(ring f === ring g) then (
         return(linExt(i->halfshuffleHelper(f,i),g));)
     else (
@@ -838,6 +840,7 @@ halfshuffle (NCRingElement, NCRingElement) := (f,g) -> (
     )
 )
 
+--The notation in the reference is the other way around but for some reason changing this to >> breaks the code
 NCRingElement << NCRingElement := (f,g) -> (
     halfshuffle(f,g)
 )
