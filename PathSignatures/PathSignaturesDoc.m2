@@ -426,10 +426,44 @@ Node
 
 
     References
-        @HREF {"https://doi.org/10.1007/s13366-020-00493-9","Signatures of paths transformed by polynomial maps (doi.org/10.1007/s13366-020-00493-9)"} @
+        @HREF {"https://doi.org/10.1007/s13366-020-00493-9","Signatures of paths transformed by polynomial maps (doi.org/10.1007/s13366-020-00493-9)"} @ 
     SeeAlso
         shuffle
         (symbol _, Array, NCPolynomialRing)
+
+Node
+    Key
+        CAxisTensor
+        (CAxisTensor, ZZ, NCPolynomialRing)
+    Inputs
+        k : ZZ --The level of the signature to compute
+        R : NCPolynomialRing -- The signature tensors space
+    Outputs
+        s : NCRingElement -- The k-th level signature of the canonical axis path in R^d, where d is the number of generators of R
+    Usage
+        s = CAxisTensor(k, R)
+    Description
+        Text
+            As in the reference paper, define the {\em canonical axis path} in $\mathbb{R}^d$ 
+            to be the path from $(0, \dots, 0)$ to $(1, \dots, 1)$ given by $d$ lienar steps 
+            in the unit direction $e_1, \dots, e_d$ in that order. Then the method computes the 
+            $k$-th level signature of the canonical axis path in dimension $d$, where $d$ is the
+            number of generatos of R.
+        Example
+            d = 2;
+            k = 3;
+            R = wordAlgebra(d);
+            Cd = CAxisTensor(k, R); Cd // wordFormat --k-th level signature of the canonical axis path in R^d
+        Text
+            To expand on the example, we verify that the result agrees with the one from @TO sig@.
+            Remark that the matrix of increments for the canonical axis path in dimension $d$ is 
+            the identity matrix of order $d$.
+        Example
+            M = id_(QQ^d); --Identity matric of order d
+            CAxisPath = pwLinPath(M) -- The canonical axis path in dimension d
+            Cd2 = sig(CAxisPath, k); Cd2 // wordFormat --The k-th level signature
+    References
+        @HREF {"https://doi.org/10.1017/fms.2019.3", "VARIETIES OF SIGNATURE TENSORS (doi.org/10.1017/fms.2019.3)"}@
 ///
 
 
