@@ -1825,6 +1825,36 @@ TEST ///
     assert(isIdeal I)
 ///
 
+TEST ///
+    testIndices = enumerateTensorIndices {2,2,2};
+    TList = apply(3, i-> zeroTensor {2,2,2});
+    TE = {{2, 2, 0, 1, 2, 2, 1, 1}, {2, 2, 0, 2, 2, 0, 1, 2}, {1, 1, 1, 2, 0, 0, 2, 1}};
+    scan(3, k->scan(pairs testIndices, (j,i)->(TList#k#i = TE#k#j)));
+    R2 = nashEquilibriumRing TList;
+    I = nashEquilibriumIdeal(R2, TList);
+    ComputedGens = first entries gens I;
+    TargetGens = {p_{1,1} * p_{2,0}, -2 * p_{0,0} * p_{2,0} - p_{0,1} * p_{2,0} + 2 * p_{0,1} * p_{2,1}, p_{0,0} * p_{1,1} - p_{0,1} * p_{1,1}, p_{0,0} + p_{0,1} - 1, p_{1,0} + p_{1,1} - 1, p_{2,0} + p_{2,1} - 1};
+    assert(ComputedGens == TargetGens)
+///
+
+---------------------------------
+--- TEST deltaList ---
+---------------------------------
+TEST ///
+    DL = deltaList {2,4,5}
+    d = apply(DL, p->dim p)
+    assert(d == {7, 5, 5, 5, 4, 4, 4, 4})
+    ad = apply(DL, p->ambDim p)
+    assert(ad == toList (8 : 8))
+///
+
+TEST ///
+    DL2 = deltaList {2,2,2}
+    ComputedV = apply(DL2, p->entries vertices p)
+    TargetV = {{{0, 0, 0, 0}, {0, 1, 0, 1}, {0, 0, 1, 1}}, {{0, 1, 0, 1}, {0, 0, 0, 0}, {0, 0, 1, 1}}, {{0, 1, 0, 1}, {0, 0, 1, 1}, {0, 0, 0, 0}}}
+    assert(ComputedV == TargetV)
+///
+
 ---------------------------------
 --- TEST maxNumberEquilibria ---
 ---------------------------------
