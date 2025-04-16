@@ -490,9 +490,9 @@ Node
         Text
             To expand on the example, we verify that the result agrees with the one from @TO sig@.
         Example
-            R=QQ[t]
+            R=QQ[t];
             CMonPath = polyPath(for i from 1 to d list t^i) -- The canonical axis path in dimension d
-            Cd2 = sig(CMonPath, k, BaseRing => class Cd); Cd2 // wordFormat --The k-th level signature
+            Cd2 = sig(CMonPath, k); Cd2 // wordFormat --The k-th level signature
     References
         @HREF {"https://doi.org/10.1017/fms.2019.3", "VARIETIES OF SIGNATURE TENSORS (doi.org/10.1017/fms.2019.3)"}@
 
