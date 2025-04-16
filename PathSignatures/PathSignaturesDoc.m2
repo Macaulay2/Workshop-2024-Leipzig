@@ -496,6 +496,28 @@ Node
     References
         @HREF {"https://doi.org/10.1017/fms.2019.3", "VARIETIES OF SIGNATURE TENSORS (doi.org/10.1017/fms.2019.3)"}@
 
+Node 
+    Key
+        wordString
+        (wordString, NCRingElement)
+    Inputs
+        w : NCRingElement
+    Outputs
+        s : String -- A string representing the word 2 in word format
+    Usage
+        w // wordString
+    Description
+        Text
+            Returns a string representing the word as described in @TO wordFormat@.
+        Example
+            R = wordAlgebra(3);
+            w = [1,2,3]_R + 2 * [3,2,1]_R; w // wordFormat
+            w // wordString
+    SeeAlso
+        wordAlgebra
+        wordFormat
+        (symbol _, Array, NCPolynomialRing)
+
 ///
 
 
