@@ -910,20 +910,11 @@ doc ///
    Text
     This package provides methods for constructing the mixed probability polynomial rings
     and computing the Nash equilibrium polynomials and ideals, as well as the max number of
-    isolated totally mixed Nash Equilibria via polyhedral methods. It depends on the Polyhedra package.
+    isolated totally mixed Nash Equilibria via polyhedral methods.
     An introduction together with the relevant definitions is given in
     Chapter 6, Sturmfels, Bernd, @EM "Solving Systems of Polynomial Equations"@. American Mathematical Society,
     2002. ISBN 978-0-8218-3251-6 and in Abo, Hirotachi, Portakal, Irem, and Sodomaco, Luca,
     @EM "A vector bundle approach to Nash equilibria"@, arXiv504.03456.
-   Text
-    This package uses the following functions in the @TO Polyhedra@ package:
-   Text
-      @UL { 
-         {TO convexHull},
-         {TO directProduct},
-         {TO mixedVolume},
-         {TO simplex},
-    	}@
   SeeAlso
    nashEquilibriumRing
    nashEquilibriumIdeal
