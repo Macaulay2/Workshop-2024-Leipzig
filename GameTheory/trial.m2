@@ -1896,19 +1896,23 @@ TEST ///
     assert(ComputedV == TargetV)
 ///
 
----------------------------------
---- TEST maxNumberEquilibria ---
----------------------------------
-TEST ///
-    mv = maxNumberEquilibria {2,2,2}
-    assert(mv == 2)
-///
+------------------------------
+--- TEST BlockDerangements ---
+------------------------------
 
 TEST ///
-    -- Test maxNumberEquilibria using a tensor's format
-    T2 = randomTensor {2,2,2}
-    mv2 = maxNumberEquilibria format T2
-    assert(mv2 == 2)    
+    BD = BlockDerangements{2,2,2}
+    L = {{set {(2, 0)}, set {(0, 0)}, set {(1, 0)}}, {set {(1, 0)}, set {(2, 0)}, set {(0, 0)}}}
+    assert(BD == L)
+///
+
+-----------------------
+--- TEST NumberTMNE ---
+-----------------------
+
+TEST ///
+    mv = NumberTMNE {2,2,2}
+    assert(mv == 2)
 ///
 
 ----------------------------
@@ -2117,10 +2121,6 @@ TEST///
 --******************************************--
 --         DEVELOPMENT SECTION	      	    --
 --******************************************--
-
--------------------------
--- Development section --
--------------------------
 
 restart
 debug needsPackage "GameTheory"
