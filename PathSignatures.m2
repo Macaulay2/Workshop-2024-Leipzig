@@ -682,14 +682,16 @@ tensorParametrization(NCRingElement) := opts -> (f) -> (
 
 -- define shuffle products on words, then overload function and use linExt to extend to NCRingElements. Define operator ** as shuffle product in NCAlgebra
 
-wordAlgebra = method(Options=>{BaseRing => QQ});
-wordAlgebra (List) := opts -> (l) -> (
+wordAlgebraHelper = method(Options=>{BaseRing => QQ});
+wordAlgebraHelper (List) := opts -> (l) -> (
     Lt := getSymbol("Lt");
     myvars := apply(l,i-> (Lt_i));
     return(opts.BaseRing myvars);
 )
+
+wordAlgebra = method(Options=>{BaseRing => QQ});
 wordAlgebra (ZZ) := opts -> (z) -> (
-    return(wordAlgebra(toList(1..z), BaseRing => opts.BaseRing));
+    return(wordAlgebraHelper(toList(1..z), BaseRing => opts.BaseRing));
 )
 
 
