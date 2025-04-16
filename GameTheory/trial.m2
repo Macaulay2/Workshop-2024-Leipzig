@@ -2126,7 +2126,7 @@ restart
 debug needsPackage "GameTheory"
 check "GameTheory"
 
-uninstallPackage "GraphicalModels"
+uninstallPackage "GameTheory"
 restart
 installPackage "GameTheory"
 viewHelp GameTheory
