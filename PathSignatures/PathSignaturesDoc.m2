@@ -464,6 +464,38 @@ Node
             Cd2 = sig(CAxisPath, k); Cd2 // wordFormat --The k-th level signature
     References
         @HREF {"https://doi.org/10.1017/fms.2019.3", "VARIETIES OF SIGNATURE TENSORS (doi.org/10.1017/fms.2019.3)"}@
+
+Node
+    Key
+        CMonTensor
+        (CMonTensor, ZZ, NCPolynomialRing)
+    Inputs
+        k : ZZ --The level of the signature to compute
+        R : NCPolynomialRing -- The signature tensors space
+    Outputs
+        s : NCRingElement -- The k-th level signature of the canonical monomial path in R^d, where d is the number of generators of R
+    Usage
+        s = CMonTensor(k, R)
+    Description
+        Text
+            As in the reference paper, define the {\em canonical monomial path} in $\mathbb{R}^d$ 
+            to be the path from $(0, \dots, 0)$ to $(1, \dots, 1)$ given by $t\mapsto (t, t^2, \dots, t^d)$. Then the method computes the 
+            $k$-th level signature of the canonical monomial path in dimension $d$, where $d$ is the
+            number of generatos of R.
+        Example
+            d = 2;
+            k = 3;
+            R = wordAlgebra(d);
+            Cd = CMonTensor(k, R); Cd // wordFormat --k-th level signature of the canonical monomial path in R^d
+        Text
+            To expand on the example, we verify that the result agrees with the one from @TO sig@.
+        Example
+            R=QQ[t]
+            CMonPath = polyPath(for i from 1 to d list t^i) -- The canonical axis path in dimension d
+            Cd2 = sig(CMonPath, k, BaseRing => class Cd); Cd2 // wordFormat --The k-th level signature
+    References
+        @HREF {"https://doi.org/10.1017/fms.2019.3", "VARIETIES OF SIGNATURE TENSORS (doi.org/10.1017/fms.2019.3)"}@
+
 ///
 
 
