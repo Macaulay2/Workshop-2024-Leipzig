@@ -450,41 +450,48 @@ deltaList List := d -> (
     result
 )
 
-
--- given a format D = (d_1,...,d_n),
--- this function computes all block derangements A = (A_1,...,A_n)
--- with respect to the sets F_i = {(i,j) | j \in [d_i-1]} and their union F.
+--------------------------------------------------------------
+-- BlockDerangements(List)
+--
+-- Given a format of a tensor, it computes all block derangements
+-- A = (A_1,...,A_n) with respect to the sets
+-- F_i = {(i,j) | j \in [d_i-1]} and their union F.
+--------------------------------------------------------------
 
 BlockDerangements = method()
 BlockDerangements List := D -> (
-    F := apply(#D, i-> apply(D#i-1, j-> (i+1,j+1)));
-    PP := permutations flatten F;
-    partsPP = toList set apply(PP, p-> apply(#d, i-> set apply(d#i-1, j-> p#(j+sum(i, k-> d#k-1)))));
-    BD = {};
-    for p in partsPP do if toList set flatten apply(#D, i-> apply(toList(p#i), j-> j#0 != i+1)) == {true} then BD = append(BD,p);
+    F := apply(#D, i -> apply(D#i - 1, j -> (i, j)));  
+    PP := permutations flatten F;                    
+    partsPP = toList set apply(PP, p -> 
+        apply(#D, i -> set apply(D#i - 1, j -> p#(j + sum(i, k -> D#k - 1)))));
+    BD = {};                                         
+    for p in partsPP do 
+        if toList set flatten apply(#D, i -> apply(toList(p#i), j -> j#0 != i)) == {true} 
+        then BD = append(BD, p);                     
     return BD
     )
 
--- given a format D = (d_1,...,d_n),
--- this function computes the number of totally mixed Nash equilibria of a generic game of format D.
+-------------------------------------------------------------------------------
+--NumberTMNE(List)
+--
+-- Given a format of a tensor, it computes the number of
+-- totally mixed Nash equilibria of a generic game.
+--
 -- This number equals the coefficient of h_1^(d_1-1)*...*h_n^(d_n-1)
--- in the expansion of (h_2+...+h_n)^(d_1-1)*(h_1+h_3...+h_n)^(d_2-1)*...*(h_1+...+h_(n-1))^(d_n-1)
+-- in the expansion of
+-- (h_2+...+h_n)^(d_1-1)*(h_1+h_3...+h_n)^(d_2-1)*...*(h_1+...+h_(n-1))^(d_n-1)
+-- which speeds up the usual mixed volume calculation.
+
+-- Reference: arXiv:2504.03456 - Theorem 2.7
+-------------------------------------------------------------------------------
+
 NumberTMNE = method()
 NumberTMNE List := D -> (
     KK := ZZ;
-    R := KK[h_1..h_(#D)];
-    return sub(contract(product(#D, j-> h_(j+1)^(D#j-1)),product(#D, j-> (sum(#D, i-> h_(i+1))-h_(j+1))^(D#j-1))),KK)
+    R := KK[h_0..h_(#D-1)];
+    return sub(contract(product(#D, j -> h_(j)^(D#j-1)),
+                        product(#D, j -> (sum(#D, i -> h_(i))-h_(j))^(D#j-1))), KK)
     )
-
-
------------------------------------------------------
--- maxNumberEquilibria (List)
---
--- Returns the maximal number of totally mixed Nash 
--- equilibria for a game of sizes d = (d1, d2, ... dn) given 
--- by List d.
------------------------------------------------------
-
 
 
 --***************************************--
