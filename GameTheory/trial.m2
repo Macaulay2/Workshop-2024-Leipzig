@@ -491,6 +491,13 @@ NumberTMNE List := D -> (
 --   METHODS FOR DEPENDENCY EQUILIBRIA   --
 --***************************************--
 
+-------------------------------------------------
+-- probabilityRing (List)
+--
+-- Given a list Di this constructs a ring of joint 
+-- probabilities for a game of  format Di
+-------------------------------------------------
+
 
 probabilityRing = method(Options => { CoefficientRing => QQ, ProbabilityVariableName => "p" })
 probabilityRing List := Ring => opts -> Di -> (
@@ -507,10 +514,25 @@ probabilityRing List := Ring => opts -> Di -> (
     R)
 
 
+------------------------------------------------
+-- randomGame (List)
+--
+-- Given a list Di this constructs a random game 
+-- of format Di
+------------------------------------------------
+
 randomGame = method(Options => {CoefficientRing => QQ})
 randomGame List := List => opts -> Di -> (
     K := opts.CoefficientRing;
     apply(length Di, i -> randomTensor(K, Di)))
+
+
+---------------------------------------------------------
+-- spohnMatrices (Ring, List)
+--
+-- Given the underlying probability ring R and a game X 
+-- this constructs the Spohn matrices for X
+---------------------------------------------------------
 
 
 spohnMatrices = method()
@@ -522,12 +544,25 @@ spohnMatrices (Ring, List) := List => (PR, X) -> (
     apply(n, i -> matrix apply(d_i, k -> {sum(select(J, j -> j_i==k), j -> p#j),
                                           sum(select(J, j -> j_i==k), j -> (X_i)#j * p#j) })))
 
+--------------------------------------------------------
+-- spohnIdeal (Ring, List)
+--
+-- Given the underlying probability ring R and a game X 
+-- this constructs the Spohn ideal for X
+-------------------------------------------------------- 
+			  
 
 spohnIdeal = method()
 spohnIdeal (Ring, List) := List => (PR, X) -> (
     M := spohnMatrices(PR, X);
     sum(M, m -> minors(2, m)))
 
+--------------------------------------------------------
+--konstanzMatrix (Ring, List)
+--
+-- Given the underlying probability ring R and a game X 
+-- this constructs the Konstanz Matrix for X
+--------------------------------------------------------
 
 konstanzMatrix = method(Options=>{ KonstanzVariableName => "k" })
 konstanzMatrix (Ring, List) := Matrix => opts -> (PR, X) -> (
@@ -542,8 +577,7 @@ konstanzMatrix (Ring, List) := Matrix => opts -> (PR, X) -> (
     P := vector(apply(J, j -> p#j));
     fold((M0, M1) -> M0 || M1, 
          apply(n, i -> transpose matrix apply(Di_i,
-                                              j -> diff(P, (LinearForms_i)_(j, 0)))))
-)
+                                              j -> diff(P, (LinearForms_i)_(j, 0))))))
 
 
 
