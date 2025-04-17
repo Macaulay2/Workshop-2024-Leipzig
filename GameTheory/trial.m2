@@ -2230,7 +2230,8 @@ TEST///
      PR = probabilityRing(d, CoefficientRing => FF);
      G = graph ({{1,2},{2,3}});
      I = ciIdeal(PR, G);
-     J = ideal(-p_{0, 0, 1}*p_{1, 0, 0}+p_{0, 0, 0}*p_{1, 0, 1},-p_{0, 1, 1}*p_{1, 1, 0}+p_{0, 1, 0}*p_{1, 1, 1});  
+     L = gens PR;
+     J = ideal(-L_1*L_4+L_0*L_5,-L_3*L_6+L_2*L_7);  
      assert(I==J)
 ///
 
