@@ -529,7 +529,7 @@ Node
         lie
     Headline
         Lie bracket of two elements
-    Inpupts
+    Inputs
         a : Thing
         b : Thing
     Outputs
@@ -547,7 +547,45 @@ Node
 Node 
     Key
         lieBasis
+        (lieBasis, Array, NCPolynomialRing)
+        (lieBasis, List, NCPolynomialRing)
+    Headline
+        Basis element corresponding to a Lyndon word in a Lie algebra
+    Inputs
+        l : Array -- A Lyndon word in @TO wordFormat@ notation
+        R : NCPolynomialRing -- The algebra where the output lives
+    Outputs
+        b : NCRingElement --An element of R
+    Usage
+        b = lieBasis(l, R)
+    Description
+        Text
+            A word $l$ on the alphabet $\{1,\dots, d\}$ is a {\em Lyndon word} if it is striclty smaller, in lexicographic order, than all of its rotations.
+            To any Lyndon word we can associate an iteretaed Lie braketing $b(l)\in T(\mathbb{R}^d)$ defined iteratively as follows. If $l$ is a letter $i\in \{1,\dots, d\}$
+            we simply define $$ b(i) := e_i$$
+            where as ever $e_i$ is the $i-th$ vector in the canonical basis of $\mathbb{R}^d$. For the lenght of $l$ greater than 1 we define $$
+            b(I) := [b(I_1), b(I_2)]$$
+            where $I_1, I_2$ are such that their concatenation $I_1 I_2$ is $I$ and $I_2$ is the longest Lyndon word appering as a proper right factor 
+            of $I$. 
+        Text
+            This method computes $b(l)$ for a given Lyndon word. To illustrate its usage, we replicate Example 4.9 of the reference paper.
+        Example
+            R = wordAlgebra(2);
+            lieBasis([1,1,1,2], R) == [1,1,1,2]_R - 3 * [1,1,2,1]_R + 3 * [1,2,1,1]_R - [2,1,1,1]_R
+            lieBasis([1,1,2,2], R) == [1,1,2,2]_R - 2 * [1,2,1,2]_R + 2 * [2,1,2,1]_R - [2,2,1,1]_R
+            lieBasis([1,2,2,2], R) == [1,2,2,2]_R - 3 * [2,1,2,2]_R + 3 * [2,2,1,2]_R - [2,2,2,1]_R
+        Text
+            The word can also be given as a @TO List@.
+        Example
+            lieBasis({1,1,1,2}, R) // wordFormat
 
+    References
+        @HREF {"https://doi.org/10.1017/fms.2019.3", "VARIETIES OF SIGNATURE TENSORS (doi.org/10.1017/fms.2019.3)"}@
+Node
+    Key
+        (lieBasis, Array, NCPolynomialRing)
+
+    
 ///
 
 
