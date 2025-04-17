@@ -320,7 +320,7 @@ Node
         NCRingElement
         NCPolynomialRing
     Headline
-        Create a free algebra representing a tensor
+        Create a free algebra representing a tensor algebra
     Description
         Text
             In this package tensors are represented as elements of free associative algebras, 
@@ -435,6 +435,8 @@ Node
     Key
         CAxisTensor
         (CAxisTensor, ZZ, NCPolynomialRing)
+    Headline
+        Signature of the canonical axis path at a given level
     Inputs
         k : ZZ --The level of the signature to compute
         R : NCPolynomialRing -- The signature tensors space
@@ -469,6 +471,8 @@ Node
     Key
         CMonTensor
         (CMonTensor, ZZ, NCPolynomialRing)
+    Headline
+        Signature of the canonical monomial path at a given level
     Inputs
         k : ZZ --The level of the signature to compute
         R : NCPolynomialRing -- The signature tensors space
@@ -500,6 +504,8 @@ Node
     Key
         wordString
         (wordString, NCRingElement)
+    Headline
+        A string representing a word in wordFormat
     Inputs
         w : NCRingElement
     Outputs
@@ -517,6 +523,30 @@ Node
         wordAlgebra
         wordFormat
         (symbol _, Array, NCPolynomialRing)
+
+Node
+    Key
+        lie
+    Headline
+        Lie bracket of two elements
+    Inpupts
+        a : Thing
+        b : Thing
+    Outputs
+        c : Thing --The lie bracket of a, b
+    Usage 
+        c = lie(a, b)
+    Description
+        Text
+            Let $a, b$ be elements of a non commutative ring $(R, +, \cdot)$. Their Lie bracket is the element $a\cdot b - b\cdot a$.
+        Example
+            R = wordAlgebra (3);
+            a = [1]_R
+            b = [2]_R
+            lie(a,b) == a*b - b*a
+Node 
+    Key
+        lieBasis
 
 ///
 

@@ -1187,6 +1187,8 @@ lieBasis(List, NCPolynomialRing) := (l,R) -> (
     return(lie(fact_0,fact_1))
 )
 
+lieBasis(Array, NCPolynomialRing) := (l, R) -> lieBasis (new List from l, R);
+
 -- auxiliary functions for tensorExp
 expTermCoef = (t) -> (
     m := max t;
