@@ -2214,7 +2214,7 @@ TEST///
 
 TEST///
      FF = ZZ/32003;
-     d={2,2,2};
+     d = {2,2,2};
      PR = probabilityRing(d, CoefficientRing => FF);
      G1 = graph ({{1,2},{2,3},{1,3}});
      G2 = graph ({}, Singletons => {1,2,3});
@@ -2226,11 +2226,12 @@ TEST///
 
 TEST///
      FF = ZZ/32003;
-     d={2,2,2};
+     d = {2,2,2};
      PR = probabilityRing(d, CoefficientRing => FF);
      G = graph ({{1,2},{2,3}});
      I = ciIdeal(PR, G);
-     assert(I==ideal(-p_{0, 0, 1}*p_{1, 0, 0}+p_{0, 0, 0}*p_{1, 0, 1},-p_{0, 1, 1}*p_{1, 1, 0}+p_{0, 1, 0}*p_{1, 1, 1}))
+     J = ideal(-p_{0, 0, 1}*p_{1, 0, 0}+p_{0, 0, 0}*p_{1, 0, 1},-p_{0, 1, 1}*p_{1, 1, 0}+p_{0, 1, 0}*p_{1, 1, 1});  
+     assert(I==J)
 ///
 
 -------------------------------
