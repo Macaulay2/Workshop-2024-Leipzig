@@ -50,8 +50,8 @@ export {
    "nashEquilibriumRing",
    "nashEquilibriumIdeal",  
    "deltaList",
-   "BlockDerangements",
-   "NumberTMNE",   
+   "blockDerangements",
+   "numberTMNE",   
    "toMarkovRing",
    "mapToMarkovRing",
    "mapToProbabilityRing",
@@ -377,7 +377,7 @@ nashEquilibriumRing List := L -> (
     polyRing
 )
 
---------------------------------------------------------------
+----------------------------------------------------------------
 -- nashEquilibriumIdeal (Ring, List)
 --
 -- Returns the ideal of totally mixed Nash equilibria, 
@@ -386,7 +386,7 @@ nashEquilibriumRing List := L -> (
 -- The input L must be a list of payoff tensors of
 -- the same format. The input R should be a probability ring and
 -- can be generated e.g. with nashEquilibriumRing.
---------------------------------------------------------------
+----------------------------------------------------------------
 
 nashEquilibriumIdeal = method()
 nashEquilibriumIdeal (Ring, List) := (R, L) -> (
@@ -451,7 +451,7 @@ deltaList List := d -> (
 )
 
 --------------------------------------------------------------
--- BlockDerangements(List)
+-- blockDerangements(List)
 --
 -- Given a format of a tensor, it computes all block derangements
 -- A = (A_1,...,A_n) with respect to the sets
@@ -465,8 +465,8 @@ deltaList List := d -> (
 -- Issue 2, February 1997, Pages 411-425. 
 --------------------------------------------------------------
 
-BlockDerangements = method()
-BlockDerangements List := D -> (
+blockDerangements = method()
+blockDerangements List := D -> (
     F := apply(#D, i -> apply(D#i - 1, j -> (i, j)));  
     PP := permutations flatten F;                    
     partsPP = toList set apply(PP, p -> 
@@ -479,7 +479,7 @@ BlockDerangements List := D -> (
     )
 
 -------------------------------------------------------------------------------
---NumberTMNE(List)
+-- numberTMNE(List)
 --
 -- Given a format of a tensor, it computes the number of
 -- totally mixed Nash equilibria of a generic game.
@@ -493,8 +493,8 @@ BlockDerangements List := D -> (
 -- L. Sodomaco, arXiv:2504.03456, Theorem 2.7.
 -------------------------------------------------------------------------------
 
-NumberTMNE = method()
-NumberTMNE List := D -> (
+numberTMNE = method()
+numberTMNE List := D -> (
     KK := ZZ;
     R := KK[h_0..h_(#D-1)];
     return sub(contract(product(#D, j -> h_(j)^(D#j-1)),
@@ -1745,7 +1745,6 @@ assert(class T === Tensor)
 assert(format T === {2,2})
 assert(coefficientRing T === QQ)
 assert(indexset T === {{0,0},{0,1},{1,0},{1,1}})
--- testing randomness is tricky.
 ///
 
 ------------------
@@ -1765,15 +1764,46 @@ assert(S === {5,6,7});
 --- TEST getVariableToIndexset ---
 ----------------------------------
 
+TEST ///
+R = QQ[p_{0,0}, p_{0,1}, p_{1,0}, p_{1,1}]
+ki = {0,1}
+result = getVariableToIndexset(R, ki)
+assert(result === p_{0,1})
+///
 
-
-----------------------------
+-------------------------------
 --- TEST assemblePolynomial ---
-----------------------------
+-------------------------------
+
+TEST ///
+PR = QQ[p_{0,0}, p_{0,1}, p_{1,0}, p_{1,1}]
+Xi = zeroTensor(QQ, {2,2})
+Xi#{0,0} = 1
+Xi#{0,1} = 2
+Xi#{1,0} = 3
+Xi#{1,1} = 4
+ikl = {0, 0, 1} -- Player index i=0, current strategy k=0, deviating strategy l=1
+poly = assemblePolynomial(PR, Xi, ikl)
+expected = (-2*p_{0,0} - 2*p_{0,1})
+assert(poly == expected)
+///
 
 ---------------------------------------
 --- TEST assemblePlayeriPolynomials ---
 ---------------------------------------
+
+TEST ///
+PR = QQ[p_{0,0}, p_{0,1}, p_{1,0}, p_{1,1}]
+Xi = zeroTensor(QQ, {2,2})
+Xi#{0,0} = 1
+Xi#{0,1} = 2
+Xi#{1,0} = 3
+Xi#{1,1} = 4
+i = 0
+polys = assemblePlayeriPolynomials(PR, Xi, i)
+expected = {0, -2*p_{0,0} -2*p_{0,1}, 2*p_{1,0} + 2*p_{1,1}, 0}
+assert(polys == expected)
+///
 
 
 
@@ -1795,12 +1825,19 @@ assert(#vertices CE >= 1) -- CE polytope must be non-empty
 ---------------------------------
 
 TEST ///
-X1 = zeroTensor(QQ, {2,2});
-X2 = zeroTensor(QQ, {2,2});
-X0#{0,0} = -99; X0#{0,1} = 1; X0#{1,0} = 0; X0#{1,1} = 0;
-X1#{0,0} = -99; X1#{0,1} = 0; X1#{1,0} = 1; X1#{1,1} = 0;
+X1 = zeroTensor(QQ, {2,2})
+X2 = zeroTensor(QQ, {2,2})
+X1#{0,0} = -99; X1#{0,1} = 1; X1#{1,0} = 0; X1#{1,1} = 0
+X2#{0,0} = -99; X2#{0,1} = 0; X2#{1,0} = 1; X2#{1,1} = 0
+CE = correlatedEquilibria {X1, X2}
 assert(class CE === Polyhedron)
-assert(#vertices CE > ------
+assert(#vertices CE  == 5)
+assert(vertices CE ==  matrix{
+    {0, 0, 1/199, 0, 1/10000},
+    {1, 0, 99/199, 1/101, 99/10000},
+    {0, 1, 99/199, 1/101, 99/10000},
+    {0, 0, 0, 99/101, 9801/10000}
+})
 ///
 
 ----------------------------------------
@@ -1922,27 +1959,24 @@ TEST ///
 ///
 
 ------------------------------
---- TEST BlockDerangements ---
+--- TEST blockDerangements ---
 ------------------------------
 
 TEST ///
-    BD = BlockDerangements{2,2,2}
+    BD = blockDerangements{2,2,2}
     L = {{set {(2, 0)}, set {(0, 0)}, set {(1, 0)}}, {set {(1, 0)}, set {(2, 0)}, set {(0, 0)}}}
     assert(BD == L)
 ///
 
 -----------------------
---- TEST NumberTMNE ---
+--- TEST numbertMNE ---
 -----------------------
 
 TEST ///
-    mv = NumberTMNE {2,2,2}
+    mv = numberTMNE {2,2,2}
     assert(mv == 2)
-    ---mv2 = NumberTMNE {2,2,2,2}
-    ---assert(mv2 == 9)
-    ---mv3 = NumberTMNE {3,3,3}
-    ---assert(mv3 == 10)
-    ---potential new test??
+    mv2 = NumberTMNE {3,3,3}
+    assert(mv3 == 10)
 ///
 
 ----------------------------
