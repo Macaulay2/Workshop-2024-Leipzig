@@ -33,7 +33,7 @@ newPackage(
    },
    Headline => "A package for computing equilibria in game theory",
    Keywords => {"Game Theory","Equilibria","Nash","Correlated","Dependency","Spohn","Conditional Independence"},
-   PackageExports => {"Polyhedra","GraphicalModels"},
+   PackageExports => {"Polyhedra","Elimination","GraphicalModels"},
    PackageImports => {"Polyhedra"}
    )
 
@@ -2105,16 +2105,16 @@ Di = {2,2,2}
 R = probabilityRing(Di, CoefficientRing=>QQ, ProbabilityVariableName=>"q")
 Q = zeroTensor(Di)
 
-Q#{0,0,0}=q#{0,0,0}
-Q#{0,0,1}=q#{0,0,1}
-Q#{0,1,0}=q#{0,1,0}
-Q#{0,1,1}=q#{0,1,1}
-Q#{1,0,0}=q#{1,0,0}
-Q#{1,0,1}=q#{1,0,1}
-Q#{1,1,0}=q#{1,1,0}
-Q#{1,1,1}=q#{1,1,1}
+Q#{0,0,0}=q_{0,0,0}
+Q#{0,0,1}=q_{0,0,1}
+Q#{0,1,0}=q_{0,1,0}
+Q#{0,1,1}=q_{0,1,1}
+Q#{1,0,0}=q_{1,0,0}
+Q#{1,0,1}=q_{1,0,1}
+Q#{1,1,0}=q_{1,1,0}
+Q#{1,1,1}=q_{1,1,1}
 
-assert(all for j in enumerateTensorIndices Di list Q#j === q#j)
+assert(all for j in enumerateTensorIndices Di list Q#j === q_j)
 ///
 
 -----------------------
@@ -2162,7 +2162,7 @@ TEST ///
  P = vector gens PR;
  R = QQ[apply(enumerateTensorIndices Di, j -> p_j), apply(#Di, i -> k_i)];
  I = substitute(eliminate({k_0,k_1,k_2},substitute(ideal entries(K*P), R)), PR);
- assert(I == spohnIdeal(PR,X))
+ assert(I === spohnIdeal(PR,X))
 /// 
 
 
@@ -2177,7 +2177,7 @@ TEST///
       p_(1,2,3), p_(1,2,4), p_(1,3,1), p_(1,3,2), p_(1,3,3), p_(1,3,4),
       p_(2,1,1), p_(2,1,2), p_(2,1,3), p_(2,1,4), p_(2,2,1), p_(2,2,2),
       p_(2,2,3), p_(2,2,4), p_(2,3,1), p_(2,3,2), p_(2,3,3), p_(2,3,4)};
-    assert(gens markovR === correctGens)
+    assert(toString gens markovR === toString correctGens)
 ///
 
 
@@ -2202,10 +2202,10 @@ TEST///
 TEST///
     R = probabilityRing({2,3,4}, CoefficientRing => ZZ/32003, ProbabilityVariableName => "x");
     markovR = toMarkovRing R;
-    F = mapToMarkovRing R;
-    assert(target F == R)
-    assert(source F == markovR)
-    assert(isInjective F == true)
+    F = mapToProbabilityRing R;
+    assert(target F === R)
+    assert(source F === markovR)
+    assert(isInjective F === true)
 ///
 
 ------------------
