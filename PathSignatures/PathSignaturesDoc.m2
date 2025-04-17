@@ -583,7 +583,27 @@ Node
         @HREF {"https://doi.org/10.1017/fms.2019.3", "VARIETIES OF SIGNATURE TENSORS (doi.org/10.1017/fms.2019.3)"}@
 Node
     Key
-        (lieBasis, Array, NCPolynomialRing)
+        lyndonWords
+        (lyndonWords, ZZ, ZZ)
+    Headline
+        Compute all Lyndon words of at most a given lenght on a given number of letters
+    Inputs
+        d : ZZ --The number of letters
+        k : ZZ --The maximum lenght 
+    Outputs
+        L : List -- of all Lyndon words of length at most k in d letters
+    Usage
+        L = lyndonWords(d, k)
+    Description
+        Text
+            A word $l$ on the alphabet $\{1,\dots, d\}$ is a {\em Lyndon word} if it is striclty smaller, in lexicographic order, than all of its rotations.
+        Text
+            This method generates a list containing all Lyndon words of lenght at most $k$ on $d$ letters. The Lyndon words are given as @TO List@ in the same convention
+            of @TO wordFormat@. 
+        Example
+            lyndonWords (2,3)
+
+
 
     
 ///
