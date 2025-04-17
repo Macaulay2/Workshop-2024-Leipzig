@@ -1803,6 +1803,33 @@ assert(class CE === Polyhedron)
 assert(#vertices CE > ------
 ///
 
+----------------------------------------
+--- TEST mixedProbabilityRing (List) ---
+----------------------------------------
+TEST ///
+  L = {{2,1},{3,1,2},{4,5}};
+  R1 = mixedProbabilityRing L;
+  expectedVars = {p_{0,0},p_{0,1},p_{1,0},p_{1,1},p_{1,2},p_{2,0},p_{2,1}};
+  assert(gens R1 == expectedVars);
+///
+
+------------------------------------------
+--- TEST mixedProbabilityRing (Tensor) ---
+------------------------------------------
+TEST ///
+  T = randomTensor {2,3,2};
+  R2 = mixedProbabilityRing T;
+  -- should match the List‐case for {2,3,2}
+  assert(gens R2 == gens (mixedProbabilityRing {2,3,2}));
+///
+
+-------------------------------------
+--- TEST differencesFromFirst  ---
+-------------------------------------
+TEST ///
+  assert(differencesFromFirst {2,3,10,15} == {1,7,5});
+///
+
 --------------------------------
 --- TEST nashEquilibriumRing ---
 --------------------------------
@@ -1836,8 +1863,31 @@ TEST ///
     assert(ComputedGens == TargetGens)
 ///
 
+---------------------------------------
+--- TEST directProductList        ---
+---------------------------------------
+TEST ///
+  P1 = simplex 1;   -- dim=1
+  P2 = simplex 2;   -- dim=2
+  P = directProductList {P1,P2};
+  assert(dim P == 3);
+
+  v1 = entries vertices P1;
+  v2 = entries vertices P2;
+  expectedVerts = flatten apply(v1, u -> apply(v2, w -> u | w));
+  assert(sort entries vertices P == sort expectedVerts);
+
+TEST ///
+  Q = simplex 3;  -- a tetrahedron should just return that unchanged
+  assert(directProductList {Q} === Q);
+///
+
+TEST ///
+  assertError("Empty list of polytopes", directProductList {});
+///
+
 ---------------------------------
---- TEST deltaList ---
+--- TEST deltaList            ---
 ---------------------------------
 TEST ///
     DL = deltaList {2,4,5}
@@ -1852,6 +1902,23 @@ TEST ///
     ComputedV = apply(DL2, p->entries vertices p)
     TargetV = {{{0, 0, 0, 0}, {0, 1, 0, 1}, {0, 0, 1, 1}}, {{0, 1, 0, 1}, {0, 0, 0, 0}, {0, 0, 1, 1}}, {{0, 1, 0, 1}, {0, 0, 1, 1}, {0, 0, 0, 0}}}
     assert(ComputedV == TargetV)
+///
+
+--singleton skipped test
+TEST ///
+  D = {1,2,3};
+  DL = deltaList D;
+
+  --  (1–1)+(2–1)+(3–1) = 0+1+2 = 3 polytopes
+  expectedCount = sum apply(D, i -> i-1);
+  assert(#DL == expectedCount);
+
+  --  one for i=1: dim = (1–1)+(3–1) = 0+2 = 2,
+  --  two for i=2: dim = (1–1)+(2–1) = 0+1 = 1.
+  assert(apply(DL, p -> dim p) == {2,1,1});
+
+  --  ambient dim = (1–1)+(2–1)+(3–1) = 3
+  assert(apply(DL, p -> ambDim p) == toList(3 : expectedCount));
 ///
 
 ------------------------------
@@ -1871,6 +1938,11 @@ TEST ///
 TEST ///
     mv = NumberTMNE {2,2,2}
     assert(mv == 2)
+    ---mv2 = NumberTMNE {2,2,2,2}
+    ---assert(mv2 == 9)
+    ---mv3 = NumberTMNE {3,3,3}
+    ---assert(mv3 == 10)
+    ---potential new test??
 ///
 
 ----------------------------
