@@ -398,21 +398,21 @@ Node
     Key
         halfshuffle
         (halfshuffle, NCRingElement, NCRingElement)
-        (symbol <<, NCRingElement, NCRingElement)
+        (symbol >>, NCRingElement, NCRingElement)
     Headline
         Compute the halfshaffle of an ordered pair of words
     Inputs
         f : NCRingElement 
         g : NCRingElement 
     Outputs
-        h : NCRingElement -- The half-shuffle f<<g of the two words
+        h : NCRingElement -- The half-shuffle f>>g of the two words
     Usage
-        h = f << g
+        h = f >> g
     Description
         Text
             We start on the mathematical definition, based on the reference, where the operation is called {\em right half-shuffle}. Let 
-            $T^{\geq 1}(\mathbb{R}^d)$ be the vector space spanned by the non empty words on $d$ letters. Then the half shuffle $<<$ is defined 
-            recursively to be $$ w << i := wi$$ for $w$ a word and $i$ a letter and $$ w << vi := (w << v + v << w)\bullet i$$ for $w, v$ words 
+            $T^{\geq 1}(\mathbb{R}^d)$ be the vector space spanned by the non empty words on $d$ letters. Then the half shuffle $>>$ is defined 
+            recursively to be $$ w >> i := wi$$ for $w$ a word and $i$ a letter and $$ w >> vi := (w >> v + v >> w)\bullet i$$ for $w, v$ words 
             and $i$ a letter, where $\bullet$ is the contatenation product on words. 
         Text
             As stated in the reference, the @TO shuffle@ on non empty words can be seen as a symmetrization of the half-shuffle. As a usage example, we verify this in a particular instance.
@@ -421,7 +421,7 @@ Node
             w = [1]_R
             v = [1,2,3]_R
             s = w ** v --shuffle product of w, v
-            hsSymm = (w << v) + (v << w)--half-shuffle product symmetrization of w, v
+            hsSymm = (w >> v) + (v >> w)--half-shuffle product symmetrization of w, v
             s == hsSymm
 
 

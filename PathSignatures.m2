@@ -834,6 +834,7 @@ halfshuffle (NCRingElement, NCRingElement) := (f,g) -> (
     --Exlclude one input is 0
     --fix behaviour for constants
     if(ring f === ring g) then (
+        if(degree f == 0 or degree g == 0) then error("Can not apply halfshuffle to polynomials of degree zero.");
         return(linExt(i->halfshuffleHelper(f,i),g));)
     else (
         error "Can not apply halfshuffle to polynomials from different rings";
@@ -841,9 +842,8 @@ halfshuffle (NCRingElement, NCRingElement) := (f,g) -> (
 )
 
 --The notation in the reference is the other way around but for some reason changing this to >> breaks the code
-NCRingElement << NCRingElement := (f,g) -> (
-    halfshuffle(f,g)
-)
+
+installMethod(symbol >>, NCRingElement, NCRingElement, (f,g)->halfshuffle(f,g))
 
 wordFormat = method();
 wordFormat NCRingElement := f -> (
@@ -1109,8 +1109,8 @@ phiMap(RingElement,NCPolynomialRing) := (p, A) -> (
 adjointWordHelper = method();
 adjointWordHelper (List, NCPolynomialRing, List) := (w, A, P) -> (
 
-    w2 := {1_A} | w;
-    fold((i,j) -> i << (phiMap(P#(j-1),A)), w2)
+    w2 := {phiMap(P#(w#0 - 1),A)} | w_{1..length(w)-1};
+    fold((i,j) -> i >> (phiMap(P#(j-1),A)), w2)
 )
 
 -- f is the input nc polynomial, A is the output nc ring and P is the polynomial transformation, given as a list of polynomials
