@@ -953,7 +953,6 @@ doc ///
   SeeAlso
    nashEquilibriumIdeal
    deltaList
-   maxNumberEquilibria
 ///
 
 ----------------------------------------
@@ -995,7 +994,6 @@ doc ///
   SeeAlso
    nashEquilibriumRing
    deltaList
-   maxNumberEquilibria
 ///
 
 ----------------------------------------
@@ -1038,7 +1036,6 @@ doc ///
   SeeAlso
    nashEquilibriumRing
    nashEquilibriumIdeal
-   maxNumberEquilibria
 ///
 
 -----------------------------------
