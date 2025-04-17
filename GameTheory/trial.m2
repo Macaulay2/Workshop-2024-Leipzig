@@ -51,7 +51,12 @@ export {
    "nashEquilibriumIdeal",  
    "deltaList",
    "blockDerangements",
-   "numberTMNE",   
+   "numberTMNE",
+   "probabilityRing",
+   "randomGame",
+   "spohnMatrices",
+   "spohnIdeal",
+   "konstanzMatrix",
    "toMarkovRing",
    "mapToMarkovRing",
    "mapToProbabilityRing",
@@ -512,7 +517,7 @@ numberTMNE List := D -> (
 -- probabilityRing (List)
 --
 -- Given a list Di this constructs a ring of joint 
--- probabilities for a game of  format Di
+-- probabilities for a game of format Di
 -------------------------------------------------
 
 
