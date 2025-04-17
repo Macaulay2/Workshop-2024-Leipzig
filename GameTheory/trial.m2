@@ -796,36 +796,31 @@ doc ///
   Key
     GameTheory
   Headline
-    A package for computing equilibria in game theory 
+    a package for computing equilibria in game theory 
   Description
   
     Text
       {\bf Game Theory} is a package for several equilibrium concepts in game theory. It constructs the algebraic and
       combinatorial models for Nash, correlated, dependency and conditional independence equilibria.
        
-      This package constructs ...
+      This package constructs.
       
       Here is a typical use of this package.  
-
       
-    Text
-      
-      
-    Example
-        
-      
-    Text
+    Acknowledgement
+    We thank Ben Hollering<@HREF"https://sites.google.com/view/benhollering"@> and  Mahrud Sayrafi<@HREF"https://www-users.cse.umn.edu/~mahrud/"@> for their support during the Macaulay2 in the Sciences Workshop<@HREF"https://www.mis.mpg.de/de/events/series/macaulay2-in-the-sciences"@>.
+    
+    Contributors
       The following people have generously contributed their time and effort to this project:  
+      Luca Sodomaco<@HREF"https://sites.google.com/view/luca-sodomaco/home"@>.
       
-      Name name<@HREF""@>.
-      
-  Caveat
-     GameTheory requires GraphicalModels.m2...
+    Caveat
+     GameTheory requires GraphicalModels.m2.
 ///;
 
---------------------------------
--- Documentation randomTensor --
---------------------------------
+-------------------------------
+-- Documentation zeroTensor --
+-------------------------------
 
 doc ///
   Key
@@ -833,40 +828,40 @@ doc ///
     (zeroTensor, List)
     (zeroTensor, Ring, List)
   Headline
-    construct a tensor with zero entries from a given ring
+    Construct a tensor with zero entries from a given ring.
   Usage
     zeroTensor format
     zeroTensor(R, format)
   Inputs
-    format: 
-      :List 
-        A list of integers specifying the format of the tensor (e.g. {2,2,2} creates a 2x2x2 tensor with zero entries)
-    R: 
-      @Ring@
-        (Optional) A ring from which zeros will be drawn.
+    format: List
+      A list of integers specifying the format of the tensor 
+      (e.g., {2,2,2} creates a 2x2x2 tensor with zero entries).
+    R: Ring
+      A ring from which zeros will be drawn (optional).
   Outputs
-    :Tensor
+   :Tensor
       A tensor whose entries are all zero.
   Description
-
+  
     Text
-      This method constructs a tensor with the specified format and fills it with zeros from the given ring.
-      Internally, it uses a hash table where each key is a multi-index (a list of positions).
-      Metadata such as the format, coefficient ring, and index set are stored in the tensor as well. It is useful for
-      defining a custom tensor.
-
-    Example
-      T = zeroTensor {2,2}
-      T#{0,0} = 1
-      T#{0,1} = 2
-      T#{1,0} = 3
-      T#{1,1} = 4
-      format T
-      peek T
+      This method constructs a tensor with the specified format and fills it with 
+      zeros from the given ring. Internally, it uses a hash table where each key is 
+      a multi-index (a list of positions). Metadata such as the format, coefficient 
+      ring, and index set are stored in the tensor as well. It is useful for defining 
+      a custom tensor.
+      
+  Example
+    T = zeroTensor {2,2}
+    T#{0,0} = 1
+    T#{0,1} = 2
+    T#{1,0} = 3
+    T#{1,1} = 4
+    format T
+    peek T
 
     SeeAlso
-      randomTensor
-/// 
+     randomTensor
+///
 
 --------------------------------
 -- Documentation randomTensor --
@@ -883,11 +878,9 @@ doc ///
     randomTensor format
     randomTensor(R, format)
   Inputs
-    format: 
-      :List 
+    format: List 
         A list of integers specifying the format of the tensor (e.g. {2,2,2} creates a 2x2x2 tensor)
-    R: 
-      @Ring@
+    R: Ring
         (Optional) A ring from which random coefficients will be drawn.
   Outputs
     :Tensor
@@ -923,9 +916,8 @@ doc ///
   Usage
     correlatedEquilibria X
   Inputs
-    X:
-      :List
-        A list of tensors, one for each player. Each tensor encodes the payoffs for that player.
+    X: List
+    A list of tensors, one for each player. Each tensor encodes the payoffs for that player.
   Outputs
     :Polyhedron
       The polytope representing the set of correlated equilibria for the game.
@@ -1928,7 +1920,7 @@ TEST ///
   L = {2,3,2};
   R1 = mixedProbabilityRing L;
   expectedVars = {p_{0,0},p_{0,1},p_{1,0},p_{1,1},p_{1,2},p_{2,0},p_{2,1}};
-  assert(gens R1 == expectedVars);
+  assert(toString gens R1 === toString expectedVars);
 ///
 
 ------------------------------------------
