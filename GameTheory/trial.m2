@@ -2213,7 +2213,8 @@ TEST///
 ------------------
 
 TEST///
-     FF = ZZ/32003
+     FF = ZZ/32003;
+     d={2,2,2};
      PR = probabilityRing(d, CoefficientRing => FF);
      G1 = graph ({{1,2},{2,3},{1,3}});
      G2 = graph ({}, Singletons => {1,2,3});
@@ -2224,7 +2225,8 @@ TEST///
 ///
 
 TEST///
-     FF = ZZ/32003
+     FF = ZZ/32003;
+     d={2,2,2};
      PR = probabilityRing(d, CoefficientRing => FF);
      G = graph ({{1,2},{2,3}});
      I = ciIdeal(PR, G);
