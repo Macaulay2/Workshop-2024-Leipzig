@@ -103,9 +103,8 @@ A = QQ[symbol x_1..symbol x_3]
 
 pR = A[t];
 X = polyPath({0,x_2*t^2}) ** polyPath({x_3*t^3 + 3*t, t^2 - 1})
---The issue with 0 components was fixed by changing the polyPath generator
 <<<<<<< HEAD
-r = sig(X,f,BaseRing => A)
+r = sig(X,f)
 ///
 
 ------------------------------------------------
@@ -125,11 +124,6 @@ r = sig(X,f,BaseRing => A)
     -- Latex export of a path
     -- override the "display" command (look into "net" class)
     -- ... other suggestions
-    -- 
-
--- I think there is already a way to do this but i could not find it
--- I think 'pairs' does what you want! -- how?
-enumerate = L -> toList apply(0..(#L - 1), i -> {i, L#i});
 
 --Basic checks to verify if a list is the listForm of a polynomial
 isListForm = method(); 
@@ -177,7 +171,7 @@ polyPath List := Path => (polyPathList) -> (
 
 --Take parts of a path
 
-Path _ List := (X, l) -> (
+Path _ List := Path => (X, l) -> (
     if(l === {}) then return polyPath({});
     P := new Path from{
         bR => X.bR,
@@ -188,17 +182,17 @@ Path _ List := (X, l) -> (
     return P;
 )
 
-Path _ Sequence := (X,l) -> (
+Path _ Sequence := Path => (X,l) -> (
     return X_(toList l);
 )
 
-Path _ ZZ := (X, z) -> (
+Path _ ZZ := Path => (X, z) -> (
     return X_{z};
 )
 
 getDimension = method();
 getDimension Path := (X) -> X.dimension;
-dim Path := (X) -> X.dimension;
+dim Path := (X) -> X.dimension; -- can we have two aliases for the same function?
 
 getPieces = method();
 getPieces Path := (X) -> X.pieces;
@@ -212,7 +206,7 @@ getNumberOfPieces Path := (X) -> X.numberOfPieces;
 
 -- Concatenation of paths
 
-sub(Path,Ring) := (X,R) -> (
+sub(Path,Ring) := Path => (X,R) -> (
     npieces := X.pieces;
     npieces = apply(npieces, polvec -> apply(polvec, pol -> apply(pol, mon -> (mon#0, sub(mon#1,R)))));
     P := new Path from{
@@ -247,7 +241,15 @@ Path ** Path := Path => (X,Y) -> (
     return P;
 )
 
-Path ^ ZZ := (X,n) -> (
+TEST ///
+pR = QQ[t];
+X = polyPath({t,t^2})
+
+<<<<<<< HEAD
+X**X
+///
+
+Path ^ ZZ := Path => (X,n) -> (
     if(n > 0) then return(fold(n:X, (X,Y) -> X**Y));
     if(n == -1) then (
         rpath := X.pieces;
@@ -266,15 +268,14 @@ Path ^ ZZ := (X,n) -> (
     auxR := X.bR [t];
     return(polyPath(toList(X.dimension:(0_(auxR)))))
 )
--- TEST ///
--- pR = QQ[t];
--- X = polyPath({t,t^2})
--- Y = polyPath({t,t^2})
 
--- <<<<<<< HEAD
--- X**Y
--- ///
+TEST ///
+pR = QQ[t];
+X = polyPath({t,t^2})
 
+<<<<<<< HEAD
+X^(-1)
+///
 
 net Path := (X) ->
 (
@@ -292,14 +293,8 @@ net Path := (X) ->
     return(myNet)
 )
 
--- foo = method(Options=>{BaseRing => QQ})
--- foo(List,List) := (l,g)->(l|g);
--- foo(Path,List) := (l,g)->(l_g);
-
--- The general method for computing the signature of a piecewise polynomial path
-
-
 --Constructs the linear polynomial path t*v for a vector v
+
 linPath = method();
 linPath List := Path => (v) ->(
     baseR := class product(v); 
@@ -312,9 +307,10 @@ linPath List := Path => (v) ->(
     }
 )
 
-pwLinPath = method();
 --Constructs a pw linear path from a given matrix of increments
-pwLinPath Matrix := (pwlMatrix) -> (
+
+pwLinPath = method();
+pwLinPath Matrix := Path => (pwlMatrix) -> (
     pathList := apply(transpose entries pwlMatrix, i-> linPath(i));
     return(fold(pathList,(i,j)->i**j));
 )
@@ -322,118 +318,29 @@ pwLinPath Matrix := (pwlMatrix) -> (
 TEST ///
 R= QQ[t];
 
+X = polyPath({t, t^2});
+assert(getNumberOfPieces X === 1);
+assert(dim p === 2);
+Y = linPath({1,2});
 
-p = polyPath({t, t^2});
-assert(p#"type" === "PPolynomial", "p should be a polynomial path");
-assert(keys(p#"pieces") === {0}, "p should have one piece");
-assert(p#"dimension" === 2, "p should be 2-dimensional");
-
-pp = polyPath({ {t, t^2}, {t^3, t^4} });
-assert(pp#"type" === "PPolynomial", "pp should be a piecewise polynomial path");
-assert(keys(pp#"pieces") === {0,1}, "pp should have pieces with keys 0 and 1");
-assert(pp#"dimension" === 2, "pp should be 2-dimensional");
-
+XY = X**Y;
+assert(getNumberOfPieces XY === 2);
+assert(dim XY === 2);
 ///
 
 
--- linToPoly = method(Options => {polyRing => QQ[local t] });
--- linToPoly Path := Path => opts -> p -> (
---     if p#'type' == 
--- )
-
-
-
--- Path"+" = (p,q) -> (
---     --For now assuming p, q have the same number of pieces 
-
--- )
-
-
------------------------------------------
---Signature of a linear path
---u is a vector correspongding to the increment of the path
---w is a list representing a word
------------------------------------------
--- linsig = method()
--- linsig (List, List) := QQ => (u, w)-> (
---     h := length (w);
---     if h==0 then (return(1));
---     product(h, i-> u#(w#i-1))/(h!)
--- )
-
-
-
------------------------------------------
---Signature of a piecewise linear path
---Build calling recursively linsig
---M is a list of increments as in linsig, 
---w is a word, as in linsig
------------------------------------------
--- pwlsigw = method()
--- pwlsigw (List, List) := QQ => (M, w, baseR)-> (
---     h := length (w); 
---     m := length(M);
-
---     --base case
---     if(m==1) then return linsig(M#0,w);     
-    
---     --matrix check
---     if not(isMatrix(M)) then(               
---         error("Expected list representing matrix, got list of lists of lengths:",for i from 0 to length(M)-1 list length(M_i)) ;
---     );
-
---     -- First m-1 pieces
---     Mrec := M_{0..m-2};
---     -- last piece
---     Mlast := M#(m-1);
-
---     sum(h+1, i -> (
---         pwlsigw(Mrec, w_{0..i-1})*linsig(Mlast,w_{i..h-1}))
---     )
--- );
-
-
-----------------------------------------
---Checks if a list represents a matrix
-----------------------------------------
-isMatrix = method()
-isMatrix (List) := Boolean => M ->(
-    lens := for i from 0 to length(M)-1 list length(M_i); 
-    if(#(set(lens))>1) then(
-        return false 
-    );
-    return true
-)
-
-ncMonToVar = method()
-ncMonToVar (NCRingElement) := List => f -> (
-    fmons := keys f.terms;
-    monKey := (keys fmons#0)#1;
-    (fmons#0)#(monKey)
-);
-
-------------------------------------
 --coefficientHTable returns a Hash table associating the monomials in a nc polynomial to their coefficients
 --this is not the same as f.terms, which associated the NCMonomials (an inaccessible type) in f to their coefficients
--------------------------------------
 coefficientHTable = method()
 coefficientHTable (NCRingElement) := HashTable => f -> (
         fterms := terms f;
         hashTable(apply(fterms, i -> {leadMonomial i, leadCoefficient i}))
 );
 
---Returns the index of a variable given as an element of a NCRing
-varIndex = method()
-varIndex(NCRingElement) := List => (var) -> (
-    tbl := hashTable toList(apply(pairs var.ring.generators, (i,j)->(j,i)));
-    return tbl#var
-)
 
-------------------------------------
 --This function converts a NC monomial to a list representing the corresponding word
 --f is a monomial in an NCring
---The output is a list representing the word, as in linsig
--------------------------------------
+--The output is a list representing the word
 
 ncMonToList = method()
 ncMonToList (NCRingElement) := List => f -> (
@@ -444,57 +351,18 @@ ncMonToList (NCRingElement) := List => f -> (
     (fmons#0)#(monKey) / ( i -> varst#i)
 );
 
-------------------------------------
---This function converts a list to the corresponding monomial in an NCring
--------------------------------------
-
-toNCMon = method()
-toNCMon (List, NCRing) := (w,R) -> (
-    return(product(w,i->R_(i-1)));
-);
-
-
---------------------------------
---wordRingAndValues takes an non commutative polynomial f and returns a ring wR and a list vals of elements in the base ring of f
--- For every monomial m in f, it creates a new variable v_m. The ring wR is the free commutative QQ-algebra in the variables v_m.
--- The coefficients of these monomials in f are stored in vals, in such a way that the index of v_m in R agrees with the position of the coefficient of m in vals
--- (TODO: add option for different variable name in wR.)
---------------------------------
--- wordRingAndValues = method(Options => {BaseRing => QQ})
--- wordRingAndValues(NCRingElement) := (Ring,List) => opts -> f -> (
---         htable := coefficientHTable(f);
---         whtable := applyKeys(htable, ncMonToList);
---         v := getSymbol("v");
---         vs := new Array from apply(keys whtable, i-> v_(toSequence(i)));
---         wR := opts.BaseRing vs;
---         vals := values whtable;
---        return((wR,vals))
--- )
-
---This is used to extend functions on words to the whole non commutative polynomial algebra
+--linExt extends functions on words to the whole non commutative polynomial algebra
 linExt = method();
 linExt(FunctionClosure, NCRingElement) := RingElement => (fun, w) -> (
     lot := apply(terms w, i -> {leadCoefficient i, ncMonToList(i)});
     sum(length(lot),i->(lot#i)#0 * fun((lot#i)#1))
 )
 
---------------------------------------
---The following function computes the signature of a piecewise linear path
---The increments of the segments are given by the columns of the matrix M
---The non-commutative polynomial is given as an element w of a NCRing
---------------------------------------
--- pwlsig = method();
--- pwlsig (Matrix, NCRingElement) := QQ => (M, w)-> (
---     Mentries := entries M;
---     linExt(i->pwlsigw(Mentries,i),w)
--- );
 
-
---------------------------------------
 --polyIntegral computes integrals of polynomials with respect to one variable
 --f is the integrand
 --xn is a generator of the base ring
---------------------------------------
+
 polyIntegral = method()
 polyIntegral (RingElement, RingElement) := RingElement => (f, xn) ->(
     R := ring f;
@@ -504,13 +372,13 @@ polyIntegral (RingElement, RingElement) := RingElement => (f, xn) ->(
 );
 
 
--------------------------------------
---polySigGen computes the signature of a polynomial path for words
+
+-- polySigGen computes the signature of a polynomial path for words
 -- l is the list of components of the polynomial path, each represented by a list
 -- Here, a polynomial is represented by its list form, see M2 documentation for listForm
 -- w is a list representing a word as in linsig
 -- br is the base ring of the coefficients
--------------------------------------
+
 polySigGen = method()
 
 polySigGen (List, List, Ring) := RingElement => (l,w, baseR) ->(
@@ -540,48 +408,21 @@ polySigGen (List, List, Ring) := RingElement => (l,w, baseR) ->(
     return (if class resd === baseR then resd else leadCoefficient resd)
 );
 
----------------------------------------------
---polysig  computes the signature of a polynomial path for nc polynomials, similar to pwlsig for pwl paths
---CAVEAT: do not use variable names s or t when calling this function. TODO: solve this
---------------------------------------------
--- polysig = method(Options=>{BaseRing => QQ});
 
--- polysig (List, NCRingElement) := QQ => opts -> (l, w) -> (
---     linExt(i->polySigGen(l,i,opts.BaseRing),w)
--- );
-
--- errorDepth = 0;
-
-
-TEST ///
-R = QQ{s_1..s_5};
-f = 1/2*(s_1*s_2 - s_2*s_1);
-A = QQ[x_1,x_2,x_3]
-
-<<<<<<< HEAD
-r = polysig({ {({1},0)} , {({1},x_2),({2},x_3)} },f, BaseRing => A)
-assert(r == 1/6*x_1*x_3) 
-///
-
-
-----------------------------------------------------------------------------
--- Draft of equivariance action
--- Consider outputing the NCringmap instead of computing it on 
--- an element
-----------------------------------------------------------------------------
-
-matrixAction = method()
-matrixAction (Matrix,  NCRingElement, NCRing) := NCRingElement => (M,  p, B) -> (
-    --if #(gens B) != 
+-- Diagonal matrix action on tensors
+matrixAction = method();
+matrixAction (Matrix,  NCRing, NCRing) := NCRingElement => (M, A, B) -> (
     N :=transpose entries M;
-    f := ncMap(B, ring p, apply(N, j->sum(length(j), i->j#i*(gens B)#i)));
-    f(p)
+    f := ncMap(B, A, apply(N, j->sum(length(j), i->j#i*(gens B)#i)));
+    return(f);
 )
 
-----------------
--- Matrix * Tensor gives the result of the diagonal action of the matrix on the tensor
-----------------
+matrixAction (Matrix,  NCRingElement, NCRing) := NCRingElement => (M, p, B) -> (
+    f := matrixAction(M,ring p, B);
+    return(f(p));
+)
 
+-- Matrix * Tensor also computes the diagonal matrix action on a tensor, but creates the output nc ring automatically
 Matrix * NCRingElement := (M, f) -> (
     n := length entries M;
     m := length entries transpose M;
@@ -593,16 +434,14 @@ Matrix * NCRingElement := (M, f) -> (
     return(matrixAction(M, f, B));)
 )
 
-----------------------------------------------------------------------------
+
 -- Hard coded canonical axis path tensor simple components as in 
 -- Example 2.1 of "varieties of signature tensors" 
 -- C. Amendola et al, 2018
 --Inputs: 
 --  w, a word in a NCpolynomial ring 
-----------------------------------------------------------------------------
 
 CAxisComponent= method();
-
 CAxisComponent (NCRingElement) := QQ => w -> (
     L := ncMonToList (w);
     if(L!=sort(L)) then return 0;
@@ -610,16 +449,14 @@ CAxisComponent (NCRingElement) := QQ => w -> (
     distinctPermutations/((#L))!
 );
 
-----------------------------------------------------------------------------
+
 -- Hard coded canonical moment path tensor simple components as in 
 -- Example 2.3 of "varieties of signature tensors" 
 -- C. Amendola et al, 2018
 --Inputs: 
 --  w, a word in a NCpolynomial ring
-----------------------------------------------------------------------------
 
 CMonComponent= method();
-
 CMonComponent (NCRingElement) := QQ => w -> (
     L := ncMonToList (w);
     product(L_{1..length(L)-1})/product(accumulate(plus,L))
@@ -635,27 +472,7 @@ CMonTensor(ZZ, NCPolynomialRing) := NCRingElement => (k,r) -> (
     sum(apply((entries basis(k,r))#0, i-> CMonComponent(i) * i))
 )
 
-
------------------------------------------------------------------------
---createMapFromCoreTensor takes a core tensor f and a target ambient 
---dimension and constructs the associated map of varieties
------------------------------------------------------------------------
-
--- createMapFromCoreTensor = method(Options=>{BaseRing => QQ});
--- createMapFromCoreTensor(NCRingElement, ZZ) := NCRingElement => opts -> (f,ambd) -> (
---     a := getSymbol "a";
---     lamb := getSymbol "lamb";
---     ctd := #gens f.ring; -- if core tensor is element of (R^d)^{tensor k}, this is d
---     mR := (opts.BaseRing)[a_(1,1)..a_(ctd,ambd)]; -- create coordinate ring of matrix space
---     A := genericMatrix(mR,ambd,ctd); -- create generic matrix
---     ncR2 := mR{(lamb)_1..(lamb)_ambd}; -- create tensor algebra over ambient vector space
---     genTensor := matrixAction(A, f, ncR2); -- create generic tensor
---     (wR,rmap) := wordRingAndValues(genTensor,BaseRing=>opts.BaseRing); -- get target ring and components of ring map
---     map(mR, wR, rmap) -- create the map from word ring to matrix ring via rmap
--- )
-
 -- tensorParametrization takes a tensor T, constructs a ring R with one variable for each word appearing in T and creates the map that sends a variable to the coefficient of the corresponding word.
--- I think this makes createMapFromCoreTensor obsolete.
 
 tensorParametrization = method(Options=>{BaseRing => QQ})
 tensorParametrization(NCRingElement) := opts -> (f) -> (
@@ -669,8 +486,7 @@ tensorParametrization(NCRingElement) := opts -> (f) -> (
     return(map(bR,R,lc));
 )
 
-
--- define shuffle products on words, then overload function and use linExt to extend to NCRingElements. Define operator ** as shuffle product in NCAlgebra
+-- create the non commutative algebra over alphabet given by a list.
 
 wordAlgebraHelper = method(Options=>{BaseRing => QQ});
 wordAlgebraHelper (List) := opts -> (l) -> (
@@ -679,85 +495,17 @@ wordAlgebraHelper (List) := opts -> (l) -> (
     return(opts.BaseRing myvars);
 )
 
+-- create the non commutative algebra over alphabet 1..z
+
 wordAlgebra = method(Options=>{BaseRing => QQ});
 wordAlgebra (ZZ) := opts -> (z) -> (
     return(wordAlgebraHelper(toList(1..z), BaseRing => opts.BaseRing));
 )
 
+-- define shuffle products on words, use linExt to extend to NCRingElements. Define operator ** as shuffle product in NCAlgebra
 
---Returns the shuffle product of two words using the recursive definition. The words are given as NCMonomials with their respective ring. 
---There is no need for checks on whether the imputed elements are monomials since this is an auxiliary function that will be called in the function "shuffle" 
-
--- need to rewrite shuffleMon; causes bugs when working with different NCRings, see below
--- shuffleMon = method();
--- shuffleMon (NCRingElement, NCRingElement, NCPolynomialRing) := NCRingElement => (word1, word2, R) -> (
-
---     list1Aux:=(values ((keys word1.terms)#0))#1; --List of factors in the monomial
---     list2Aux:=(values ((keys word2.terms)#0))#1;
-
---     if (word1==0_R or word2==0_R ) then (return 0_R);
-
---     if (word1==1_R) then (return word2);
-
---     if (word2==1_R) then (return word1);
-
---     if (length(list1Aux)==1) and (length(list2Aux)==1) then (return word2*word1 + word1*word2);
-
---     if (length(list1Aux)==1) and (length(list2Aux)>1) then (
---         ww2:= product(length(list2Aux)-1, i-> value (list2Aux)#i); -- CALLING value PUTS VARIABLE INTO THE WRONG RING
---         bb:= value (list2Aux)#-1; -- SAME PROBLEM HERE! --is this fixed?
---         return word2*word1 + shuffleMon(word1, ww2, R)*bb
---     );
-
---     if (length(list1Aux)>1) and (length(list2Aux)==1) then (
---         return  shuffleMon(word2, word1, R)
---     );
-
-
---     w1:= product(length(list1Aux)-1, i-> value (list1Aux)#i);
-
---     w2:= product(length(list2Aux)-1, i-> value (list2Aux)#i);
-
---     a:= value (list1Aux)#-1;
-
---     b:= value (list2Aux)#-1;
-
---     return (shuffleMon(w1, word2, R)* a) + (shuffleMon(word1, w2, R)* b)
--- )
-
--- --Auxiliary function that returns the shuffle product of NCpolynomials of the type (sum f_i x^i) shuffle x^j
--- --
-
--- shuffleMonExtL = method()
--- shuffleMonExtL (NCRingElement, NCRingElement, NCPolynomialRing) := (NCRingElement) => (g , word, R) -> (
-
---     coefTableAux:= coefficientHTable(g);       
---     return sum(#(values coefTableAux), i-> (values coefTableAux)_i* shuffleMon((keys coefTableAux)_i, word, R))
-
--- );
-
-
-
--- --Returns the shuffle product of two NCpolynomials of the type (sum f_i x^i) shuffle (sum g_j x^j)
--- --
--- shuffle = method();
--- shuffle (NCRingElement, NCRingElement) := NCRingElement => (f, g) -> (
---     R1 := class f; R2 := class g;
---     if(not R1 === R2) then error("Can not shuffle words from different algebras.");
---     coefTableAux:= coefficientHTable(g);       
---     return sum(#(values coefTableAux), i-> (values coefTableAux)_i* shuffleMonExtL(f, (keys coefTableAux)_i, R1))
-
--- )
-
-
--- updated shuffle method:
-
----------------------------------------------
---Intermediate operations for shuffle product 
---of two words
----------------------------------------------
-
-shuffleHelper= method();
+--Intermediate operations for shuffle product of two words
+shuffleHelper= method(); 
 shuffleHelper(List,List,NCRing) := (w1,w2,R) -> (
     l1 := length(w1);
     l2 := length(w2);
@@ -782,9 +530,8 @@ shuffleHelper(NCRingElement, NCRingElement) := (f,g) -> (
     )
 )
 
----------------------------------
 -- Exposed versions of shuffle
----------------------------------
+
 shuffle = method();
 shuffle (NCRingElement, NCRingElement) := (a, b) -> shuffleHelper(a,b); 
 
@@ -792,27 +539,19 @@ NCRingElement ** NCRingElement := (f,g) -> (
     shuffle(f,g)
 )
 
+-- the antipode of the nc polynomial ring as a Hopf algebra
+
 antipode NCRingElement := (f) -> (
     R := ring f;
     linExt(w -> (-1)^(length(w)) * (new Array from reverse(w))_R, f)
 );
 
+TEST ///
+A3 = wordAlgebra(3);
+assert((antipode (antipode [1,2,3,2,1]_A3)) == [1,2,3,2,1]_A3)
+///
 
--- define halfshuffle product. Define operator << as halfshuffle product in NCAlgebra
-
--- halfshuffle = method();
--- halfshuffle (NCRingElement, NCRingElement) := NCRingElement => (word1, word2) -> (
-  
---     if (length((values ((keys word2.terms)#0))#1)==1) then (
---     return word1*word2
---     );
-
-
---     w2:= product(length((values ((keys word2.terms)#0))#1)-1, i-> value ((values ((keys word2.terms)#0))#1)#i);
---     b:= value ((values ((keys word2.terms)#0))#1)#-1;
-
---     return (halfshuffle(word1, w2) + halfshuffle(w2, word1))*b
--- )
+-- define halfshuffle on nc polynomials and words, then extend to nc pols via linExt
 
 halfshuffleHelper = method();
 halfshuffleHelper(NCRingElement, List) := (f,w) -> (
@@ -820,10 +559,9 @@ halfshuffleHelper(NCRingElement, List) := (f,w) -> (
     wr := w_(-1);
     return( shuffleHelper(f,wl) * (ring f)_(wr-1) );
 )
+
 halfshuffle = method();
 halfshuffle (NCRingElement, NCRingElement) := (f,g) -> (
-    --Exlclude one input is 0
-    --fix behaviour for constants
     if(ring f === ring g) then (
         if(degree f == 0 or degree g == 0) then error("Can not apply halfshuffle to polynomials of degree zero.");
         return(linExt(i->halfshuffleHelper(f,i),g));)
@@ -832,10 +570,11 @@ halfshuffle (NCRingElement, NCRingElement) := (f,g) -> (
     )
 )
 
---The notation in the reference is the other way around but for some reason changing this to >> breaks the code
-
 installMethod(symbol >>, NCRingElement, NCRingElement, (f,g)->halfshuffle(f,g))
 
+-- methods for output of nc polynomials
+
+-- should mention reference? (copied and adapted code from NCAlgebra package)
 wordFormat = method();
 wordFormat NCRingElement := f -> (
    if #(f.terms) == 0 then return net "0";
@@ -902,7 +641,8 @@ wordString NCRingElement := f -> (
    myString
 )
 
-applyDeep = method();
+
+applyDeep = method(); -- auxiliary function for tensorArray
 applyDeep (Thing, FunctionClosure) := (l,f) -> (
     if(class l === List) then (
         l1 := apply(l,i->applyDeep(i,f));
@@ -911,6 +651,7 @@ applyDeep (Thing, FunctionClosure) := (l,f) -> (
     f(l)
 )
 
+-- converts a polynomial f in an nc ring R to a list of multi-dimensional arrays of depth 1,...,k, where k is the degree of f and the entry (j,i_1,...,i_j) is the coefficient of [i_1,...,i_j]_R in f.
 tensorArray = method();
 tensorArray NCRingElement := f -> (
     H := coefficientHTable f;
@@ -923,6 +664,7 @@ tensorArray NCRingElement := f -> (
     )
 )
 
+-- returns only the depth h component of tensorArray
 tensorArray(NCRingElement,ZZ) := (f,h) -> (
     H := coefficientHTable f;
     R := ring f;
@@ -932,7 +674,7 @@ tensorArray(NCRingElement,ZZ) := (f,h) -> (
 
 NCRingElement @ ZZ := (f,h) -> tensorArray(f,h);
 
- -- the inner product on tensor space
+-- the inner product on tensor space
 innerHelper = method();
 innerHelper(List, NCRingElement) := (l,f) -> (
     H := coefficientHTable f;
@@ -946,15 +688,16 @@ inner(NCRingElement, NCRingElement) := (fv,f) -> (
     return(linExt(w->innerHelper(w,f),fv));
 )
 
-
 NCRingElement @ NCRingElement := (f,m) -> inner(f,m);
 
+-- installs operator to work with words [i1,...,ik]_R in an NC ring R
 Array _ NCPolynomialRing := (a, R) -> (
     if(max(toList a)>length(gens R)) then (error(toString(net "Not enough letters in ring " | net R | ".")));
     
     product(a,i->R_(i-1))
 )
 
+-- returns the word in an NC ring that corresponds to the signed volume under the signature
 signedVolume = method();
 signedVolume NCPolynomialRing := (R) -> (
     perms := permutations(toList(1..length(gens R)));
@@ -962,134 +705,19 @@ signedVolume NCPolynomialRing := (R) -> (
 );
 
 
--- --Function to transform a commutative polynomial into a non-commutative polynomial, with the same ordered variables of a given NCRing. 
--- --Roughly speaking it outputs the given polynomial with the variables replaced by non commutative variables on a given NCRing. It is an auxiliary funtion to be used later. 
--- --
--- elementToNCElement = method();
--- elementToNCElement (RingElement, NCPolynomialRing):= NCRingElement => (f, S) -> (
---     R:=ring f;
---     phi:=ncMap(S ,R , apply(length(gens S), i->(gens S)_i));
---     return phi(f)
--- )
+-- adjointWord computes values of the half-shuffle homomorphism M_p of nc rings adjoint to polynomial maps of affine spaces under the signature.
 
-
--- --Returns the image of a monomial under the map \varphi: R[x_1..x_d] \to T(R^d), x_i\maptso i, x_{i_1},...,x_{i_l}\mapsto x_{i_1}\shuffle .... \shuffle x_{i_l}
--- --This function is then extended linearly in "phiMap"  
-
--- phiMapMon = method();
--- phiMapMon (NCRingElement, NCPolynomialRing):= NCRingElement => (f, S) -> (
-  
---     if f==1_S then (
---         return 1_S
---     );
-
---     ListAux:=(values ((keys f.terms)#0))#1;
-
---     if (length(ListAux)==1) then (
---         return f
---     );
-
-
---     fw:= product(length(ListAux)-1, i-> value (ListAux)#i);
---     b:= value (ListAux)#-1;
-
---     return (phiMapMon(fw, S) ** b)
--- )
-
--- --Returns the image of a polynomial under the map \varphi: R[x_1..x_d] \to T(R^d), x_i\maptso i, x_{i_1},...,x_{i_l}\mapsto x_{i_1}\shuffle .... \shuffle x_{i_l} 
--- --Extends linearly the previous function.
-
--- phiMap = method();
--- phiMap (RingElement, NCPolynomialRing) := NCRingElement => (f, S) -> ( 
-
-
---     if f==0 then (
---         return 0_S
---     );
-
---     ncomf:= elementToNCElement(f, S);
---     coefTableAux:= coefficientHTable(ncomf);
---     return sum(#(values coefTableAux), i-> (values coefTableAux)_i* phiMapMon((keys coefTableAux)_i, S))
--- )
-
-
--- --Given a list of polynomials, it returns the image of their Jacobian under the phi map. 
--- --There is no need to check whether the input list is made of polynomials since it is an auxiliary function to be called later.  
-
--- phiJacobian = method();
--- phiJacobian (List, NCPolynomialRing) := NCMatrix => (l, S) -> ( 
-
---     M:=matrix{l};
---     J:=jacobian M;
-
---     m := table(numgens target J, numgens source J, (i,j)->phiMap(J_(i,j), S));
-
---     return ncMatrix(apply(numgens target J, i->apply(numgens source J, j->m#i#j)))
-
--- )
-
-
-
--- --Function M_p applied to words
-
--- adjointWordMon = method()
--- adjointWordMon (NCRingElement, NCPolynomialRing, ZZ, List) := NCRingElement => (word, T, d, l) -> (
-
---     S := class word;
-    
---     if word==0_S then (
---             return 0_T
---         );
-    
---     listAux := (values ((keys word.terms)#0))#1;
---     M := transpose phiJacobian(l, T);
---     listVars := gens T;
-    
---     i := 0;
-
---     if length(listAux)==1 then (
---         i =varIndex(word);
---         return sum(d, j-> ((M.matrix)_i)_j*listVars_(j))
---     );
-
---     if length(listAux)>1 then (
---         ww := product(length(listAux)-1, i-> value (listAux)#i);
---         i = varIndex(value (listAux)#-1);
-
---         return sum(d, j-> (adjointWordMon(ww, T, d, l) ** ((M.matrix)_i)_j )*listVars_(j))
---     );
--- )
-
--- --Function M_p applied to polynomials
-
-
--- adjointWord = method()
--- adjointWord (NCRingElement, NCPolynomialRing, List) := NCRingElement => (g, T, L) -> (
-
---     Raux:=ring product(L);
---     d:=length(gens Raux);
-
---     --Check that number of letters in the given NCRing is enough to compute the image of the word  
---     if d>length(gens T) then (
---         error("Number of generators of the NCRing lower than dimension of the polynomial ring")
---     );
-
---     if not all(apply(L, p->part(0,p)), q->q==0) then (
---         error("The image of 0 under the polynomial map is not 0")
---     );
-
---     coefTableAux:= coefficientHTable(g);       
---     return sum(#(values coefTableAux), i-> (values coefTableAux)_i* adjointWordMon((keys coefTableAux)_i, T,d,L))
-
--- )
-
--- alternative implementation of adjointWord via half-shuffle -- let's discuss --status?
+-- Returns the image of a monomial under the map \varphi: R[x_1..x_d] \to T(R^d), x_i\maptso i, x_{i_1},...,x_{i_l}\mapsto x_{i_1}\shuffle .... \shuffle x_{i_l}
+-- This function is then extended linearly in "phiMap"  
 
 phiMapMon = method();
 phiMapMon(List, NCPolynomialRing) := (l, A) -> (
     L := flatten apply(length(l), i -> toList((l#i : [i+1]_A)));
     fold(L, (i,j) -> i**j)
 )
+
+-- Returns the image of a polynomial under the map \varphi: R[x_1..x_d] \to T(R^d), x_i\maptso i, x_{i_1},...,x_{i_l}\mapsto x_{i_1}\shuffle .... \shuffle x_{i_l} 
+-- Extends the previous function linearly.
 
 phiMap = method();
 phiMap(RingElement,NCPolynomialRing) := (p, A) -> (
@@ -1105,6 +733,7 @@ adjointWordHelper (List, NCPolynomialRing, List) := (w, A, P) -> (
 )
 
 -- f is the input nc polynomial, A is the output nc ring and P is the polynomial transformation, given as a list of polynomials
+
 adjointWord = method();
 adjointWord (NCRingElement, NCPolynomialRing, List) := (f, A, P) -> (
     Raux:=ring product(P);
@@ -1123,7 +752,11 @@ adjointWord (NCRingElement, NCPolynomialRing, List) := (f, A, P) -> (
     return(linExt(w->adjointWordHelper(w,A,P), f));
 )
 
--- given d and k, nextLyndon(w,d,k) creates the next Lyndon word of length at most k in d letters after w in lexicographical order
+
+-- Lyndon words and more.
+
+-- Implementation of Duval's algorithm. Given d and k, nextLyndon(w,d,k) creates the next Lyndon word of length at most k in d letters after w in lexicographical order
+
 nextLyndonWord = method();
 nextLyndonWord(List,ZZ,ZZ) := (l,d,k) -> (
     nl := fold((ceiling(k/length(l))):l, (i,j)->i|j);
@@ -1136,6 +769,7 @@ nextLyndonWord(List,ZZ,ZZ) := (l,d,k) -> (
 );
 
 -- lyndonWords(d,k) returns a list of all Lyndon words of length at most k in d letters
+
 lyndonWords = method();
 lyndonWords (ZZ,ZZ) := (d,k) -> (
     if(d <= 0) then error("d must be a positive integer in lyndonWords(d,k).");
@@ -1148,9 +782,11 @@ lyndonWords (ZZ,ZZ) := (d,k) -> (
 )
 
 -- lie(a,b) returns the lie bracket of a and b
+
 lie = (a,b) -> (a*b - b*a);
 
 -- isLyndon(l) checks if l is a Lyndon word
+
 isLyndon = method();
 isLyndon List := (l) -> (
     out := true;
@@ -1159,6 +795,7 @@ isLyndon List := (l) -> (
 )
 
 -- lyndonFact(l) computes the standard decomposition of l
+
 lyndonDecomposition = method();
 lyndonDecomposition List := (l) -> (
     i := length(l)-1;
@@ -1168,6 +805,7 @@ lyndonDecomposition List := (l) -> (
 )
 
 -- lieBasis(l, A) yields the basis element corresponding to the Lyndon word l in the free Lie algebra, realized in A
+
 lieBasis = method();
 lieBasis(List, NCPolynomialRing) := (l,R) -> (
     if(length(l) == 0) then error("lieBasis expected a non-empty list as input.");
@@ -1179,6 +817,7 @@ lieBasis(List, NCPolynomialRing) := (l,R) -> (
 lieBasis(Array, NCPolynomialRing) := (l, R) -> lieBasis (new List from l, R);
 
 -- auxiliary functions for tensorExp
+
 expTermCoef = (t) -> (
     m := max t;
     counts := new MutableList from (m : 0);
