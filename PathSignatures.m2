@@ -1,6 +1,6 @@
 newPackage("PathSignatures",
          Version => "1.0",
-         Authors => {{Name => "Felix Lotter"}, {Name => "Oriol Reig"}, {Name => "Angelo El Saliby"}},
+         Authors => {{Name => "Felix Lotter"}, {Name => "Oriol Reig"}, {Name => "Angelo El Saliby"}, {Name => "Carlos Amendola"}},
          Headline => "A package for working with signatures of algebraic paths",
          AuxiliaryFiles => true,
          PackageExports => {"NCAlgebra", "Permutations"}
@@ -135,12 +135,11 @@ r = sig(X,f,BaseRing => A)
     -- "==": check whether two paths are equal (this could be hard)
     -- Latex export of a path
     -- override the "display" command (look into "net" class)
-    --
     -- ... other suggestions
     -- 
 
 -- I think there is already a way to do this but i could not find it
--- I think 'pairs' does what you want!
+-- I think 'pairs' does what you want! -- how?
 enumerate = L -> toList apply(0..(#L - 1), i -> {i, L#i});
 
 --Basic checks to verify if a list is the listForm of a polynomial
@@ -235,7 +234,7 @@ sub(Path,Ring) := (X,R) -> (
 );
 
 Path ** Path := Path => (X,Y) -> (
-    if(X.dimension != Y.dimension) then error("Can not concatenate paths of different ambient dimension.");
+    if(X.dimension != Y.dimension) then error("Cannot concatenate paths of different ambient dimension.");
     R := if((X.bR === Y.bR)) then X.bR else (
         if (isMember(Y.bR, (X.bR).baseRings)) then (
             Y = sub(Y,X.bR); return(X ** Y);
@@ -465,7 +464,7 @@ toNCMon (List, NCRing) := (w,R) -> (
 
 
 --------------------------------
---wordRingAndValues takes an nc polynomial f and returns a ring wR and a list vals of elements in the base ring of f
+--wordRingAndValues takes an non commutative polynomial f and returns a ring wR and a list vals of elements in the base ring of f
 -- For every monomial m in f, it creates a new variable v_m. The ring wR is the free commutative QQ-algebra in the variables v_m.
 -- The coefficients of these monomials in f are stored in vals, in such a way that the index of v_m in R agrees with the position of the coefficient of m in vals
 -- (TODO: add option for different variable name in wR.)
@@ -604,7 +603,7 @@ Matrix * NCRingElement := (M, f) -> (
 )
 
 ----------------------------------------------------------------------------
--- Hard coded canonical axis path tensor simple compoents as in 
+-- Hard coded canonical axis path tensor simple components as in 
 -- Example 2.1 of "varieties of signature tensors" 
 -- C. Amendola et al, 2018
 --Inputs: 
@@ -697,7 +696,6 @@ wordAlgebra (ZZ) := opts -> (z) -> (
 
 --Returns the shuffle product of two words using the recursive definition. The words are given as NCMonomials with their respective ring. 
 --There is no need for checks on whether the imputed elements are monomials since this is an auxiliary function that will be called in the function "shuffle" 
---
 
 -- need to rewrite shuffleMon; causes bugs when working with different NCRings, see below
 -- shuffleMon = method();
@@ -716,7 +714,7 @@ wordAlgebra (ZZ) := opts -> (z) -> (
 
 --     if (length(list1Aux)==1) and (length(list2Aux)>1) then (
 --         ww2:= product(length(list2Aux)-1, i-> value (list2Aux)#i); -- CALLING value PUTS VARIABLE INTO THE WRONG RING
---         bb:= value (list2Aux)#-1; -- SAME PROBLEM HERE!
+--         bb:= value (list2Aux)#-1; -- SAME PROBLEM HERE! --is this fixed?
 --         return word2*word1 + shuffleMon(word1, ww2, R)*bb
 --     );
 
@@ -1025,7 +1023,7 @@ signedVolume NCPolynomialRing := (R) -> (
 
 
 -- --Given a list of polynomials, it returns the image of their Jacobian under the phi map. 
--- --There is no need to check whether the imputed list is made of polynomials since it is an auxiliary function to be called later.  
+-- --There is no need to check whether the input list is made of polynomials since it is an auxiliary function to be called later.  
 
 -- phiJacobian = method();
 -- phiJacobian (List, NCPolynomialRing) := NCMatrix => (l, S) -> ( 
@@ -1094,7 +1092,7 @@ signedVolume NCPolynomialRing := (R) -> (
 
 -- )
 
--- alternative implementation of adjointWord via half-shuffle -- let's discuss
+-- alternative implementation of adjointWord via half-shuffle -- let's discuss --status?
 
 phiMapMon = method();
 phiMapMon(List, NCPolynomialRing) := (l, A) -> (
