@@ -10,7 +10,7 @@ Node
         Text
             {\em PathSignatures} is a package for studying the signature of piecewise polynomial paths.
 
-            An example for the use of the package is to reproduce the data in Table 3 of the paper: Carlos Améndola, Peter Friz and Bernd Sturmfels, 
+            An example for the use of the package is to obtain data such as the one in Table 3 of the paper: Carlos Améndola, Peter Friz and Bernd Sturmfels, 
             {\em Varieties of signatures tensors}, Forum of Mathematics, Sigma. 2019;7:e10. doi:10.1017/fms.2019.3
 
             We create the ...
@@ -150,7 +150,7 @@ Node
         (sig, Path, ZZ)
         (sig, Path, ZZ, NCRing)
     Headline
-        Compute the signature of a picewise polynomial path.
+        Compute the signature of a piecewise polynomial path.
     Description
         Text
             Given a path $X(t):[0,1]\rightarrow \mathbb{R}^d$, its signature is the linear form $\sigma: T((\mathbb{R}^d)^*)\rightarrow \mathbb{R}$ on the tensor algebra of the dual of 
@@ -221,7 +221,7 @@ Node
     Description
         Text
             This computes the image of g through the map $M_p$ described in Theorem 1 and Theorem 7 of the paper: Laura Colmenarejo and Rosa Preiß, {\em Signatures of
-             paths transformed by polynomial maps}, Beitr Algebra Geom 61, 695–717 (2020). https://doi.org/10.1007/s13366-020-00493-9. It's importance is evidenced by
+             paths transformed by polynomial maps}, Beitr Algebra Geom 61, 695–717 (2020). https://doi.org/10.1007/s13366-020-00493-9. Its importance is evidenced by
             Theorem 2 of the same paper: 
         Text
             Let $X:[0,1]\rightarrow \mathbb{R}^d$ be a piecewise continuously differentiable path
