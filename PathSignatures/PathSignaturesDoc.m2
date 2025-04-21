@@ -22,12 +22,14 @@ Node
         (symbol _, Path, Sequence)
         (getDimension, Path)
         getDimension
+        (dim, Path)
         (getNumberOfPieces, Path)
         getNumberOfPieces
         (getPieces, Path)
         getPieces
         (getBaseRing, Path)
         getBaseRing
+        (baseRing, Path)
     Headline
         The type of a piecewise polynomial path. 
     Description
@@ -400,12 +402,12 @@ Node
         (halfshuffle, NCRingElement, NCRingElement)
         (symbol >>, NCRingElement, NCRingElement)
     Headline
-        Compute the halfshaffle of an ordered pair of words
+        Compute the half-shuffle of an ordered pair of words
     Inputs
         f : NCRingElement 
         g : NCRingElement 
     Outputs
-        h : NCRingElement -- The half-shuffle f>>g of the two words
+        h : NCRingElement -- the half-shuffle f>>g of the two words
     Usage
         h = f >> g
     Description

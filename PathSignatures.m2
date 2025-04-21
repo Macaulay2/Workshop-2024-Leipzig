@@ -57,7 +57,7 @@ Path = new Type of MutableHashTable
 
 sig = method()
 
-sig (Path, List) := QQ => (X,w) -> ( --This doesn't need to be exposed
+sig (Path, List) := (X,w) -> (
     nop := X.numberOfPieces;
     h := length(w);
     if(w == {}) then return 1;
@@ -70,11 +70,13 @@ sig (Path, List) := QQ => (X,w) -> ( --This doesn't need to be exposed
     )
 )
 
-sig(Path,NCRingElement) := QQ => (X,f) -> (
+sig(Path,NCRingElement) := (X,f) -> (
     return(linExt(w->sig(X,w),f));
 )
 
-sig(Path,ZZ,NCRing) := QQ => (X, h, R) -> (
+--Compute the signature in level h of a path X
+
+sig(Path,ZZ,NCRing) := (X, h, R) -> (
     nop := X.numberOfPieces;
     d := X.dimension;
     if(h == 0) then return 1_R;
@@ -88,7 +90,6 @@ sig(Path,ZZ,NCRing) := QQ => (X, h, R) -> (
     )
 )
 
---Compute the signature in level h of a path X
 sig(Path,ZZ) := (X,h) ->
 (
     R := wordAlgebra(X.dimension, BaseRing => X.bR);
@@ -106,18 +107,6 @@ X = polyPath({0,x_2*t^2}) ** polyPath({x_3*t^3 + 3*t, t^2 - 1})
 <<<<<<< HEAD
 r = sig(X,f,BaseRing => A)
 ///
-
--- TEST ///
--- bR = QQ[t]
--- X= linPath({0,0,0,1})
--- Y= polyPath({0,0,0,1}) --Gives error
--- Z= X**Y
-
--- wR = QQ{x_1..x_4}
--- w= x_4
--- assert(sig(Z, w)==pwlSig(X, w))
--- ///
---globalAssignment Path
 
 ------------------------------------------------
 --Defining the Type "Path" as a subclass of MutableHashTable.
@@ -160,7 +149,7 @@ isListForm Thing := (L) ->(
 --the polynomials can be given as actual polynomials or directly in listForm
 
 polyPath = method();
-polyPath List := (polyPathList) -> (
+polyPath List := Path => (polyPathList) -> (
     if(polyPathList === {}) then return new Path from {pieces => {}, dimension => -1, numberOfPieces => 0};
 
     if isListForm (polyPathList#0) then (
@@ -210,12 +199,14 @@ Path _ ZZ := (X, z) -> (
 
 getDimension = method();
 getDimension Path := (X) -> X.dimension;
+dim Path := (X) -> X.dimension;
 
 getPieces = method();
 getPieces Path := (X) -> X.pieces;
 
 getBaseRing = method();
 getBaseRing Path := (X) -> X.bR;
+baseRing Path := (X) -> X.bR;
 
 getNumberOfPieces = method();
 getNumberOfPieces Path := (X) -> X.numberOfPieces;
