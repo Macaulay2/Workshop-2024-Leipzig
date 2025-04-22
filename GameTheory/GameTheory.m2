@@ -461,7 +461,7 @@ directProductList List := L -> (
 -- that are generated via nashEquilibriumIdeal.
 
 -- Note: One can use the existing mixedVolume method from Polyhedra
--- package however our method NumberTMNE performs much faster for
+-- package however our method numberTMNE performs much faster for
 -- larger examples.
 ------------------------------------------------------------------
 
@@ -493,7 +493,7 @@ deltaList List := d -> (
 -- F_i = {(i,j) | j \in [d_i-1]} and their union F.
 
 -- Note: The number of all block derangements for a given format
--- coincides with the output of NumberTMNE.
+-- coincides with the output of numberTMNE.
 
 -- Reference: The Maximal Number of Regular Totally Mixed Nash Equilibria
 -- by R. D. McKelvey, A. McLennan, Journal of Economic Theory, Vol. 72,
@@ -531,7 +531,7 @@ blockDerangements List := D -> (
 numberTMNE = method()
 numberTMNE List := D -> (
     KK := ZZ;
-    h:= getSymbol "h";
+    h := getSymbol "h";
     R := KK[h_0..h_(#D-1)];
     return sub(contract(product(#D, j -> h_(j)^(D#j-1)),
                         product(#D, j -> (sum(#D, i -> h_(i))-h_(j))^(D#j-1))), KK)
@@ -813,11 +813,27 @@ doc ///
       {\bf Game Theory} is a package for several equilibrium concepts in game theory. It constructs the algebraic and
       combinatorial models for Nash, correlated, dependency, and conditional independence equilibria.
        
-      This package constructs...
       
       Here is a typical use of this package.
+    Example
+     example
+  References
+    This package is based on the following papers:
+         
+      - Nash Equilibria: [@HREF("https://arxiv.org/abs/2504.03456","H. Abo, I. Portakal, and L. Sodomaco: A vector bundle approach to Nash equilibria")@]
+        available on arXiv. 
+        
+      - Correlated Equilibria: [@HREF("https://www.tandfonline.com/doi/full/10.1080/10586458.2024.2340000","M.-C. Brandenburg, B. Hollering, I. Portakal: Combinatorics of Correlated Equilibria")@]
+        Experimental Mathematics, 2024. 
+           
+      - Dependency Equilibria: [@HREF("https://www.openstarts.units.it/server/api/core/bitstreams/12c8c6f4-d535-49e3-b6a5-d4f12c331b0f/content","I. Portakal and B. Sturmfels: Geometry of dependency equilibria")@]
+        published in Rend. Istit. Mat. Univ. Trieste 54 (Art. No. 5), 2022, 13, 2022.
+
+      - Conditional Independence Equilibria: [@HREF("https://www.sciencedirect.com/science/article/pii/S0021869324006707","I. Portakal and J. Sendra-Arranz: Game theory of undirected graphical models")@]
+        Journal of Algebra, Volume 666, 2025.
   Acknowledgement
-    We thank Ben Hollering<@HREF"https://sites.google.com/view/benhollering"@> and Mahrud Sayrafi<@HREF"https://www-users.cse.umn.edu/~mahrud/"@> for their support during the Macaulay2 in the Sciences Workshop<@HREF"https://www.mis.mpg.de/de/events/series/macaulay2-in-the-sciences"@>.
+    We thank Ben Hollering<@HREF"https://sites.google.com/view/benhollering"@> and Mahrud Sayrafi<@HREF"https://www-users.cse.umn.edu/~mahrud/"@> for their support
+    during the Macaulay2 in the Sciences Workshop<@HREF"https://www.mis.mpg.de/de/events/series/macaulay2-in-the-sciences"@> in which this package started.
   Contributors
     The following people have generously contributed their time and effort to this project:  
     Luca Sodomaco<@HREF"https://sites.google.com/view/luca-sodomaco/home"@>.
@@ -895,6 +911,43 @@ doc ///
   SeeAlso
     zeroTensor
     randomTensor
+///
+
+----------------------------
+-- Documentation indexset --
+----------------------------
+
+doc ///
+  Key
+    indexset
+    (indexset, Tensor)
+  Headline
+    get the list of index tuples of a tensor
+  Usage
+    indexset T
+  Inputs
+    T: Tensor
+      A tensor whose index set is to be retrieved.
+  Outputs
+    :List
+      A list of index tuples corresponding to the entries of the tensor.
+  Description
+    Text
+      Given a tensor $T$ of format $\{d_1, d_2, \dots, d_n\}$, this method returns a list of all index tuples
+      $(i_1, i_2, \dots, i_n)$ such that $0 \leq i_j < d_j$ for each dimension $j$. Difference from @TO enumerateTensorIndices@
+      is that indexset can only be used with a Tensor object. @TO indexset@ retrieves precomputed indices stored as metadata in a @TO Tensor@.
+
+    Example
+      T = zeroTensor(QQ, {2,3,4})
+      indexset T
+
+    Example
+      T = zeroTensor(QQ, {2})
+      indexset T
+  SeeAlso
+    zeroTensor
+    randomTensor
+    enumerateTensorIndices
 ///
 
 -------------------------------
@@ -2042,7 +2095,7 @@ doc ///
 
 
 --******************************************--
---              TESTS         	      	    --
+--                 TESTS              	    --
 --******************************************--
 
 -----------------------------------
@@ -2066,7 +2119,7 @@ assert(enumerateTensorIndices {2,1,2} === {
 -----------------------
 
 TEST ///
-T = zeroTensor(QQ, {2,2})
+T = zeroTensor(QQ, {2,2});
 assert(class T === Tensor)
 assert(format T === {2,2})
 assert(coefficientRing T === QQ)
@@ -2079,7 +2132,7 @@ assert(all(select(keys T, k -> class k === List), k -> T#k == 0_QQ))
 -------------------------
 
 TEST ///
-T = randomTensor(QQ, {2,2})
+T = randomTensor(QQ, {2,2});
 assert(class T === Tensor)
 assert(format T === {2,2})
 assert(coefficientRing T === QQ)
@@ -2104,9 +2157,9 @@ assert(S === {5,6,7});
 ----------------------------------
 
 TEST ///
-R = QQ[p_{0,0}, p_{0,1}, p_{1,0}, p_{1,1}]
-ki = {0,1}
-result = getVariableToIndexset(R, ki)
+R = QQ[p_{0,0}, p_{0,1}, p_{1,0}, p_{1,1}];
+ki = {0,1};
+result = getVariableToIndexset(R, ki);
 assert(result === p_{0,1})
 ///
 
@@ -2115,16 +2168,16 @@ assert(result === p_{0,1})
 -------------------------------
 
 TEST ///
-PR = QQ[p_{0,0}, p_{0,1}, p_{1,0}, p_{1,1}]
-Xi = zeroTensor(QQ, {2,2})
-Xi#{0,0} = 1
-Xi#{0,1} = 2
-Xi#{1,0} = 3
-Xi#{1,1} = 4
-ikl = {0, 0, 1} -- Player index i=0, current strategy k=0, deviating strategy l=1
-poly = assemblePolynomial(PR, Xi, ikl)
-expected = (-2*p_{0,0} - 2*p_{0,1})
-assert(poly == expected)
+PR = QQ[p_{0,0}, p_{0,1}, p_{1,0}, p_{1,1}];
+Xi = zeroTensor(QQ, {2,2});
+Xi#{0,0} = 1;
+Xi#{0,1} = 2;
+Xi#{1,0} = 3;
+Xi#{1,1} = 4;
+ikl = {0, 0, 1}; -- Player index i=0, current strategy k=0, deviating strategy l=1
+polytest = assemblePolynomial(PR, Xi, ikl);
+expected = (-2*p_{0,0} - 2*p_{0,1});
+assert(polytest == expected)
 ///
 
 ---------------------------------------
@@ -2132,16 +2185,16 @@ assert(poly == expected)
 ---------------------------------------
 
 TEST ///
-PR = QQ[p_{0,0}, p_{0,1}, p_{1,0}, p_{1,1}]
-Xi = zeroTensor(QQ, {2,2})
-Xi#{0,0} = 1
-Xi#{0,1} = 2
-Xi#{1,0} = 3
-Xi#{1,1} = 4
-i = 0
-polys = assemblePlayeriPolynomials(PR, Xi, i)
-expected = {0, -2*p_{0,0} -2*p_{0,1}, 2*p_{1,0} + 2*p_{1,1}, 0}
-assert(polys == expected)
+PR = QQ[p_{0,0}, p_{0,1}, p_{1,0}, p_{1,1}];
+Xi = zeroTensor(QQ, {2,2});
+Xi#{0,0} = 1;
+Xi#{0,1} = 2;
+Xi#{1,0} = 3;
+Xi#{1,1} = 4;
+i = 0;
+polystest = assemblePlayeriPolynomials(PR, Xi, i);
+expected = {0, -2*p_{0,0} -2*p_{0,1}, 2*p_{1,0} + 2*p_{1,1}, 0};
+assert(polystest == expected)
 ///
 
 ---------------------------------
@@ -2149,10 +2202,10 @@ assert(polys == expected)
 ---------------------------------
 
 TEST ///
-X1 = randomTensor(QQ, {2,2,2})
-X2 = randomTensor(QQ, {2,2,2})
-X3 = randomTensor(QQ, {2,2,2})
-CE = correlatedEquilibria {X1, X2, X3}
+X1 = randomTensor(QQ, {2,2,2});
+X2 = randomTensor(QQ, {2,2,2});
+X3 = randomTensor(QQ, {2,2,2});
+CE = correlatedEquilibria {X1, X2, X3};
 assert(class CE === Polyhedron)
 assert(#vertices CE >= 1) -- CE polytope must be non-empty
 ///
@@ -2162,11 +2215,11 @@ assert(#vertices CE >= 1) -- CE polytope must be non-empty
 ---------------------------------
 
 TEST ///
-X1 = zeroTensor(QQ, {2,2})
-X2 = zeroTensor(QQ, {2,2})
-X1#{0,0} = -99; X1#{0,1} = 1; X1#{1,0} = 0; X1#{1,1} = 0
-X2#{0,0} = -99; X2#{0,1} = 0; X2#{1,0} = 1; X2#{1,1} = 0
-CE = correlatedEquilibria {X1, X2}
+X1 = zeroTensor(QQ, {2,2});
+X2 = zeroTensor(QQ, {2,2});
+X1#{0,0} = -99; X1#{0,1} = 1; X1#{1,0} = 0; X1#{1,1} = 0;
+X2#{0,0} = -99; X2#{0,1} = 0; X2#{1,0} = 1; X2#{1,1} = 0;
+CE = correlatedEquilibria {X1, X2};
 assert(class CE === Polyhedron)
 assert(#vertices CE  == 5)
 assert(vertices CE ==  matrix{
@@ -2196,20 +2249,20 @@ TEST ///
   T = randomTensor {2,3,2};
   R2 = mixedProbabilityRing T;
   -- should match the List‐case for {2,3,2}
-  assert(gens R2 == gens (mixedProbabilityRing {2,3,2}));
+  assert(toString gens R2 == toString gens (mixedProbabilityRing {2,3,2}));
 ///
 
--------------------------------------
---- TEST differencesFromFirst  ---
--------------------------------------
+---------------------------------
+--- TEST differencesFromFirst ---
+---------------------------------
 TEST ///
   debug needsPackage "GameTheory"
   assert(differencesFromFirst {2,3,10,15} == {1,8,13});
 ///
 
--------------------------------------
---- TEST monomialFromIndex  ---
--------------------------------------
+------------------------------
+--- TEST monomialFromIndex ---
+------------------------------
 TEST ///
     debug needsPackage "GameTheory"
     L = {5,5,5,5};
@@ -2218,16 +2271,15 @@ TEST ///
     assert(monomialFromIndex({3,2,0},1,R) == p_{0,3} * p_{2,2} * p_{3,0})
     assert(monomialFromIndex({3,2,0},2,R) == p_{0,3} * p_{1,2} * p_{3,0})
     assert(monomialFromIndex({3,2,0},3,R) == p_{0,3} * p_{1,2} * p_{2,0})
-
     assert(monomialFromIndex({1,3,4},3,R) == p_{0,1} * p_{1,3} * p_{2,4})
 ///
 
---------------------------------
+-----------------------------------
 --- TEST equilibriumPolynomials ---
---------------------------------
+-----------------------------------
 TEST ///
     debug needsPackage "GameTheory"
-    testIndices = enumerateTensorIndices {2,2,2}
+    testIndices = enumerateTensorIndices {2,2,2};
     T = zeroTensor {2,2,2};
     TE = {0, 3, 4, 2, 5, 1, 0, 3};
     scan(pairs testIndices, (j,i)->(T#i = TE#j));
@@ -2235,7 +2287,7 @@ TEST ///
     polysPlayer0 = equilibriumPolynomials(T,0,R);
     polysPlayer1 = equilibriumPolynomials(T,1,R);
     polysPlayer2 = equilibriumPolynomials(T,2,R);
-    Targetpolys = {{5 * p_{1, 0} * p_{2, 0} - 4 * p_{1, 1} * p_{2, 0} - 2 * p_{1, 0} * p_{2, 1} + p_{1, 1} * p_{2, 1}}, {4 * p_{0, 0} * p_{2, 0} - 5 * p_{0, 1} * p_{2, 0} - p_{0, 0} * p_{2, 1} + 2 * p_{0, 1} * p_{2, 1}}, {3 * p_{0, 0} * p_{1, 0} - 4 * p_{0, 1} * p_{1, 0} - 2 * p_{0, 0} * p_{1, 1} + 3 * p_{0, 1} * p_{1, 1}}}
+    Targetpolys = {{5 * p_{1, 0} * p_{2, 0} - 4 * p_{1, 1} * p_{2, 0} - 2 * p_{1, 0} * p_{2, 1} + p_{1, 1} * p_{2, 1}}, {4 * p_{0, 0} * p_{2, 0} - 5 * p_{0, 1} * p_{2, 0} - p_{0, 0} * p_{2, 1} + 2 * p_{0, 1} * p_{2, 1}}, {3 * p_{0, 0} * p_{1, 0} - 4 * p_{0, 1} * p_{1, 0} - 2 * p_{0, 0} * p_{1, 1} + 3 * p_{0, 1} * p_{1, 1}}};
     assert({polysPlayer0, polysPlayer1, polysPlayer2} == Targetpolys)
 ///
 
@@ -2244,9 +2296,9 @@ TEST ///
 --------------------------------
 
 TEST ///
-    tensorList = apply(3, i -> randomTensor {2,2,2})
-    R = nashEquilibriumRing tensorList
-    L = {p_{0,0}, p_{0,1}, p_{1,0}, p_{1,1}, p_{2,0}, p_{2,1}}
+    tensorList = apply(3, i -> randomTensor {2,2,2});
+    R = nashEquilibriumRing tensorList;
+    L = {p_{0,0}, p_{0,1}, p_{1,0}, p_{1,1}, p_{2,0}, p_{2,1}};
     assert(gens R == L)
 ///
 
@@ -2254,9 +2306,9 @@ TEST ///
 --- TEST nashEquilibriumIdeal ---
 ---------------------------------
 TEST ///
-    tensorList = apply(3, i -> randomTensor {2,2,2})
-    R = nashEquilibriumRing tensorList
-    I = nashEquilibriumIdeal(R, tensorList)
+    tensorList = apply(3, i -> randomTensor {2,2,2});
+    R = nashEquilibriumRing tensorList;
+    I = nashEquilibriumIdeal(R, tensorList);
     assert(isIdeal I)
 ///
 
@@ -2272,9 +2324,9 @@ TEST ///
     assert(ComputedGens == TargetGens)
 ///
 
----------------------------------------
---- TEST directProductList        ---
----------------------------------------
+------------------------------
+--- TEST directProductList ---
+------------------------------
 TEST ///
   debug needsPackage "GameTheory"
   P1 = simplex 1;   -- dim=1
@@ -2282,36 +2334,32 @@ TEST ///
   P = directProductList {P1,P2};
   assert(dim P == 3);
 
-  v1 = entries transpose vertices P1
-  v2 = entries transpose vertices P2
-  expectedVerts = flatten apply(v1, u -> apply(v2, w -> u | w))
-  assert(sort entries transpose vertices P == sort expectedVerts);
+  v1 = entries transpose vertices P1;
+  v2 = entries transpose vertices P2;
+  expectedVerts = flatten apply(v1, u -> apply(v2, w -> u | w));
+  assert(sort entries transpose vertices P == sort expectedVerts)
 ///
 
 TEST ///
   Q = simplex 3;  -- a tetrahedron should just return that unchanged
-  assert(directProductList {Q} === Q);
+  assert(directProductList {Q} === Q)
 ///
 
+----------------------
+--- TEST deltaList ---
+----------------------
 TEST ///
-  -- assertError("Empty list of polytopes", directProductList {});
-///
-
----------------------------------
---- TEST deltaList            ---
----------------------------------
-TEST ///
-    DL = deltaList {2,4,5}
-    d = apply(DL, p->dim p)
+    DL = deltaList {2,4,5};
+    d = apply(DL, p->dim p);
     assert(d == {7, 5, 5, 5, 4, 4, 4, 4})
-    ad = apply(DL, p->ambDim p)
+    ad = apply(DL, p->ambDim p);
     assert(ad == toList (8 : 8))
 ///
 
 TEST ///
-    DL2 = deltaList {2,2,2}
-    ComputedV = apply(DL2, p->entries vertices p)
-    TargetV = {{{0, 0, 0, 0}, {0, 1, 0, 1}, {0, 0, 1, 1}}, {{0, 1, 0, 1}, {0, 0, 0, 0}, {0, 0, 1, 1}}, {{0, 1, 0, 1}, {0, 0, 1, 1}, {0, 0, 0, 0}}}
+    DL2 = deltaList {2,2,2};
+    ComputedV = apply(DL2, p->entries vertices p);
+    TargetV = {{{0, 0, 0, 0}, {0, 1, 0, 1}, {0, 0, 1, 1}}, {{0, 1, 0, 1}, {0, 0, 0, 0}, {0, 0, 1, 1}}, {{0, 1, 0, 1}, {0, 0, 1, 1}, {0, 0, 0, 0}}};
     assert(ComputedV == TargetV)
 ///
 
@@ -2337,8 +2385,8 @@ TEST ///
 ------------------------------
 
 TEST ///
-    BD = blockDerangements{2,2,2}
-    L = {{set {(2, 0)}, set {(0, 0)}, set {(1, 0)}}, {set {(1, 0)}, set {(2, 0)}, set {(0, 0)}}}
+    BD = blockDerangements{2,2,2};
+    L = {{set {(2, 0)}, set {(0, 0)}, set {(1, 0)}}, {set {(1, 0)}, set {(2, 0)}, set {(0, 0)}}};
     assert(BD == L)
 ///
 
@@ -2347,10 +2395,10 @@ TEST ///
 -----------------------
 
 TEST ///
-    mv = numberTMNE {2,2,2}
+    mv = numberTMNE {2,2,2};
     assert(mv == 2)
-    mv2 = numberTMNE {3,3,3}
-    assert(mv3 == 10)
+    mv2 = numberTMNE {3,3,3};
+    assert(mv2 == 10)
 ///
 
 ----------------------------
@@ -2358,18 +2406,18 @@ TEST ///
 ----------------------------
 
 TEST ///
-Di = {2,2,2}
-R = probabilityRing(Di, CoefficientRing=>QQ, ProbabilityVariableName=>"q")
-Q = zeroTensor(Di)
+Di = {2,2,2};
+R = probabilityRing(Di, CoefficientRing=>QQ, ProbabilityVariableName=>"q");
+Q = zeroTensor(Di);
 
-Q#{0,0,0}=q_{0,0,0}
-Q#{0,0,1}=q_{0,0,1}
-Q#{0,1,0}=q_{0,1,0}
-Q#{0,1,1}=q_{0,1,1}
-Q#{1,0,0}=q_{1,0,0}
-Q#{1,0,1}=q_{1,0,1}
-Q#{1,1,0}=q_{1,1,0}
-Q#{1,1,1}=q_{1,1,1}
+Q#{0,0,0}=q_{0,0,0};
+Q#{0,0,1}=q_{0,0,1};
+Q#{0,1,0}=q_{0,1,0};
+Q#{0,1,1}=q_{0,1,1};
+Q#{1,0,0}=q_{1,0,0};
+Q#{1,0,1}=q_{1,0,1};
+Q#{1,1,0}=q_{1,1,0};
+Q#{1,1,1}=q_{1,1,1};
 
 assert(all for j in enumerateTensorIndices Di list Q#j === q_j)
 ///
@@ -2379,8 +2427,8 @@ assert(all for j in enumerateTensorIndices Di list Q#j === q_j)
 -----------------------
 
 TEST /// 
- Di = {2,2,3}
- X = randomGame(Di)
+ Di = {2,2,3};
+ X = randomGame(Di);
  assert(#X == #Di and all(#Di, i -> format(X#i) == Di))
 /// 
 
@@ -2392,8 +2440,10 @@ TEST ///
  Di = {2,2,3};
  PR = probabilityRing(Di);
  X = randomGame(Di);
- M = spohnMatrices(PR,X)
- -- add assert
+ M = spohnMatrices(PR,X);
+ assert(length M == length Di)
+ assert(all(0..#Di-1, i -> class M#i === Matrix))
+
 /// 
 
 -----------------------
@@ -2405,7 +2455,7 @@ TEST ///
  PR = probabilityRing(Di);
  X = randomGame(Di);
  I = spohnIdeal(PR,X)
- assert(I == sum(spohnMatrices(PR,X), m -> minors(2, m)) )
+ assert(I == sum(spohnMatrices(PR,X), m -> minors(2, m)))
 /// 
 
 ---------------------------
@@ -2528,7 +2578,7 @@ TEST///
 
 TEST///
      FF = ZZ/32003
-     d = {2,3,2};
+     d = {2,2,2};
      X = randomGame(d, CoefficientRing => FF);
      PR = probabilityRing(d, CoefficientRing => FF);
      G = graph ({{1,2}},Singletons => {3});
@@ -2563,7 +2613,7 @@ TEST///
 end
 
 --******************************************--
---         DEVELOPMENT SECTION	      	    --
+--           DEVELOPMENT SECTION	      	    --
 --******************************************--
 
 restart
