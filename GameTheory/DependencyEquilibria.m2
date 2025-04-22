@@ -1,4 +1,4 @@
-needsPackage "GameTheory"
+needsPackage "GameTheoryinitial"
 
 -- ProbabilityRing = new Type of Ring
 
