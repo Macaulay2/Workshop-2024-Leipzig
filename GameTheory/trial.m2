@@ -494,9 +494,9 @@ blockDerangements = method()
 blockDerangements List := D -> (
     F := apply(#D, i -> apply(D#i - 1, j -> (i, j)));  
     PP := permutations flatten F;                    
-    partsPP = toList set apply(PP, p -> 
+    partsPP := toList set apply(PP, p -> 
         apply(#D, i -> set apply(D#i - 1, j -> p#(j + sum(i, k -> D#k - 1)))));
-    BD = {};                                         
+    BD := {};                                         
     for p in partsPP do 
         if toList set flatten apply(#D, i -> apply(toList(p#i), j -> j#0 != i)) == {true} 
         then BD = append(BD, p);                     
@@ -521,6 +521,7 @@ blockDerangements List := D -> (
 numberTMNE = method()
 numberTMNE List := D -> (
     KK := ZZ;
+    h:= getSymbol "h";
     R := KK[h_0..h_(#D-1)];
     return sub(contract(product(#D, j -> h_(j)^(D#j-1)),
                         product(#D, j -> (sum(#D, i -> h_(i))-h_(j))^(D#j-1))), KK)
@@ -2550,6 +2551,7 @@ TEST///
      I = spohnCI(PR, X, G);
      assert(V==I)
 ///
+end
 
 --******************************************--
 --         DEVELOPMENT SECTION	      	    --
