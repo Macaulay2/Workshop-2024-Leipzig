@@ -796,27 +796,95 @@ doc ///
   Key
     GameTheory
   Headline
-    a package for computing equilibria in game theory 
+    A package for computing equilibria in game theory
   Description
-  
     Text
       {\bf Game Theory} is a package for several equilibrium concepts in game theory. It constructs the algebraic and
-      combinatorial models for Nash, correlated, dependency and conditional independence equilibria.
+      combinatorial models for Nash, correlated, dependency, and conditional independence equilibria.
        
-      This package constructs.
+      This package constructs...
       
-      Here is a typical use of this package.  
+      Here is a typical use of this package.
+  Acknowledgement
+    We thank Ben Hollering<@HREF"https://sites.google.com/view/benhollering"@> and Mahrud Sayrafi<@HREF"https://www-users.cse.umn.edu/~mahrud/"@> for their support during the Macaulay2 in the Sciences Workshop<@HREF"https://www.mis.mpg.de/de/events/series/macaulay2-in-the-sciences"@>.
+  Contributors
+    The following people have generously contributed their time and effort to this project:  
+    Luca Sodomaco<@HREF"https://sites.google.com/view/luca-sodomaco/home"@>.
+  Caveat
+    GameTheory requires GraphicalModels.m2.
+///
+
+------------------------------------------
+-- Documentation enumerateTensorIndices --
+------------------------------------------
+
+doc ///
+  Key
+    enumerateTensorIndices
+    (enumerateTensorIndices, ZZ)
+    (enumerateTensorIndices, List)
+  Headline
+    generate index tuples for a tensor with given dimensions
+  Usage
+    enumerateTensorIndices d
+  Inputs
+    d: ZZ
+      A single integer.
+    d: List
+      A list of integers, representing the format of a tensor.
+  Outputs
+    :List
+      A list of index tuples, where each tuple corresponds to a coordinate of the tensor.
+  Description
+
+   Text
+     This function generates all possible index tuples for a tensor with the specified dimensions.
+     For a tensor of format $d_1 \times d_2 \cdots d_n$, it returns a list of all tuples $(i_1, i2, \ldots, i_n)$
+     where $0 \leq i_j < d_j$.
+
+   Example
+     enumerateTensorIndices 5
+     enumerateTensorIndices {2,2}
+     enumerateTensorIndices {3,2,4}
       
-    Acknowledgement
-    We thank Ben Hollering<@HREF"https://sites.google.com/view/benhollering"@> and  Mahrud Sayrafi<@HREF"https://www-users.cse.umn.edu/~mahrud/"@> for their support during the Macaulay2 in the Sciences Workshop<@HREF"https://www.mis.mpg.de/de/events/series/macaulay2-in-the-sciences"@>.
-    
-    Contributors
-      The following people have generously contributed their time and effort to this project:  
-      Luca Sodomaco<@HREF"https://sites.google.com/view/luca-sodomaco/home"@>.
-      
-    Caveat
-     GameTheory requires GraphicalModels.m2.
-///;
+  SeeAlso
+   Tensor
+   zeroTensor
+   randomTensor
+/// 
+
+----------------------------
+-- Documentation Tensor  --
+----------------------------
+
+doc ///
+  Key
+    Tensor
+  Headline
+    a mutable hash table representing a tensor
+  Usage
+    T = zeroTensor(QQ, {2,3})
+  Outputs
+    :Tensor
+      A Tensor object storing values at multi-indices.
+  Description
+
+    Text
+      The type `Tensor` is a mutable hash table with additional metadata to represent multi-dimensional arrays.
+      Each tensor has an associated format (list of dimensions), a coefficient ring, and a set of index keys.
+
+    Example
+      T = zeroTensor(QQ, {2,2});
+      T#{0,0} = 1;
+      T#{1,1} = 5;
+      format T
+      coefficientRing T
+      indexset T
+
+  SeeAlso
+    zeroTensor
+    randomTensor
+///
 
 -------------------------------
 -- Documentation zeroTensor --
@@ -850,16 +918,16 @@ doc ///
       ring, and index set are stored in the tensor as well. It is useful for defining 
       a custom tensor.
       
-  Example
-    T = zeroTensor {2,2}
-    T#{0,0} = 1
-    T#{0,1} = 2
-    T#{1,0} = 3
-    T#{1,1} = 4
-    format T
-    peek T
+    Example
+      T = zeroTensor {2,2}
+      T#{0,0} = 1
+      T#{0,1} = 2
+      T#{1,0} = 3
+      T#{1,1} = 4
+      format T
+      peek T
 
-    SeeAlso
+  SeeAlso
      randomTensor
 ///
 
@@ -899,9 +967,155 @@ doc ///
       format T
       peek T
 
-    SeeAlso
+  SeeAlso
       zeroTensor
 /// 
+
+-------------------------
+-- Documentation slice --
+-------------------------
+
+doc ///
+  Key
+    slice
+    (slice, Tensor, List, List)
+  Headline
+    extract a slice of a tensor
+  Usage
+    slice(T, Lstart, Lend)
+  Inputs
+    T: Tensor
+      A tensor from which to extract the slice.
+    Lstart: List
+      A list of fixed indices before the varying position.
+    Lend: List
+      A list of fixed indices after the varying position.
+  Outputs
+    :List
+      A list of entries of the tensor along the specified dimension.
+  Description
+    Text
+      This method varies the index at the position given by the length of `Lstart`, iterating from 0 to $d_i - 1$, where $d_i$ is the corresponding index of the format.
+
+      The slice is formed by fixing all other indices and varying only the one at the slicing position.
+
+    Example
+      T = zeroTensor(QQ, {2,3,2});
+      T#{{0,0,0}} = 5;
+      T#{{0,1,0}} = 6;
+      T#{{0,2,0}} = 7;
+      slice(T, {0}, {0}) -- should return {5,6,7}
+  SeeAlso
+    Tensor
+///
+
+-----------------------------------------
+-- Documentation getVariableToIndexset --
+-----------------------------------------
+
+doc ///
+  Key
+    getVariableToIndexset
+    (getVariableToIndexset, Ring, List)
+  Headline
+    retrieve a polynomial ring variable by its index tuple
+  Usage
+    getVariableToIndexset(R, indexTuple)
+  Inputs
+    R: Ring
+      A polynomial ring whose variables are indexed by tuples.
+    indexTuple: List
+      A list representing the index of the variable.
+  Outputs
+    :RingElement
+      The variable from the ring corresponding to the given index.
+  Description
+    Text
+      Given a ring $R = \mathbb{Q}[p_{\{i,j\}}]$, this method retrieves $p_{\{i,j\}}$ when passed the index $\{i,j\}$.
+
+    Example
+      R = QQ[p_{0,0}, p_{0,1}, p_{1,0}, p_{1,1}]
+      getVariableToIndexset(R, {1,0})
+  SeeAlso
+    probabilityRing
+    assemblePolynomial
+///
+
+--------------------------------------
+-- Documentation assemblePolynomial --
+--------------------------------------
+
+doc ///
+  Key
+    assemblePolynomial
+    (assemblePolynomial, Ring, Tensor, List)
+  Headline
+    compute incentive constraint polynomial for deviation
+  Usage
+    assemblePolynomial(PR, Xi, {i,k,l})
+  Inputs
+    PR: Ring
+      Polynomial ring of strategy probabilities.
+    Xi: Tensor
+      Tensor of strategy probabilities.
+    {i, k, l}: List
+      A triple where:
+        - $i$ is the player index,
+        - $k$ is the current strategy,
+        - $l$ is the deviating strategy.
+  Outputs
+    :RingElement
+      A polynomial representing the incentive constraint for player $i$ deviating from $k$ to $l$.
+  Description
+    Text
+      This function computes a linear inequality encoding the condition for a correlated equilibrium:
+      the expected utility from playing $k$ should be no less than from playing $l$.
+    Example
+      R = QQ[p_{0,0}, p_{0,1}, p_{1,0}, p_{1,1}]
+      Xi = randomTensor(R, {2,2})
+      assemblePolynomial(R, Xi, {0,0,1})
+  SeeAlso
+    probabilityRing
+    getVariableToIndexset
+    assemblePlayeriPolynomials
+///
+
+----------------------------------------------
+-- Documentation assemblePlayeriPolynomials --
+----------------------------------------------
+
+doc ///
+  Key
+    assemblePlayeriPolynomials
+    (assemblePlayeriPolynomials, Ring, Tensor, ZZ)
+  Headline
+    get all incentive constraint polynomials for a player
+  Usage
+    assemblePlayeriPolynomials(PR, Xi, i)
+  Inputs
+    PR: Ring
+      Polynomial ring of probabilities.
+    Xi: Tensor
+      Tensor of strategy probabilities.
+    i: ZZ
+      The player index.
+  Outputs
+    :List
+      A list of polynomials corresponding to the player's deviation constraints.
+  Description
+    Text
+      For a given player $i$, this method computes all incentive constraint polynomials
+      $\forall k,l \in S_i$, representing deviations from strategy $k$ to $l$.
+
+    Example
+      R = QQ[p_{0,0}, p_{0,1}, p_{1,0}, p_{1,1}]
+      Xi = randomTensor(R, {2,2})
+      assemblePlayeriPolynomials(R, Xi, 0)
+  SeeAlso
+    probabilityRing
+    assemblePolynomial
+    correlatedEquilibria
+///
 
 ----------------------------------------
 -- Documentation correlatedEquilibria --
@@ -917,7 +1131,7 @@ doc ///
     correlatedEquilibria X
   Inputs
     X: List
-    A list of tensors, one for each player. Each tensor encodes the payoffs for that player.
+      A list of tensors, one for each player. Each tensor encodes the payoffs for that player.
   Outputs
     :Polyhedron
       The polytope representing the set of correlated equilibria for the game.
@@ -950,35 +1164,6 @@ doc ///
   SeeAlso
     assemblePolynomial
     assemblePlayeriPolynomials
-///
-
-----------------------------------------
--- Documentation NashEquilibriumIdeal --
-----------------------------------------
-
----------------------------------------------
--- Documentation Ideals of Nash equilibria --
----------------------------------------------
-
-doc ///
- Node
-  Key
-   "Ideals of Nash equilibria"
-  Headline
-   computing the ideal of a totally mixed Nash equilibria
-  Description
-   Text
-    This package provides methods for constructing the mixed probability polynomial rings
-    and computing the Nash equilibrium polynomials and ideals, as well as the max number of
-    isolated totally mixed Nash Equilibria via polyhedral methods.
-    An introduction together with the relevant definitions is given in
-    Chapter 6, Sturmfels, Bernd, @EM "Solving Systems of Polynomial Equations"@. American Mathematical Society,
-    2002. ISBN 978-0-8218-3251-6 and in Abo, Hirotachi, Portakal, Irem, and Sodomaco, Luca,
-    @EM "A vector bundle approach to Nash equilibria"@, arXiv504.03456.
-  SeeAlso
-   nashEquilibriumRing
-   nashEquilibriumIdeal
-   deltaList
 ///
 
 ----------------------------------------
@@ -1017,6 +1202,8 @@ doc ///
   SeeAlso
    nashEquilibriumIdeal
    deltaList
+   blockDerangements
+   numberTMNE
 ///
 
 ----------------------------------------
@@ -1061,9 +1248,14 @@ doc ///
    Example
     I2 = nashEquilibriumIdeal(R2 = nashEquilibriumRing tensors, tensors)
     gens R2
+   Text
+    An introduction together with the relevant definitions is given in Chapter 6, Sturmfels, Bernd, @EM "Solving Systems of Polynomial Equations"@. American Mathematical Society,
+    2002. ISBN 978-0-8218-3251-6 and in Abo, Hirotachi, Portakal, Irem, and Sodomaco, Luca, @EM "A vector bundle approach to Nash equilibria"@, arXiv504.03456.
   SeeAlso
    nashEquilibriumRing
    deltaList
+   blockDerangements
+   numberTMNE
 ///
 
 ----------------------------------------
@@ -1107,6 +1299,84 @@ doc ///
   SeeAlso
    nashEquilibriumRing
    nashEquilibriumIdeal
+///
+
+-----------------------------------
+-- Documentation numberTMNE --
+-----------------------------------
+
+doc ///
+ Node
+  Key
+   (numberTMNE, List)
+   numberTMNE
+  Headline
+    compute the maximum number of totally mixed Nash equilibria
+  Usage
+    numberTMNE d
+  Inputs
+    d:List
+     a list of integers representing the dimensions of the game
+  Outputs
+    :ZZ
+     an integer value, the degree of the top Chern class of a vector bundle on a product of projective spaces, representing the maximum number of totally mixed Nash equilibria of a game of format $\mathbf{d}$.
+  Description
+   Text
+    For an $n$-player game where the $i$-th player has $d_i$ pure strategies, the maximum number of isolated totally mixed Nash equilibria is given
+    by the degree $c(\mathbf{d})$ of the top Chern class of the following vector bundle:
+
+    \[ E \coloneqq \bigoplus_{i=0}^{n-1} \ko_{\mathbb{P}^{\mathbf{d}}}({\mathbf{1}}_i)^{\oplus(d_i-1)},\]
+
+    where $\mathbb{P}^{\mathbf{d}}=\prod_{i=0}^{n-1}\mathbb{P}^{d_i-1}$ and $\mathbf{1}_i=(1,\ldots,1,0,1,\ldots,1)$, where the entry $0$ is in the $i$th component.
+    In particular, this function computes the integer $c(\mathbf{d})$ as the coefficient of the monomial
+    $\prod_{i=0}^{n-1} h_i^{d_i-1}$ in $\prod_{i=0}^{n-1} \hat{h}_i^{d_i-1}$ with $\hat{h}_i\coloneqq \sum_{j\neq i}h_j$,
+    where $h_i$ denotes the pullback of the hyperplane class on the $i$th factor $\mathbb{P}^{d_i-1}$ of $\PP^\bd$ via the projection map.
+
+   Example
+    d = {2,2,2};
+    nTMNE = numberTMNE d
+   Text
+    Alternatively, if you have a tensor $T$, you can compute its maximum number as follows:
+   Example
+    T = randomTensor {2,2,2}
+    nTMNE2 = numberTMNE format T
+  SeeAlso
+   blockDerangements
+
+-------------------------------------
+-- Documentation blockDerangements --
+-------------------------------------
+   
+ Node
+  Key
+   (blockDerangements, List)
+   blockDerangements
+  Headline
+    compute the number of block derangements
+  Usage
+    blockDerangements D
+  Inputs
+    D:List
+     a list of integers representing the number of elements in each block, plus one
+  Outputs
+    :List
+     a list of block derangements with respect to D.
+  Description
+   Text
+    Given a partition $\{F_0,\ldots,F_{n-1}\}$ of a finite set $F$, a block derangement of $F$ with respect to $\{F_1,\ldots,F_n\}$ is a permutation $P\colon F\to F$ of $F$ such that $P(F_i)\cap F_i=\emptyset$ for every $i\in\{0,\ldots,n-1\}$.
+
+    The function considers the input $D=(d_0,\ldots,d_{n-1})$, defines the set $F=F_0\cup\cdots\cup F_{n-1}$, where $F_i=\{(i,j)\mid j\in\{0,\ldots,d_i-2\}\}$ for every $i\in\{0,\ldots,n-1\}$, and computes the set of permutations of F.
+    Then, it creates an empty list BD, and for each permutation $P$, if $P(F_i)\cap F_i=\emptyset$ for every $i\in\{0,\ldots,n-1\}$, then $P$ is added to the list BD.
+    The function returns the list BD.
+    
+    The number of elements of BD corresponds to the maximum number of totally mixed Nash equilibria of an $n$-player game where the $i$-th player has $d_i$ pure strategies.
+   
+   Example
+    D = {3,3,3};
+    BD = blockDerangements D;
+    netList BD
+  SeeAlso
+    numberTMNE
 ///
 
 -----------------------------------
@@ -1210,9 +1480,7 @@ doc ///
   SeeAlso
     spohnMatrices
     spohnIdeal
-    konstanzMatrix
-    --ADD MORE?
-    
+    konstanzMatrix    
 ///
 
 ---------------------------------
@@ -1242,10 +1510,9 @@ doc ///
       The Spohn matrices $M_1,\ldots , M_n$ have rank one at the dependency equilibria of the game $X$.
       
     Example
-      Di = {2,2,3};
-      PR = probabilityRing(Di);
-      X = randomGame(Di);
-
+      Di = {2,2,3}
+      PR = probabilityRing(Di)
+      X = randomGame(Di)
       I = spohnMatrices(PR,X)
 
   SeeAlso
@@ -1284,10 +1551,9 @@ doc ///
       This function uses the function spohnMatrices to compute the Spohn matrices of the given game.
       
     Example
-      Di = {2,2,3};
-      PR = probabilityRing(Di);
-      X = randomGame(Di);
-
+      Di = {2,2,3}
+      PR = probabilityRing(Di)
+      X = randomGame(Di)
       I = spohnIdeal(PR,X)
 
   SeeAlso
@@ -1356,13 +1622,8 @@ doc ///
     probabilityRing
     randomGame
     spohnMatrices
-    spohnIdeal
-   
+    spohnIdeal 
 ///
-
-
-
-
 
 --------------------------------
 -- Documentation toMarkovRing --
@@ -1378,30 +1639,29 @@ Usage
  toMarkovRing R
 Inputs
  R:PolynomialRing
- created using the probabilityRing method
+  created using the probabilityRing method
 Outputs
  :PolynomialRing
- a polynomial ring isomorphic to the input ring created by the markovRing method from the GraphicalModels pacakge,
- with variables $q_{(i_1+1, \dots , i_k+1)}$ corresponding to the variables $p_{\{i_1, \ldots, i_k\}}$
- of the input ring
+  a polynomial ring isomorphic to the input ring created by the markovRing method from the GraphicalModels package,
+  with variables $q_{(i_1+1, \dots , i_k+1)}$ corresponding to the variables $p_{\{i_1, \ldots, i_k\}}$
+  of the input ring
 Description
-Text
- Given a ring created with the probabilityRing function, this function creates the canonically isomorphic ring
- defined by the markovRing function from the GraphicalModels package.
- The variable name of the output ring is set to be different from the variable name of the input ring:
- the default variable name of the output ring is "p",
- and if the variable name of the input ring is "p" then the variable name of the output ring becomes "q".
+ Text
+  Given a ring created with the probabilityRing function, this function creates the canonically isomorphic ring
+  defined by the markovRing function from the GraphicalModels package.
+  The variable name of the output ring is set to be different from the variable name of the input ring:
+  the default variable name of the output ring is "p",
+  and if the variable name of the input ring is "p" then the variable name of the output ring becomes "q".
 
-Example
- R = probabilityRing({2,3,4}, CoefficientRing => ZZ/32003, ProbabilityVariableName => "x")
- markovR = toMarkovRing R
- numgens markovR
- R_0, R_11, R_23
+ Example
+  R = probabilityRing({2,3,4}, CoefficientRing => ZZ/32003, ProbabilityVariableName => "x")
+  markovR = toMarkovRing R
+  numgens markovR
+  R_0, R_11, R_23
 
 SeeAlso
  probabilityRing
  gaussianRing
-
 ///
 
 
@@ -1410,7 +1670,6 @@ SeeAlso
 -----------------------------------
 
 doc ///
-
 Key
  mapToMarkovRing
  (mapToMarkovRing, Ring)
@@ -1420,11 +1679,11 @@ Usage
  mapToMarkovRing R
 Inputs
  R:Ring
- must be a probabilityRing
+  must be a probabilityRing
 Outputs
  :RingMap
- the isomorphism identifying R with toMarkovRing(R).
- The variable $p_{\{i_1, \ldots, i_k\}}$ is sent to $q_{(i_1+1, \dots , i_k+1)}$.
+  the isomorphism identifying R with toMarkovRing(R).
+  The variable $p_{\{i_1, \ldots, i_k\}}$ is sent to $q_{(i_1+1, \dots , i_k+1)}$.
  
 Description
  Text
@@ -1442,7 +1701,6 @@ Description
 SeeAlso
  toMarkovRing
  mapToProbabilityRing
-
 ///
 
 ----------------------------------------
@@ -1459,11 +1717,11 @@ Usage
  mapToProbabilityRing R
 Inputs
  R:Ring
-   must be a probabilityRing
+  must be a probabilityRing
 Outputs
  :RingMap
- the isomorphism identifying R with toMarkovRing(R).
- The variable $q_{(i_1+1, \dots , i_k+1)}$ is sent to $p_{\{i_1, \ldots, i_k\}}$.
+  the isomorphism identifying R with toMarkovRing(R).
+  The variable $q_{(i_1+1, \dots , i_k+1)}$ is sent to $p_{\{i_1, \ldots, i_k\}}$.
  
 Description
  Text
@@ -1515,7 +1773,7 @@ Inputs
    (or the vertices of G) are assumed to be labelled 1..n.
 Outputs
  :Ideal
- the ideal in R of conditional independence relations
+  the ideal in R of conditional independence relations
 Description
  Text
   {\tt ciIdeal} computes the ideal of a list of conditional independence statements.
