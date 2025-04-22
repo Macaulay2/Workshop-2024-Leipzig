@@ -1,5 +1,5 @@
 -- optimized NEpolynomials
-needsPackage "GameTheory"
+needsPackage "GameTheoryinitial"
 
 --mixedProbabilityRing; 
 mixedProbabilityRing = method()
