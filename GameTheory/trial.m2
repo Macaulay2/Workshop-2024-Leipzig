@@ -1630,38 +1630,38 @@ doc ///
 --------------------------------
 
 doc ///
-Key
- toMarkovRing
- (toMarkovRing, Ring)
-Headline
- ring of joint probability distributions created with the markovRing function from the GraphicalModels package
-Usage
- toMarkovRing R
-Inputs
- R:PolynomialRing
-  created using the probabilityRing method
-Outputs
- :PolynomialRing
-  a polynomial ring isomorphic to the input ring created by the markovRing method from the GraphicalModels package,
-  with variables $q_{(i_1+1, \dots , i_k+1)}$ corresponding to the variables $p_{\{i_1, \ldots, i_k\}}$
-  of the input ring
-Description
- Text
-  Given a ring created with the probabilityRing function, this function creates the canonically isomorphic ring
-  defined by the markovRing function from the GraphicalModels package.
-  The variable name of the output ring is set to be different from the variable name of the input ring:
-  the default variable name of the output ring is "p",
-  and if the variable name of the input ring is "p" then the variable name of the output ring becomes "q".
+ Key
+  toMarkovRing
+  (toMarkovRing, Ring)
+ Headline
+  ring of joint probability distributions created with the markovRing function from the GraphicalModels package
+ Usage
+  toMarkovRing R
+ Inputs
+  R:PolynomialRing
+   created using the probabilityRing method
+ Outputs
+  :PolynomialRing
+   a polynomial ring isomorphic to the input ring created by the markovRing method from the GraphicalModels package,
+   with variables $q_{(i_1+1, \dots , i_k+1)}$ corresponding to the variables $p_{\{i_1, \ldots, i_k\}}$
+   of the input ring
+ Description
+  Text
+   Given a ring created with the probabilityRing function, this function creates the canonically isomorphic ring
+   defined by the markovRing function from the GraphicalModels package.
+   The variable name of the output ring is set to be different from the variable name of the input ring:
+   the default variable name of the output ring is "p",
+   and if the variable name of the input ring is "p" then the variable name of the output ring becomes "q".  
 
- Example
-  R = probabilityRing({2,3,4}, CoefficientRing => ZZ/32003, ProbabilityVariableName => "x")
-  markovR = toMarkovRing R
-  numgens markovR
-  R_0, R_11, R_23
+  Example
+   R = probabilityRing({2,3,4}, CoefficientRing => ZZ/32003, ProbabilityVariableName => "x")
+   markovR = toMarkovRing R
+   numgens markovR
+   R_0, R_11, R_23
 
-SeeAlso
- probabilityRing
- gaussianRing
+ SeeAlso
+  probabilityRing
+  gaussianRing
 ///
 
 
@@ -1670,37 +1670,37 @@ SeeAlso
 -----------------------------------
 
 doc ///
-Key
- mapToMarkovRing
- (mapToMarkovRing, Ring)
-Headline
- ring isomorphism from the given probabilityRing to the corresponding markovRing
-Usage
- mapToMarkovRing R
-Inputs
- R:Ring
-  must be a probabilityRing
-Outputs
- :RingMap
-  the isomorphism identifying R with toMarkovRing(R).
-  The variable $p_{\{i_1, \ldots, i_k\}}$ is sent to $q_{(i_1+1, \dots , i_k+1)}$.
- 
-Description
- Text
-  This function creates the RingMap from a given probabilityRing to its canonically isomorphic
-  markovRing.
- Example
-  R = probabilityRing {2,3,4}
-  markovR = toMarkovRing R
-  F = mapToMarkovRing R
-  target F
-  source F
-  isInjective F
-  F.matrix
+ Key
+  mapToMarkovRing
+  (mapToMarkovRing, Ring)
+ Headline
+  ring isomorphism from the given probabilityRing to the corresponding markovRing
+ Usage
+  mapToMarkovRing R
+ Inputs
+  R:Ring
+   must be a probabilityRing
+ Outputs
+  :RingMap
+   the isomorphism identifying R with toMarkovRing(R).
+   The variable $p_{\{i_1, \ldots, i_k\}}$ is sent to $q_{(i_1+1, \dots , i_k+1)}$.
+  
+ Description
+  Text
+   This function creates the RingMap from a given probabilityRing to its canonically isomorphic
+   markovRing.
+  Example
+   R = probabilityRing {2,3,4}
+   markovR = toMarkovRing R
+   F = mapToMarkovRing R
+   target F
+   source F
+   isInjective F
+   F.matrix  
 
-SeeAlso
- toMarkovRing
- mapToProbabilityRing
+ SeeAlso
+  toMarkovRing
+  mapToProbabilityRing
 ///
 
 ----------------------------------------
@@ -1708,113 +1708,111 @@ SeeAlso
 ----------------------------------------
 
 doc ///
-Key
- mapToProbabilityRing
- (mapToProbabilityRing, Ring)
-Headline
- ring isomorphism to the given probabilityRing from the corresponding markovRing
-Usage
- mapToProbabilityRing R
-Inputs
- R:Ring
-  must be a probabilityRing
-Outputs
- :RingMap
-  the isomorphism identifying R with toMarkovRing(R).
-  The variable $q_{(i_1+1, \dots , i_k+1)}$ is sent to $p_{\{i_1, \ldots, i_k\}}$.
- 
-Description
- Text
-  This function creates the RingMap to a given probabilityRing from its canonically isomorphic
-  markovRing.
- Example
-  R = probabilityRing {2,3,4}
-  markovR = toMarkovRing R
-  F = mapToProbabilityRing R
-  target F
-  source F
-  isInjective F
-  F.matrix
+ Key
+  mapToProbabilityRing
+  (mapToProbabilityRing, Ring)
+ Headline
+  ring isomorphism to the given probabilityRing from the corresponding markovRing
+ Usage
+  mapToProbabilityRing R
+ Inputs
+  R:Ring
+   must be a probabilityRing
+ Outputs
+  :RingMap
+   the isomorphism identifying R with toMarkovRing(R).
+   The variable $q_{(i_1+1, \dots , i_k+1)}$ is sent to $p_{\{i_1, \ldots, i_k\}}$.
+  
+ Description
+  Text
+   This function creates the RingMap to a given probabilityRing from its canonically isomorphic
+   markovRing.
+  Example
+   R = probabilityRing {2,3,4}
+   markovR = toMarkovRing R
+   F = mapToProbabilityRing R
+   target F
+   source F
+   isInjective F
+   F.matrix
 
-SeeAlso
- toMarkovRing
- mapToProbabilityRing
-
+ SeeAlso
+  toMarkovRing
+  mapToProbabilityRing
 ///
 
 ---------------------------
 -- Documentation ciIdeal --
 ---------------------------
-
 doc ///
-Key
- ciIdeal
- (ciIdeal, Ring, List)
- (ciIdeal, Ring, Graph)
- (ciIdeal, Ring, List, List)
- (ciIdeal, Ring, Graph, List)
-Headline
- the ideal of a list of conditional independence statements
-Usage
- ciIdeal (R, Stmts)
- ciIdeal (R, G)
- ciIdeal (R, Stmts, PlayerNames)
- ciIdeal (R, G, PlayerNames)
-Inputs
- R:Ring
-   must be created using probabilityRing
- Stmts:List
-   the list of conditional independence statements 
- G:Graph
-   the graph modelling the conditional dependencies between players
- PlayerNames:List
-   the ordered list of players - the names of the random variables in the conditional independence
-   statements or vertices of the graph. If PlayerNames is omitted, the players
-   (or the vertices of G) are assumed to be labelled 1..n.
-Outputs
- :Ideal
-  the ideal in R of conditional independence relations
-Description
- Text
-  {\tt ciIdeal} computes the ideal of a list of conditional independence statements.
-  The input can be the list of conditional independence statements itself,
-  or a graph modelling the conditional dependencies between players.
+ Key
+  ciIdeal
+  (ciIdeal, Ring, List)
+  (ciIdeal, Ring, Graph)
+  (ciIdeal, Ring, List, List)
+  (ciIdeal, Ring, Graph, List)
+ Headline
+  the ideal of a list of conditional independence statements
+ Usage
+  ciIdeal (R, Stmts)
+  ciIdeal (R, G)
+  ciIdeal (R, Stmts, PlayerNames)
+  ciIdeal (R, G, PlayerNames)
+ Inputs
+  R:Ring
+    must be created using probabilityRing
+  Stmts:List
+    the list of conditional independence statements 
+  G:Graph
+    the graph modelling the conditional dependencies between players
+  PlayerNames:List
+    the ordered list of players - the names of the random variables in the conditional independence
+    statements or vertices of the graph. If PlayerNames is omitted, the players
+    (or the vertices of G) are assumed to be labelled 1..n.
+ Outputs
+  :Ideal
+   the ideal in R of conditional independence relations
+ Description
+  Text
+   {\tt ciIdeal} computes the ideal of a list of conditional independence statements.
+   The input can be the list of conditional independence statements itself,
+   or a graph modelling the conditional dependencies between players.  
 
-  A single conditional independence statement is a list consisting of three disjoint
-  lists of indices for random variables, e.g. $\{ \{1,2\},\{4\}, \{3\} \}$
-  which represents the conditional independence statement ``$(X_1, X_2)$
-  is conditionally independent of $X_4$ given $X_3$''.
-  Given an undirected graph $G$, the conditional independence statements are produced via
-  the globalMarkov function from the GraphicalModels package. A global Markov statement
-  for $G$ is a list $\{A, B, C\}$ of three disjoint lists of vertices of $G$, where the
-  subset $C$ separates the subset $A$ from the subset $B$ in the graph $G$.  
+   A single conditional independence statement is a list consisting of three disjoint
+   lists of indices for random variables, e.g. $\{ \{1,2\},\{4\}, \{3\} \}$
+   which represents the conditional independence statement ``$(X_1, X_2)$
+   is conditionally independent of $X_4$ given $X_3$''.
+   Given an undirected graph $G$, the conditional independence statements are produced via
+   the globalMarkov function from the GraphicalModels package. A global Markov statement
+   for $G$ is a list $\{A, B, C\}$ of three disjoint lists of vertices of $G$, where the
+   subset $C$ separates the subset $A$ from the subset $B$ in the graph $G$.   
 
-  The output is an ideal of the given ring PR, which must be created using the
-  probabilityRing function. This function computes the ideal using the
-  conditionalIndependenceIdeal function from the GraphicalModels package, then
-  maps it to an ideal of PR via the mapToProbabilityRing function.
+   The output is an ideal of the given ring PR, which must be created using the
+   probabilityRing function. This function computes the ideal using the
+   conditionalIndependenceIdeal function from the GraphicalModels package, then
+   maps it to an ideal of PR via the mapToProbabilityRing function.
 
- Example
+  Example
      FF = ZZ/32003
      d = {2,3,2};
      PR = probabilityRing (d, CoefficientRing => FF);
      G = graph ({}, Singletons => {1,2,3});
      I = ciIdeal (PR, G)
 
-    Text
+  Text
       Here is an example where the vertices of the graph need to be relabeled.
       
-    Example  
+  Example  
      FF = ZZ/32003
      d = {2,3,2};
      PR = probabilityRing (d, CoefficientRing => FF);
      G = graph {{John,Matthew},{Matthew,Sarah}};
      I = ciIdeal (PR, G, {John,Matthew,Sarah})
      
-    Text
+  Text
       Here is an example where the conditional independence relations are given with a List.
 
-    Example
+  Example
       FF = ZZ/32003
       d = {2,3,2};
       PR = probabilityRing (d, CoefficientRing => FF);
@@ -1824,7 +1822,7 @@ Description
       I2 = ciIdeal (PR,L)
       I1 == I2
  
-  SeeAlso
+ SeeAlso
     conditionalIndependenceIdeal 
     mapToProbabilityRing
     toMarkovRing
@@ -2342,7 +2340,7 @@ TEST ///
 TEST ///
     mv = numberTMNE {2,2,2}
     assert(mv == 2)
-    mv2 = NumberTMNE {3,3,3}
+    mv2 = numberTMNE {3,3,3}
     assert(mv3 == 10)
 ///
 
