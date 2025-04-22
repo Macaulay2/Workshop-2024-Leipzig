@@ -1,5 +1,5 @@
 restart
-needsPackage "GameTheory"
+needsPackage "GameTheoryinitial"
 load "DependencyEquilibria.m2"
 load "NEideal.m2"
 load "GameTheory - CI.m2"
