@@ -20,6 +20,7 @@ Node
         (symbol _, Path, List)
         (symbol _, Path, ZZ)
         (symbol _, Path, Sequence)
+        (symbol ^, Path, ZZ)
         (getDimension, Path)
         getDimension
         (dim, Path)
@@ -30,50 +31,52 @@ Node
         (getBaseRing, Path)
         getBaseRing
         (baseRing, Path)
-    Headline
-        The type of a piecewise polynomial path. 
+        (net, Path)
     Description
         Text
-            The type Path inherits from @TO2 {"Macaulay2Doc :: MutableHashTable", "MutableHashTable"} @. There are constructors for single piece paths, @TO linPath@ and @TO polyPath@ 
-            and these can be concatenated with @TO (symbol **, Path, Path)@.
+            A polynomial path is a map $[0,1] \to \mathbb R^d$ whose coordinate functions are given by polynomials. A piecewise polynomial path is a concatenation of polynomial paths.
         Text
-            A path can be constructed in different ways. For example a linear path starting at 0 can constructed by giving the incremenent:
+            To create a polynomial path, use @TO polyPath@, which takes a list of polynomials as input. These can be given as elements of a commutative polynomial ring with one generator or directly in @TO2 {"Macaulay2Doc :: listForm", "listForm"}@.
         Example
-            X = linPath({2,3})
+            R = QQ[t];
+            X = polyPath({t,2*t^2,3*t^3})
+            Y = polyPath({{({1},1)},{({2},2)},{({3},3)}})
         Text
-            While a polynomial path can be given either in @TO2 {"Macaulay2Doc :: listForm", "listForm"}@ or as an actual polynomial
+            While the polynomials must be chosen from a polynomial ring with one generator, the coefficient ring of the polynomials can be chosen arbitrarily.
         Example
-            R = QQ[t]
-            Y1 = polyPath({t,2*t^2})
-            Y2 = polyPath({{({1},1)},{({2},2)}})
+            R = QQ[a][t]; --QQ[a,t] will not work!
+            X = polyPath({t,2*a*t^2,3*a^2*t^3})
         Text
-            The coefficients of the polynomials can be any ring, but there must be only one top level variable
+            An important special case of polynomial paths are linear paths. These can be constructed directly from their increment using @TO linPath@.
         Example
-            R2 = QQ[a][t]; --QQ[a,t] will not work!
-            Y3 = polyPath({a*t,2*a*t^2}) 
+            Y = linPath({2,3,4})
         Text
-            Paths can be concatenated with @TO (symbol **, Path, Path)@:
+            Paths can be concatenated using @TO (symbol **, Path, Path)@. This concatenation is formal: the new Path object encodes the polynomial pieces and their order, but no parametrization is chosen. The concatenation @TO (symbol **, Path, Path)@ will automatically select a bigger coefficient ring for all polynomial pieces if an obvious choice is available.
         Example
-            Z = Y1**Y3
+            Z = X ** Y
         Text
-            To extract only one piece of the path, for example the first, one can use @TO (symbol _, Path, ZZ)@
+            A piecewise linear path can be constructed directly from the increments of its segments using @TO pwLinPath@.
         Example
-             Z_0
+            A = matrix {{1,2,3},{2,3,4},{4,5,6}};
+            W = pwLinPath(A)
         Text
-            While to exctract a subset of pieces, for example the first and last, one can use either @TO (symbol _, Path, List)@ or @TO (symbol _, Path, Sequence)@
-        Example
-            Z2 = Z**Z
-            Z2_{0,-1}
-        Text
-            Finally, there are getters @TO (getDimension, Path)@, @TO (getPieces, Path)@, @TO (getBaseRing, Path)@ and @TO (getNumberOfPieces, Path)@ to read the attributes of a path
+            To read out the ambient dimension of a path, use @TO (getDimension, Path)@ or @TO (dim, Path)@. To get the pieces of the path in @TO2 {"Macaulay2Doc :: listForm", "listForm"}@ use @TO (getPieces, Path)@. To get the coefficient ring of the coordinate polynomials, use @TO (getBaseRing, Path)@ or @TO (baseRing, Path)@. Finally, @TO (getNumberOfPieces, Path)@ returns the number of pieces of the path.
         Example
             getDimension(Z) --The ambient dimension of the path
             getPieces(Z) --The polynomial pieces of the path, in listForm
             getBaseRing(Z) -- The coefficients ring of the polynomial components of the path
             getNumberOfPieces(Z) -- The number of polynomial pieces of the path
         Text
-            Remark that the polynomials are stored in their @TO2 {"Macaulay2Doc :: listForm", "listForm"}@ and that the concatenation @TO (symbol **, Path, Path)@ will automatically
-            select a bigger base ring when an obvious choice is available.
+            To extract the pieces of a concatenated path one can use @TO (symbol _, Path, ZZ)@, @TO (symbol _, Path, List)@ and @TO (symbol _, Path, Sequence)@.
+        Example
+            Z_0
+            Z2 = Z^2
+            Z2_{0,-1}
+        Text
+            When considering the set of paths modulo tree-like equivalence, concatenation turns it into a groupoid. Use @TO (symbol ^, Path, ZZ)@ to compute powers and the inverse of a path in this groupoid. Note that the inverse of a path is just given by reversing its parametrization.
+        Example
+            X^4
+            X^(-1)
 
     SeeAlso
         polyPath
@@ -88,7 +91,7 @@ Node
         X**Y
     Description
         Text
-            This allows for concatenation of paths of the same type attribute. 
+            This allows for concatenation of paths. The concatenation is formal, no parametrization is chosen.
         Example
             R = QQ[t];
             X = polyPath({t,t^2}) ** polyPath({t^3 + 3*t, t^2 - 1})
@@ -97,7 +100,30 @@ Node
         linPath
 Node
     Key
+        (substitute,Path, Ring)
+    Headline
+        changes the base ring of a path
+    Usage
+        Y = substitute(X,R)
+    Inputs
+        X: Path
+        R: Ring -- an algebra over the coefficient ring of the polynomials defining X
+    Outputs
+        Y: Path -- a path with the same pieces as X but whose coordinate functions are now polynomials with coefficients in R
+    Description
+        Text
+            Tries to substitute the coefficients of the polynomials defining the given path into the given ring, producing a new path.
+        Example
+            R = QQ[t];
+            X = polyPath({t,t^2})
+            baseRing X
+            A = QQ[a];
+            Y = substitute(X,A)
+            baseRing Y
+Node
+    Key
         polyPath
+        (polyPath,List)
     Headline
         Constructor of single piece polynomial path
     Usage
@@ -191,6 +217,7 @@ Node
 Node 
     Key
         pwLinPath
+        (pwLinPath,Matrix)
     Headline
         Constructor of a piecewise linear path from a matrix
     Inputs
