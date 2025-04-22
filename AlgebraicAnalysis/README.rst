@@ -6,7 +6,7 @@ Connection Matrices in *Macaulay2*
 
 | Paul Görlach, Joris Koefler, Anna-Laura Sattelberger, Mahrud Sayrafi, Hendrik Schroeder, Nicolas Weiss, and Francesca Zaffalon: "Connection Matrices in *Macaulay2*"
 
-| ARXIV: (...) CODE: https://mathrepo.mis.mpg.de/ConnectionMatrices/
+| ARXIV: https://arxiv.org/abs/2504.01362 CODE: https://mathrepo.mis.mpg.de/ConnectionMatrices/
 
 
 1. Introduction
@@ -116,13 +116,13 @@ Working with the rational Weyl algebra
 ######################################
 
 * `normalForm <https://mahrud.github.io/LearnM2/packages/#ConnectionMatrices::normalForm>`_ -- computes the normal form within the rational Weyl algebra
-* `standardMonomials <https://mahrud.github.io/LearnM2/packages/#ConnectionMatrices::standardMonomials>`_ -- computes the standard monomials for a $D_n$-ideal
+* `standardMonomials <https://mahrud.github.io/LearnM2/packages/#ConnectionMatrices::standardMonomials>`_ -- computes the standard monomials for a :math:`D_n`-ideal
 * `baseFractionField <https://mahrud.github.io/LearnM2/packages/#ConnectionMatrices::baseFractionField>`_ -- extracts the fraction field of the base polynomial ring of a Weyl algebra
 
-Computing and displaying $D$-ideals in connection form
+Computing and displaying :math:`D`-ideals in connection form
 ######################################################
 
-* `connectionMatrices <https://mahrud.github.io/LearnM2/packages/#ConnectionMatrices::connectionMatrices>`_ -- computes the connection matrices of a $D_n$-ideal $I$ for a chosen basis
+* `connectionMatrices <https://mahrud.github.io/LearnM2/packages/#ConnectionMatrices::connectionMatrices>`_ -- computes the connection matrices of a :math:`D_n`-ideal :math:`I` for a chosen basis
 * `connectionMatrix <https://mahrud.github.io/LearnM2/packages/#ConnectionMatrices::connectionMatrix>`_ -- computes the connection matrix
 
 Changing basis of a system of connection matrices
@@ -130,7 +130,7 @@ Changing basis of a system of connection matrices
 
 * `gaugeMatrix <https://mahrud.github.io/LearnM2/packages/#ConnectionMatrices::gaugeMatrix>`_ -- computes the base change over the field of rational functions
 * `gaugeTransform <https://mahrud.github.io/LearnM2/packages/#ConnectionMatrices::gaugeTransform>`_ -- computes the gauge transform of a system of connection matrices
-* `isEpsilonFactorized <https://mahrud.github.io/LearnM2/packages/#ConnectionMatrices::isEpsilonFactorized>`_ -- checks whether a system of connection matrices is in $\epsilon$-factorized form
+* `isEpsilonFactorized <https://mahrud.github.io/LearnM2/packages/#ConnectionMatrices::isEpsilonFactorized>`_ -- checks whether a system of connection matrices is in :math:`\epsilon`-factorized form
 
 Testing integrability of a list of matrices
 ###########################################
@@ -138,9 +138,9 @@ Testing integrability of a list of matrices
 
 Examples
 ########
-* `example from cosmology <https://mahrud.github.io/LearnM2/packages/#ConnectionMatrices::example%20from%20cosmology>`_
-* `example from particle physics <https://mahrud.github.io/LearnM2/packages/#ConnectionMatrices::example%20from%20particle%20physics>`_
-* `example from GKZ systems <https://mahrud.github.io/LearnM2/packages/#ConnectionMatrices::example%20from%20GKZ%20systems>`_
+* `Cosmological correlator for the 2-site chain <https://mahrud.github.io/LearnM2/packages/#ConnectionMatrices::Cosmological%20correlator%20for%20the%202-site%20chain>`_
+* `Massless one-loop triangle Feynman diagram <https://mahrud.github.io/LearnM2/packages/#ConnectionMatrices::Massless%20one-loop%20triangle%20Feynman%20diagram>`_
+* `Gauss' hypergeometric function <https://mahrud.github.io/LearnM2/packages/#ConnectionMatrices::Gauss%27%20hypergeometric%20function>`_
 
 
 
@@ -150,7 +150,7 @@ Examples
 
 -------------------------------------------------------------------------
 
-Project page created: 01/04/2025
+Project page created: 05/04/2025
 
 Project contributors: Paul Görlach (paul.goerlach@ovgu.de), Joris Koefler (joris.koefler@mis.mpg.de), Anna-Laura Sattelberger (anna-laura.sattelberger@mis.mpg.de), Mahrud Sayrafi (mahrud@fields.utoronto.ca), Hendrik Schroeder (h.schroeder@tu-berlin.de), Nicolas Weiss (nicolas.weiss@mis.mpg.de), and Francesca Zaffalon (francesca.zaffalon@mis.mpg.de)
 
@@ -164,7 +164,7 @@ License for code of this project page: MIT License (https://spdx.org/licenses/MI
 
 License for all other content of this project page: CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/)
 
-Last updated 01/04/2025.
+Last updated 05/04/2025.
 
 
 
