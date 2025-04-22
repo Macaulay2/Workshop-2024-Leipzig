@@ -531,7 +531,7 @@ blockDerangements List := D -> (
 numberTMNE = method()
 numberTMNE List := D -> (
     KK := ZZ;
-    h := getSymbol "h";
+    h := local h;
     R := KK[h_0..h_(#D-1)];
     return sub(contract(product(#D, j -> h_(j)^(D#j-1)),
                         product(#D, j -> (sum(#D, i -> h_(i))-h_(j))^(D#j-1))), KK)
