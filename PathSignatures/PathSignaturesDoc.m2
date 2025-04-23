@@ -5,7 +5,7 @@ Node
     Key
         PathSignatures
     Headline
-        A package for working with signatures of algebraic paths
+        a package for working with signatures of algebraic paths
     Description
         Text
             {\em PathSignatures} is a package for studying the signature of piecewise polynomial paths.
@@ -28,9 +28,9 @@ Node
         getNumberOfPieces
         (getPieces, Path)
         getPieces
-        (getBaseRing, Path)
-        getBaseRing
-        (baseRing, Path)
+        (getCoefficientRing, Path)
+        getCoefficientRing
+        (coefficientRing, Path)
         (net, Path)
     Description
         Text
@@ -60,11 +60,11 @@ Node
             A = matrix {{1,2,3},{2,3,4},{4,5,6}};
             W = pwLinPath(A)
         Text
-            To read out the ambient dimension of a path, use @TO (getDimension, Path)@ or @TO (dim, Path)@. To get the pieces of the path in @TO2 {"Macaulay2Doc :: listForm", "listForm"}@ use @TO (getPieces, Path)@. To get the coefficient ring of the coordinate polynomials, use @TO (getBaseRing, Path)@ or @TO (baseRing, Path)@. Finally, @TO (getNumberOfPieces, Path)@ returns the number of pieces of the path.
+            To read out the ambient dimension of a path, use @TO (getDimension, Path)@ or @TO (dim, Path)@. To get the pieces of the path in @TO2 {"Macaulay2Doc :: listForm", "listForm"}@ use @TO (getPieces, Path)@. To get the coefficient ring of the coordinate polynomials, use @TO (getCoefficientRing, Path)@ or @TO (coefficientRing, Path)@. Finally, @TO (getNumberOfPieces, Path)@ returns the number of pieces of the path.
         Example
             getDimension(Z) --The ambient dimension of the path
             getPieces(Z) --The polynomial pieces of the path, in listForm
-            getBaseRing(Z) -- The coefficients ring of the polynomial components of the path
+            getCoefficientRing(Z) -- The coefficient ring of the polynomial components of the path
             getNumberOfPieces(Z) -- The number of polynomial pieces of the path
         Text
             To extract the pieces of a concatenated path one can use @TO (symbol _, Path, ZZ)@, @TO (symbol _, Path, List)@ and @TO (symbol _, Path, Sequence)@.
@@ -86,7 +86,7 @@ Node
     Key
         (symbol **, Path, Path)
     Headline
-        Concatenation of paths
+        concatenation of paths
     Usage 
         X**Y
     Description
@@ -102,7 +102,7 @@ Node
     Key
         (substitute,Path, Ring)
     Headline
-        changes the base ring of a path
+        changes the coefficient ring of a path
     Usage
         Y = substitute(X,R)
     Inputs
@@ -116,16 +116,16 @@ Node
         Example
             R = QQ[t];
             X = polyPath({t,t^2})
-            baseRing X
+            coefficientRing X
             A = QQ[a];
             Y = substitute(X,A)
-            baseRing Y
+            coefficientRing Y
 Node
     Key
         polyPath
         (polyPath,List)
     Headline
-        Constructor of single piece polynomial path
+        constructor of single piece polynomial path
     Usage
         polyPath(polyPathList)
     Inputs
@@ -151,7 +151,7 @@ Node
         linPath
         (linPath, List)
     Headline
-        Constructor of single piece polynomial path
+        constructor of single piece polynomial path
     Usage
         linPath(v)
     Inputs
@@ -178,7 +178,7 @@ Node
         (sig, Path, ZZ)
         (sig, Path, ZZ, NCRing)
     Headline
-        Compute the signature of a piecewise polynomial path.
+        compute the signature of a piecewise polynomial path.
     Description
         Text
             Given a path $X(t):[0,1]\rightarrow \mathbb{R}^d$, its signature is the linear form $\sigma: T((\mathbb{R}^d)^*)\rightarrow \mathbb{R}$ on the tensor algebra of the dual of 
@@ -205,7 +205,7 @@ Node
             T = sig(X, 2)
             T // wordFormat
         Text
-            Note however that neither the symbols nor the ring of this polynomial are made available to the user, in particular they can not be added or multiplied. To obtain the tensor as a NCPolynomial in a given NCRing, use @TO (sig, Path, ZZ,  NCRing)@ instead:
+            Note however that neither the symbols nor the ring of this polynomial are made available to the user, in particular they can not be added or multiplied. To obtain the tensor as a NCPolynomial in a given NCRing, use @TO (sig, Path, ZZ,  NCRing)@ instead. The following example demonstrates Chen's identity:
         Example
             T = 1 + sig(X, 1, A) + sig(X, 2, A);
             S = T * T;
@@ -219,7 +219,7 @@ Node
         pwLinPath
         (pwLinPath,Matrix)
     Headline
-        Constructor of a piecewise linear path from a matrix
+        constructor of a piecewise linear path from a matrix
     Inputs
         pwlMatrix: Matrix -- A matrix containing on its columns the articulation points (or increments) of the path
     Outputs
@@ -240,7 +240,7 @@ Node
         adjointWord
         (adjointWord, NCRingElement, NCPolynomialRing, List)
     Headline
-        Image of a word through the shuffle algebras homomorphism induced by a polynomial map 
+        image of a word through the shuffle algebras homomorphism induced by a polynomial map 
     Inputs 
         g : NCRingElement --The word to compute the image of
         T : NCPolynomialRing --The shuffle algebra of the image
@@ -289,7 +289,7 @@ Node
         (symbol **, NCRingElement, NCRingElement)
         (shuffle, NCRingElement, NCRingElement)
     Headline
-        Shuffle product of two words
+        shuffle product of two words
     Inputs
         w1: NCRingElement 
         w2: NCRingElement
@@ -322,55 +322,82 @@ Node
         wordAlgebra
         wordFormat
         (symbol _, Array, NCPolynomialRing)
-Node 
-    Key
-        (wordAlgebra, ZZ)
-    Inputs
-        z: ZZ -- The number of variables in the algebra, usually the ambient dimension of the path
-        BaseRing => Ring -- The coefficients ring, by default the rationals.
-    Outputs
-        A: NCRing --The associative free polynomial algebra on the letters LT_1, ..., Lt_z
-    Headline
-        Create a free associative algebra on a given number of generators
-    Usage
-        wordAlgebra(z)
-    Description
-        Text
-            Creates the free associative polynomial algebra on the letters Lt_1,$ \dots$, Lt_z.
-        Example
-            z = 5;
-            A = wordAlgebra(z)
-            gens A
-    SeeAlso
-        wordAlgebra
+-- Node 
+--     Key
+--     Inputs
+--         z: ZZ -- The number of variables in the algebra, usually the ambient dimension of the path
+--         CoefficientRing => Ring -- The coefficients ring, by default the rationals.
+--     Outputs
+--         A: NCRing --The associative free polynomial algebra on the letters LT_1, ..., Lt_z
+--     Headline
+--         create a free associative algebra on a given number of generators
+--     Usage
+--         wordAlgebra(z)
+--     Description
+--         Text
+--             Creates the free associative polynomial algebra on the letters Lt_1,$ \dots$, Lt_z.
+--         Example
+--             z = 5;
+--             A = wordAlgebra(z)
+--             gens A
+--     SeeAlso
+--         wordAlgebra
 Node
     Key
         wordAlgebra
+        (wordAlgebra, ZZ)
+        (wordAlgebra, List)
         NCRingElement
         NCPolynomialRing
     Headline
-        Create a free algebra representing a tensor algebra
+        create a free algebra over a given alphabet
     Description
         Text
-            In this package tensors are represented as elements of free associative algebras, 
-            using the package @TO2 {"NCAlgebra :: NCAlgebra", "NCAlgebra"}@. The easiest way to create 
-            such an algebra is through @TO wordAlgebra@. For example, by using @TO (wordAlgebra, ZZ)@ we 
-            can create the free algebra on $d$ letters:
+            In this package, tensors are represented as elements of free associative algebras, using the package @TO2 {"NCAlgebra :: NCAlgebra", "NCAlgebra"}@.
+            More precisely, the free associative algebra on the alphabet $\{\texttt 1,...,\texttt d\}$ is isomorphic to the tensor algebra $T(\mathbb R^d)$ via the algebra homomorphism induced by $\texttt i \mapsto e_i$. This allows us to interpret tensors as non-commutative polynomials, or equivalently, linear combinations of words.
+            Given an alphabet $l$, the free assocative algebra over it can be obtained by using @TO wordAlgebra@, where the letter corresponding to $x \in l$ is represented by $\texttt{Lt}_x$.
         Example
             d = 5;
-            A = wordAlgebra(d)
+            l1 = {getSymbol "a", getSymbol "b", getSymbol "c"};
+            A = wordAlgebra(l1)
             gens A
+
+            l2 = toList(1..d);
+            B = wordAlgebra(l2)
+            gens B
         Text
-            An element of the algebra can be either generated by using the symbols Lt_1, $\dots$ , Lt_d or by @TO (symbol _, Array, NCPolynomialRing)@
+            The algebra B in the example can also be directly obtained for a given d using @TO (wordAlgebra, ZZ)@:
+        Example
+            B = wordAlgebra(d);
+            gens B
+        Text
+            By default, @TO wordAlgebra@ creates a non-commutative algebra over @TO2{"Macaulay2Doc :: QQ", "QQ"}@. The coefficient ring can be changed via the CoefficientRing option:
+        Example
+            coefficientRing B
+            C = wordAlgebra(d, CoefficientRing => CC)
+            coefficientRing C
+        Text
+            An element of the algebra can be obtained by using the generator symbols, or (more conveniently) by using word notation, see @TO (symbol _, Array, NCPolynomialRing)@:
         Example
             d = 5;
             R = wordAlgebra(d); -- create a free associative algebra over two letters Lt_1, Lt_2
-            f = [1,d]_R + [2,d]_R  -- [i_1,...,i_k]_R defines a word.
-            f === Lt_1*Lt_d+Lt_2*Lt_d 
+            f = 2 * [1,d]_R - [2,d]_R  -- [i_1,...,i_k]_R defines a word.
+            f === 2 * Lt_1 * Lt_d - Lt_2 * Lt_d
         Text
-            To display a tensor in square braket notation above one can use @TO wordFormat@
+            Note that for two words (equivalently, monomials) $\texttt{w}$ and $\texttt{v}$, $\texttt{w} * \texttt{v}$ is the concatenation.
+        Text
+            To display a non-commutative polynomial in word notation, one can use @TO wordFormat@ or @TO wordString@:
         Example
-            f // wordFormat
+            f^3 // wordFormat
+            f^3 // wordString
+        Text
+            There are more interesting algebraic structures on non-associative algebras; of particular importance in the context of path signatures is the shuffle product and the half-shuffle product:
+        Example
+            a = [1]_R ** [2]_R; wordFormat a -- the shuffle product
+            b = [1,2]_R ** [3,4]_R; wordFormat b
+            c = [1]_R >> [2,3]_R; wordFormat c -- the half-shuffle product
+        Text
+            See @TO (symbol **, NCRingElement, NCRingElement)@ and @TO (symbol >>, NCRingElement, NCRingElement)@ for more information on the shuffle and half-shuffle product.
     SeeAlso
         (symbol _, Array, NCPolynomialRing)
 
@@ -383,7 +410,7 @@ Node
     Outputs
         w: NCRingElement -- The element of R corresponding to R_(i_1)*...R_(i_k)
     Headline
-        Create a word from an array
+        create a word from an array
     Usage
         w = a_R
     Description
@@ -408,7 +435,7 @@ Node
         wordFormat
         (wordFormat, NCRingElement)
     Headline
-        Display a tensor in word notation
+        display a tensor in word notation
     Description
         Text
             A more readable display of tensors can be obtained through the following convention. Let $Lt_1,\dots, Lt_d$ be the generators of $R$, then an array of 
@@ -429,7 +456,7 @@ Node
         (halfshuffle, NCRingElement, NCRingElement)
         (symbol >>, NCRingElement, NCRingElement)
     Headline
-        Compute the half-shuffle of an ordered pair of words
+        compute the half-shuffle of an ordered pair of words
     Inputs
         f : NCRingElement 
         g : NCRingElement 
@@ -465,76 +492,70 @@ Node
         CAxisTensor
         (CAxisTensor, ZZ, NCPolynomialRing)
     Headline
-        Signature of the canonical axis path at a given level
+        the signature tensor of the canonical axis path at a given level
     Inputs
-        k : ZZ --The level of the signature to compute
-        R : NCPolynomialRing -- The signature tensors space
+        k : ZZ -- the level of the signature tensor to compute
+        R : NCPolynomialRing -- the output tensor space
     Outputs
-        s : NCRingElement -- The k-th level signature of the canonical axis path in R^d, where d is the number of generators of R
+        s : NCRingElement -- an element of R; the k-th level signature of the canonical axis path in $\mathbb R^d$, where $d$ is the number of generators of R
     Usage
         s = CAxisTensor(k, R)
     Description
         Text
-            As in the reference paper, define the {\em canonical axis path} in $\mathbb{R}^d$ 
-            to be the path from $(0, \dots, 0)$ to $(1, \dots, 1)$ given by $d$ lienar steps 
-            in the unit direction $e_1, \dots, e_d$ in that order. Then the method computes the 
-            $k$-th level signature of the canonical axis path in dimension $d$, where $d$ is the
-            number of generatos of R.
+            The {\em canonical axis path} in $\mathbb{R}^d$ is the path from $(0, \dots, 0)$ to $(1, \dots, 1)$ given by $d$ linear steps 
+            in the unit directions $e_1, \dots, e_d$, in this order. The $k$-th level signature tensor of such a path has a combinatorial closed-form description (see the reference below) and can be obtained as follows:
         Example
             d = 2;
             k = 3;
             R = wordAlgebra(d);
-            Cd = CAxisTensor(k, R); Cd // wordFormat --k-th level signature of the canonical axis path in R^d
+            Cd = CAxisTensor(k, R); Cd // wordFormat -- k-th level signature of the canonical axis path in R^d
         Text
-            To expand on the example, we verify that the result agrees with the one from @TO sig@.
-            Remark that the matrix of increments for the canonical axis path in dimension $d$ is 
-            the identity matrix of order $d$.
+            To expand on the example, we verify that the result agrees with the one obtained from @TO sig@.
+            Notice that the matrix of increments for the canonical axis path in dimension $d$ is 
+            the $d \times d$ identity matrix.
         Example
-            M = id_(QQ^d); --Identity matric of order d
-            CAxisPath = pwLinPath(M) -- The canonical axis path in dimension d
-            Cd2 = sig(CAxisPath, k); Cd2 // wordFormat --The k-th level signature
+            M = id_(QQ^d); -- identity matrix
+            CAxisPath = pwLinPath(M) -- the canonical axis path in dimension d
+            Cd2 = sig(CAxisPath, k); Cd2 // wordFormat -- the k-th level signature
     References
-        @HREF {"https://doi.org/10.1017/fms.2019.3", "VARIETIES OF SIGNATURE TENSORS (doi.org/10.1017/fms.2019.3)"}@
+        @HREF {"https://doi.org/10.1017/fms.2019.3", "Varieties Of Signature Tensors (doi.org/10.1017/fms.2019.3)"}@
 
 Node
     Key
         CMonTensor
         (CMonTensor, ZZ, NCPolynomialRing)
     Headline
-        Signature of the canonical monomial path at a given level
+        the signature tensor of the canonical monomial path at a given level
     Inputs
-        k : ZZ --The level of the signature to compute
-        R : NCPolynomialRing -- The signature tensors space
+        k : ZZ -- the level of the signature tensor to compute
+        R : NCPolynomialRing -- the output tensor space
     Outputs
-        s : NCRingElement -- The k-th level signature of the canonical monomial path in R^d, where d is the number of generators of R
+        s : NCRingElement -- an element of R; the k-th level signature of the canonical monomial path in $\mathbb R^d$, where $d$ is the number of generators of R
     Usage
-        s = CMonTensor(k, R)
+        s = CAxisTensor(k, R)
     Description
         Text
-            As in the reference paper, define the {\em canonical monomial path} in $\mathbb{R}^d$ 
-            to be the path from $(0, \dots, 0)$ to $(1, \dots, 1)$ given by $t\mapsto (t, t^2, \dots, t^d)$. Then the method computes the 
-            $k$-th level signature of the canonical monomial path in dimension $d$, where $d$ is the
-            number of generatos of R.
+            The {\em canonical monomial path} in $\mathbb{R}^d$ is the path from $(0, \dots, 0)$ to $(1, \dots, 1)$ given by $t\mapsto (t, t^2, \dots, t^d)$. Its $k$-th level signature has a closed-form description (see the reference below) and can be obtained as follows:
         Example
             d = 2;
             k = 3;
             R = wordAlgebra(d);
             Cd = CMonTensor(k, R); Cd // wordFormat --k-th level signature of the canonical monomial path in R^d
         Text
-            To expand on the example, we verify that the result agrees with the one from @TO sig@.
+            To expand on the example, we verify that the result agrees with the one obtained from @TO sig@.
         Example
             R=QQ[t];
             CMonPath = polyPath(for i from 1 to d list t^i) -- The canonical axis path in dimension d
             Cd2 = sig(CMonPath, k); Cd2 // wordFormat --The k-th level signature
     References
-        @HREF {"https://doi.org/10.1017/fms.2019.3", "VARIETIES OF SIGNATURE TENSORS (doi.org/10.1017/fms.2019.3)"}@
+        @HREF {"https://doi.org/10.1017/fms.2019.3", "Varieties Of Signature Tensors (doi.org/10.1017/fms.2019.3)"}@
 
 Node 
     Key
         wordString
         (wordString, NCRingElement)
     Headline
-        A string representing a word in wordFormat
+        a string representing a word in wordFormat
     Inputs
         w : NCRingElement
     Outputs
@@ -557,29 +578,29 @@ Node
     Key
         lie
     Headline
-        Lie bracket of two elements
+        lie bracket of two elements
     Inputs
-        a : Thing
-        b : Thing
+        a : NCRingElement
+        b : NCRingElement
     Outputs
-        c : Thing --The lie bracket of a, b
+        c : NCRingElement --The commutator of a, b
     Usage 
         c = lie(a, b)
     Description
         Text
-            Let $a, b$ be elements of a non commutative ring $(R, +, \cdot)$. Their Lie bracket is the element $a\cdot b - b\cdot a$.
+            A non-commutative algebra $(R, +, \cdot)$ is naturally a Lie algebra with the commutator $a\cdot b - b\cdot a$ as the Lie bracket. The commutator of two non-commutative polynomials can be computed as follows:
         Example
             R = wordAlgebra (3);
             a = [1]_R
             b = [2]_R
-            lie(a,b) == a*b - b*a
+            lie(a,b)
 Node 
     Key
         lieBasis
         (lieBasis, Array, NCPolynomialRing)
         (lieBasis, List, NCPolynomialRing)
     Headline
-        Basis element corresponding to a Lyndon word in a Lie algebra
+        basis element corresponding to a Lyndon word in a Lie algebra
     Inputs
         l : Array -- A Lyndon word in @TO wordFormat@ notation
         R : NCPolynomialRing -- The algebra where the output lives
@@ -615,7 +636,7 @@ Node
         lyndonWords
         (lyndonWords, ZZ, ZZ)
     Headline
-        Compute all Lyndon words of at most a given lenght on a given number of letters
+        compute all Lyndon words of at most a given lenght on a given number of letters
     Inputs
         d : ZZ --The number of letters
         k : ZZ --The maximum lenght 
