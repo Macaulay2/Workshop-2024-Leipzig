@@ -632,9 +632,32 @@ Node
         Example
             lyndonWords (2,3)
 
+Node
+    Key 
+        (symbol @, NCRingElement, ZZ)
+        (tensorArray, NCRingElement)
+    Headline
+        k-th level component of a tensor.
+    Inputs
+        s : NCRingElement 
+        k : ZZ --The level to extract
+    Outputs
+        sk : List -- The k-th level of s, as a multi-dimensional array
+    Usage
+        sk = s@k
+    Description
+        Text
+            Returns the $k$-level component of a tensor as multi-dimensioal array, represented by a nested @TO List@.
+        Example
+            R = QQ[t];
+            X = polyPath({t,t^2});
+            sig(X,2)@2 -- signature matrix at depth 2
+            A = sig(X,3)@3 -- third level signature as multi-dimensional array
+            i = 0; j = 0; k = 0;
+            A#i#j#k == (Lt_(i+1)*Lt_(j+1)*Lt_(k+1))@(sig(X, 3)) --The coefficient of (Lt_1)^3 in sig(X, 3)
+    SeeAlso
+        (symbol @, NCRingElement, NCRingElement)            
 
-
-    
 ///
 
 
