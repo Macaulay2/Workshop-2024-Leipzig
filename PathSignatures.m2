@@ -25,10 +25,9 @@ export {
     "wordString",
     "getDimension",
     "getPieces",
-    "getBaseRing",
+    "getCoefficientRing",
     "getNumberOfPieces",
     -- symbols
-    "BaseRing",
     "adjointWord",
     "tensorArray",
     "inner",
@@ -92,7 +91,7 @@ sig(Path,ZZ,NCRing) := (X, h, R) -> (
 
 sig(Path,ZZ) := (X,h) ->
 (
-    R := wordAlgebra(X.dimension, BaseRing => X.bR);
+    R := wordAlgebra(X.dimension, CoefficientRing => X.bR);
     sig(X,h,R)
 )
 
@@ -186,9 +185,9 @@ dim Path := (X) -> X.dimension; -- can we have two aliases for the same function
 getPieces = method();
 getPieces Path := (X) -> X.pieces;
 
-getBaseRing = method();
-getBaseRing Path := (X) -> X.bR;
-baseRing Path := (X) -> X.bR;
+getCoefficientRing = method();
+getCoefficientRing Path := (X) -> X.bR;
+coefficientRing Path := (X) -> X.bR;
 
 getNumberOfPieces = method();
 getNumberOfPieces Path := (X) -> X.numberOfPieces;
@@ -463,7 +462,7 @@ CMonTensor(ZZ, NCPolynomialRing) := NCRingElement => (k,r) -> (
 
 -- tensorParametrization takes a tensor T, constructs a ring R with one variable for each word appearing in T and creates the map that sends a variable to the coefficient of the corresponding word.
 
-tensorParametrization = method(Options=>{BaseRing => QQ})
+tensorParametrization = method(Options=>{CoefficientRing => QQ})
 tensorParametrization(NCRingElement) := opts -> (f) -> (
     t := terms f;
     lc := t / leadCoefficient;
@@ -471,24 +470,23 @@ tensorParametrization(NCRingElement) := opts -> (f) -> (
     b := getSymbol("b");
     varis := apply(lm, i -> b_(wordString i));
     bR := coefficientRing (class f);
-    R := opts.BaseRing monoid(new Array from varis);
+    R := opts.CoefficientRing monoid(new Array from varis);
     return(map(bR,R,lc));
 )
 
 -- create the non commutative algebra over alphabet given by a list.
 
-wordAlgebraHelper = method(Options=>{BaseRing => QQ});
-wordAlgebraHelper (List) := opts -> (l) -> (
+wordAlgebra = method(Options=>{CoefficientRing => QQ});
+wordAlgebra (List) := opts -> (l) -> (
     Lt := getSymbol("Lt");
     myvars := apply(l,i-> (Lt_i));
-    return(opts.BaseRing myvars);
+    return(opts.CoefficientRing myvars);
 )
 
 -- create the non commutative algebra over alphabet 1..z
 
-wordAlgebra = method(Options=>{BaseRing => QQ});
 wordAlgebra (ZZ) := opts -> (z) -> (
-    return(wordAlgebraHelper(toList(1..z), BaseRing => opts.BaseRing));
+    return(wordAlgebra(toList(1..z), CoefficientRing => opts.CoefficientRing));
 )
 
 -- define shuffle products on words, use linExt to extend to NCRingElements. Define operator ** as shuffle product in NCAlgebra
@@ -572,7 +570,7 @@ wordFormat NCRingElement := f -> (
    myNet := net "";
    isZp := (class coefficientRing ring f === QuotientRing and ambient coefficientRing ring f === ZZ);
    for t in sort pairs coefficientHTable f do (
-      tempNet := net t#1 | net " ";
+      tempNet := (if(instance(t#1, Number)) then (if(t#1 < 0) then (if(firstTerm) then net "- " else net " - ") | net abs(t#1) else net t#1) else net t#1) | net " ";
       printParens := ring t#1 =!= QQ and
   		     ring t#1 =!= ZZ and
                      not isZp and
@@ -588,9 +586,9 @@ wordFormat NCRingElement := f -> (
               (if printParens then net "(" else net "") | 
               (if t#1 != 1 and t#1 != -1 then
                  tempNet
-               else if t#1 == -1 then net " - "
+               else if t#1 == -1 then (if(firstTerm) then net "- " else net " - ")
                else net "") |
-              (if printParens then net ")" else net "") |
+              (if printParens then net ") " else net "") |
               (if t#0 === {} and (t#1 == 1 or t#1 == -1) then net "1" else (net new Array from ncMonToList(t#0)));
       firstTerm = false;
    );
@@ -599,35 +597,7 @@ wordFormat NCRingElement := f -> (
 
 wordString = method();
 wordString NCRingElement := f -> (
-   if #(f.terms) == 0 then return "0";
-   
-   firstTerm := true;
-   myString := "";
-   isZp := (class coefficientRing ring f === QuotientRing and ambient coefficientRing ring f === ZZ);
-   for t in sort pairs coefficientHTable f do (
-      tempString := toString(t#1) | " ";
-      printParens := ring t#1 =!= QQ and
-  		     ring t#1 =!= ZZ and
-                     not isZp and
-		     (size t#1 > 1 or (isField ring t#1 and 
-			               numgens coefficientRing ring t#1 > 0 and
-				       size sub(t#1, coefficientRing ring t#1) > 1));
-      myString = myString |
-              (if isZp and tempString#0#0 != " - " and not firstTerm then " + "
-	       else if not firstTerm and t#1 > 0 then
-                  " + "
-               else 
-                 "") |
-              (if printParens then "(" else "") | 
-              (if t#1 != 1 and t#1 != -1 then
-                 tempString
-               else if t#1 == -1 then " - "
-               else "") |
-              (if printParens then ")" else "") |
-              (if t#0 === {} and (t#1 == 1 or t#1 == -1) then "1" else (toString new Array from ncMonToList(t#0)));
-      firstTerm = false;
-   );
-   myString
+   toString(wordFormat f)
 )
 
 
