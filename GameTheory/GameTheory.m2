@@ -1406,6 +1406,7 @@ doc ///
     nTMNE2 = numberTMNE format T
   SeeAlso
    blockDerangements
+///
 
 -------------------------------------
 -- Documentation blockDerangements --
@@ -1494,8 +1495,13 @@ doc ///
       
         -- Figure out all of the functions which require a probabilityRing
         Text
-            -- The functions @TO spohnMatrices@, @TO spohnIdeal@, @TO konstanzMatrix@, ... require the ring to be created by this function
-            -- or in a similar manner.
+            Some functions such as @TO spohnIdeal@, @TO konstanzMatrix@, @TO ciIdeal@ or @TO spohnCI@  require the ring to be created by this function
+            or in a similar manner.
+    SeeAlso
+	spohnIdeal
+	konstanzMatrix
+	ciIdeal
+	spohnCI
 ///
 
 ------------------------------
@@ -1539,9 +1545,10 @@ doc ///
       peek X#2
 
     Text
-     Outputs of this function can be used as input for the functions spohnMatrices, spohnIdeal and konstanzMatrix. --ADD MORE???
+     Outputs of this function can be used as input for the functions @TO nashEquilibriumIdeal, @TO spohnMatrices@, @TO spohnIdeal@ and @TO konstanzMatrix@. 
 
   SeeAlso
+    nashEquilibriumIdeal
     spohnMatrices
     spohnIdeal
     konstanzMatrix    
