@@ -656,7 +656,28 @@ Node
             i = 0; j = 0; k = 0;
             A#i#j#k == (Lt_(i+1)*Lt_(j+1)*Lt_(k+1))@(sig(X, 3)) --The coefficient of (Lt_1)^3 in sig(X, 3)
     SeeAlso
-        (symbol @, NCRingElement, NCRingElement)            
+        (symbol @, NCRingElement, NCRingElement)
+
+Node
+    Key
+        (symbol @, NCRingElement, NCRingElement)
+        (inner, NCRingElement, NCRingElement)
+        inner
+    Headline
+        Compute the inner product of two tensors.
+    Description
+        Text
+            Let $\mathtt{s}, \mathtt{t}$ be elements of a free associative algebra on the letters $\mathtt{1}, \dots, \mathtt{d}$. Then the inner product of $\mathtt{s}$ and $\mathtt{t}$ is defined on the words $\mathtt{i_1}\cdot \dots\cdot \mathtt{i_k}$ as 
+            $$ \mathtt{i_1}\cdot \dots\cdot \mathtt{i_k} \char"40 \mathtt{t} := t_{i_1\cdot\dots\cdot i_k}$$
+            and then extended by lienarity over the whole associative algebra. Here $t_{i_1\cdot\dots\cdot i_k}$ is the coefficient of $\mathtt{i_1}\cdot \dots\cdot \mathtt{i_k}$ in $\mathtt{t}$.
+        Text
+            The inner product can be used to access the coefficient of a tensor over a single word.
+        Example
+            R = wordAlgebra(3);
+            t = 2*[1,2,3]_R + [2,3,1]_R + 4*[3,3,3,3]_R; t //wordFormat
+            [1,2,3]_R @ t == 2
+            [3,3,3,3]_R @ t == 4
+
 
 ///
 
