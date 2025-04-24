@@ -1411,7 +1411,8 @@ doc ///
 -------------------------------------
 -- Documentation blockDerangements --
 -------------------------------------
-   
+
+doc ///
  Node
   Key
    (blockDerangements, List)
@@ -1545,7 +1546,7 @@ doc ///
       peek X#2
 
     Text
-     Outputs of this function can be used as input for the functions @TO nashEquilibriumIdeal, @TO spohnMatrices@, @TO spohnIdeal@ and @TO konstanzMatrix@. 
+     Outputs of this function can be used as input for the functions @TO nashEquilibriumIdeal@, @TO spohnMatrices@, @TO spohnIdeal@ and @TO konstanzMatrix@. 
 
   SeeAlso
     nashEquilibriumIdeal
@@ -1591,7 +1592,6 @@ doc ///
     randomGame
     spohnIdeal
     konstanzMatrix
-    
 ///
 
 ------------------------------
@@ -1631,8 +1631,7 @@ doc ///
     probabilityRing
     randomGame
     spohnMatrices
-    konstanzMatrix
-    
+    konstanzMatrix    
 ///
 
 ----------------------------------
