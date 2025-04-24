@@ -2048,7 +2048,18 @@ doc ///
       {\tt spohnCI} computes the ideal of the Spohn conditional independence variety for a game $X$ and
       conditional independence model determined by an undirected graph $G$ or set of conditional
       independence statements $Stmts$.
-      
+
+      The input for the conditional independence model can be a set of conditional probability statements or
+      an undirected graph.
+      A single conditional independence statement is a list consisting of three disjoint
+      lists of indices for players, e.g. $\{ \{1,2\},\{4\}, \{3\} \}$
+      which represents the conditional independence statement ``The strategies of Players 1 and 2
+      are conditionally independent of Player 4's strategy given Player 3's strategy''.
+
+      Given an undirected graph $G$, the conditional independence statements are produced via
+      the globalMarkov function from the GraphicalModels package. A global Markov statement
+      for $G$ is a list $\{A, B, C\}$ of three disjoint lists of vertices of $G$, where the
+      subset $C$ separates the subset $A$ from the subset $B$ in the graph $G$.
     Example
       FF = ZZ/32003
       d = {2,2,2};
@@ -2085,6 +2096,19 @@ doc ///
       I1 = spohnCI(PR,X,G)
       I2 = spohnCI(PR,X,L)
       I1 == I2
+
+    Text
+      The Verbose=>true option prints the progress of each step in the saturation process -
+      a message is printed after saturating the ideal of the Spohn variety $V$, the conditional
+      independence ideal $I$, and the sum $V + I$ with respect to each hyperplane of the
+      probablity simplex.
+    Example
+      FF = ZZ/32003;
+      d = {2,3,2};
+      X = randomGame(d, CoefficientRing => FF);
+      PR = probabilityRing(d, CoefficientRing => FF);
+      L = {{{1,2},{3},{}}};
+      I = spohnCI(PR, X, L, Verbose=>true);
  
   SeeAlso
     spohnIdeal
