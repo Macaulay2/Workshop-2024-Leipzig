@@ -19,9 +19,10 @@ Node
         "Computing Path Varieties"
     Description
         Text
-            @TO PathSignatures@ simplifies the computation of varieties coming from signature tensors.
+            @TO PathSignatures@ simplifies the computation of varieties coming from signature tensors. As an example, we reproduce a computation from the paper: Carlos Améndola, Peter Friz and Bernd Sturmfels, 
+            {\em Varieties Of Signature Tensors}, Forum of Mathematics, Sigma. 2019;7:e10. doi:10.1017/fms.2019.3.
         Text
-            We briefly recall the setting for those computations. We are interested in paths $X:[0,1]\rightarrow \mathbb{R}^\mathtt{d}$ whose coordinates are polynomials of degree $\mathtt{m}$. These can be 
+            We briefly recall the setting for this computation. We are interested in paths $X:[0,1]\rightarrow \mathbb{R}^\mathtt{d}$ whose coordinates are polynomials of degree $\mathtt{m}$. These can be 
             represented by a $\mathtt{d}\times \mathtt{m}$ matrix with real entries whose coordinates are determined by the expressions 
             $$ X_i(t) = x_{i,1}t+x_{i,2}t^2+\dots+ x_{i,m}t^m$$
             When we restrict to the $\mathtt{k}$-th level signature of $X$, $\sigma:= \sigma^{(\mathtt{k})}(X)$, each of its coordinates $\sigma_{i_1, \dots, i_{\mathtt{k}}}$ is a homogeneous 
