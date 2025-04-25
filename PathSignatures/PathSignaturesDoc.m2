@@ -10,8 +10,16 @@ Node
         Text
             {\em PathSignatures} is a package for studying the signature of piecewise polynomial paths.
         Text
-            An example for the use of the package is to obtain data such as the one in Table 3 of the paper: Carlos Améndola, Peter Friz and Bernd Sturmfels, 
-            {\em Varieties of signatures tensors}, Forum of Mathematics, Sigma. 2019;7:e10. doi:10.1017/fms.2019.3
+            The package heavily simplifies the process of obtaining data related to signature varieties, e.g. as in Table 3 of the paper: Carlos Améndola, Peter Friz and Bernd Sturmfels, 
+            {\em Varieties Of Signature Tensors}, Forum of Mathematics, Sigma. 2019;7:e10. doi:10.1017/fms.2019.3. See @TO "Computing Path Varieties"@.
+
+
+Node
+    Key
+        "Computing Path Varieties"
+    Description
+        Text
+            @TO PathSignatures@ simplifies the computation of varieties coming from signature tensors.
         Text
             We briefly recall the setting for those computations. We are interested in paths $X:[0,1]\rightarrow \mathbb{R}^\mathtt{d}$ whose coordinates are polynomials of degree $\mathtt{m}$. These can be 
             represented by a $\mathtt{d}\times \mathtt{m}$ matrix with real entries whose coordinates are determined by the expressions 
@@ -50,7 +58,10 @@ Node
             needsPackage "NumericalImplicitization";
             numericalImageDim(sigVarietyParam,ideal 0_R) 
         Text
-            In the table the projective dimension is indicated, so the results coincide.
+            This agrees with the result in Table 3 of the article: Carlos Améndola, Peter Friz and Bernd Sturmfels, 
+            {\em Varieties Of Signature Tensors}, Forum of Mathematics, Sigma. 2019;7:e10. doi:10.1017/fms.2019.3, where the dimension of the corresponding projective variety is computed.
+
+
 Node
     Key
         Path
