@@ -10,17 +10,19 @@ Node
         Text
             {\em PathSignatures} is a package for studying the signature of piecewise polynomial paths.
         Text
-            The package heavily simplifies the process of obtaining data related to signature varieties, e.g. as in Table 3 of the paper: Carlos Améndola, Peter Friz and Bernd Sturmfels, 
-            {\em Varieties Of Signature Tensors}, Forum of Mathematics, Sigma. 2019;7:e10. doi:10.1017/fms.2019.3. See @TO "Computing Path Varieties"@.
-
-
+            The package heavily simplifies the process of obtaining data related to signature varieties, e.g. as in @HREF("#ref1","[1]")@. See @TO "Computing Path Varieties"@.
+    
+            
+    References
+        @LABEL("[1]","id" => "ref1")@ Carlos Améndola, Peter Friz and Bernd Sturmfels, {\em Varieties Of Signature Tensors}, Forum of Mathematics, Sigma. 2019;7:e10. doi:10.1017/fms.2019.3"
+            
+           
 Node
     Key
         "Computing Path Varieties"
     Description
         Text
-            @TO PathSignatures@ simplifies the computation of varieties coming from signature tensors. As an example, we reproduce a computation from the paper: Carlos Améndola, Peter Friz and Bernd Sturmfels, 
-            {\em Varieties Of Signature Tensors}, Forum of Mathematics, Sigma. 2019;7:e10. doi:10.1017/fms.2019.3.
+            @TO PathSignatures@ simplifies the computation of varieties coming from signature tensors. As an example, we reproduce a computation from @HREF("#ref1","[1]")@.
         Text
             We briefly recall the setting for this computation. We are interested in paths $X:[0,1]\rightarrow \mathbb{R}^\mathtt{d}$ whose coordinates are polynomials of degree $\mathtt{m}$. These can be 
             represented by a $\mathtt{d}\times \mathtt{m}$ matrix with real entries whose coordinates are determined by the expressions 
@@ -54,14 +56,15 @@ Node
             f = M * sigmaCMon; 
             sigVarietyParam = tensorParametrization(f, CoefficientRing => CC);
         Text
-            Now that we have the map, any tool for implicitization can be used. We compute its dimension with @HREF {"https://macaulay2.com/doc/Macaulay2/share/doc/Macaulay2/NumericalImplicitization/html/index.html", "NumericalImplicitization"}@.
+            Now that we have the map, any tool for implicitization can be used. We compute its dimension and degree with @HREF {"https://macaulay2.com/doc/Macaulay2/share/doc/Macaulay2/NumericalImplicitization/html/index.html", "NumericalImplicitization"}@.
         Example
             needsPackage "NumericalImplicitization";
             numericalImageDim(sigVarietyParam,ideal 0_R) 
+            numericalImageDegree(sigVarietyParam,ideal 0_R, Verbose => false) 
         Text
-            This agrees with the result in Table 3 of the article: Carlos Améndola, Peter Friz and Bernd Sturmfels, 
-            {\em Varieties Of Signature Tensors}, Forum of Mathematics, Sigma. 2019;7:e10. doi:10.1017/fms.2019.3, where the dimension of the corresponding projective variety is computed.
-
+            This agrees with the result in Table 3 of [1], where dimension and degree of the corresponding projective variety is computed.
+    References
+        @LABEL("[1]","id" => "ref1")@ Carlos Améndola, Peter Friz and Bernd Sturmfels, {\em Varieties Of Signature Tensors}, Forum of Mathematics, Sigma. 2019;7:e10. doi:10.1017/fms.2019.3"
 
 Node
     Key
