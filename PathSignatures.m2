@@ -13,6 +13,7 @@ export {
     "polyPath",
     "linPath",
     "pwLinPath",
+    "concatPath",
     "matrixAction",
     "CAxisTensor",
     "CMonTensor",
@@ -206,7 +207,8 @@ sub(Path,Ring) := Path => (X,R) -> (
     return(P);
 );
 
-Path ** Path := Path => (X,Y) -> (
+concatPath = method();
+concatPath(Path,Path) := Path => (X,Y) -> (
     if(X.dimension != Y.dimension) then error("Cannot concatenate paths of different ambient dimension.");
     R := if((X.bR === Y.bR)) then X.bR else (
         if (isMember(Y.bR, (X.bR).baseRings)) then (
@@ -228,6 +230,8 @@ Path ** Path := Path => (X,Y) -> (
     };
     return P;
 )
+
+Path ** Path := Path => (X,Y) -> concatPath(X,Y);
 
 TEST ///
 pR = QQ[t];
@@ -717,14 +721,15 @@ adjointWord (NCRingElement, NCPolynomialRing, List) := (f, A, P) -> (
 -- Implementation of Duval's algorithm. Given d and k, nextLyndon(w,d,k) creates the next Lyndon word of length at most k in d letters after w in lexicographical order
 
 nextLyndonWord = method();
-nextLyndonWord(List,ZZ,ZZ) := (l,d,k) -> (
+nextLyndonWord(Array,ZZ,ZZ) := Array => (ar,d,k) -> (
+    l := toList ar;
     nl := fold((ceiling(k/length(l))):l, (i,j)->i|j);
     if(length(nl)>k) then (nl = nl_{0..k-1});
     while(nl_(-1) == d and length(nl)>1) do (
         nl = nl_{0..length(nl)-2};
     );
     if(nl != {d}) then nl = nl + toList(((length(nl)-1):0) | (1:1));
-    return(nl)
+    return(new Array from nl)
 );
 
 -- lyndonWords(d,k) returns a list of all Lyndon words of length at most k in d letters
@@ -733,8 +738,8 @@ lyndonWords = method();
 lyndonWords (ZZ,ZZ) := (d,k) -> (
     if(d <= 0) then error("d must be a positive integer in lyndonWords(d,k).");
     if(k <= 0) then error("k must be a positive integer in lyndonWords(d,k).");
-    l:={{1}};
-    while(l_(-1) != {d}) do (
+    l:={[1]};
+    while(l_(-1) != [d]) do (
         l = l | {nextLyndonWord(l_(-1),d,k)};
     );
     return(l);
@@ -747,7 +752,8 @@ lie = (a,b) -> (a*b - b*a);
 -- isLyndon(l) checks if l is a Lyndon word
 
 isLyndon = method();
-isLyndon List := (l) -> (
+isLyndon Array := (w) -> (
+    l := toList w;
     out := true;
     scan(1..length(l)-1, i->( out = (l < l_{i..(length(l)-1)})));
     return(out)
@@ -756,9 +762,9 @@ isLyndon List := (l) -> (
 -- lyndonFact(l) computes the standard decomposition of l
 
 lyndonDecomposition = method();
-lyndonDecomposition List := (l) -> (
-    i := length(l)-1;
-    ls := apply(0..length(l)-2,i-> {l_{0..i},l_{i+1..length(l)-1}});
+lyndonDecomposition Array := (w) -> (
+    i := length(w)-1;
+    ls := apply(0..length(w)-2,i-> {new Array from w_{0..i},new Array from w_{i+1..length(w)-1}});
     cand := select(ls,i-> isLyndon(i_0) and isLyndon(i_1));
     return cand_(-1)
 )
@@ -766,14 +772,14 @@ lyndonDecomposition List := (l) -> (
 -- lieBasis(l, A) yields the basis element corresponding to the Lyndon word l in the free Lie algebra, realized in A
 
 lieBasis = method();
-lieBasis(List, NCPolynomialRing) := (l,R) -> (
-    if(length(l) == 0) then error("lieBasis expected a non-empty list as input.");
-    if(length(l) == 1) then return R_(l_(-1) - 1);
-    fact := apply(lyndonDecomposition(l),i-> lieBasis(i,R));
+lieBasis(Array, NCPolynomialRing) := (w,R) -> (
+    if(length(w) == 0) then error("lieBasis expected a non-empty list as input.");
+    if(length(w) == 1) then return R_(w_(-1) - 1);
+    fact := apply(lyndonDecomposition(w),i-> lieBasis(i,R));
     return(lie(fact_0,fact_1))
 )
 
-lieBasis(Array, NCPolynomialRing) := (l, R) -> lieBasis (new List from l, R);
+lieBasis(List, NCPolynomialRing) := (l, R) -> lieBasis (new Array from l, R);
 
 -- auxiliary functions for tensorExp
 

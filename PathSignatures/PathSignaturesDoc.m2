@@ -84,11 +84,15 @@ Node
 
 Node 
     Key
+        concatPath
+        (concatPath, Path, Path)
         (symbol **, Path, Path)
     Headline
         concatenation of paths
     Usage 
+        concatPath(X,Y)
         X**Y
+    
     Description
         Text
             This allows for concatenation of paths. The concatenation is formal, no parametrization is chosen.
@@ -136,7 +140,7 @@ Node
         Text
             Takes as input a list of polynomials in the same ring. Constructs a @TO Path@ object with one piece equal to the list of normalForm 
             of the polynomial components of the path given in input. Automatically sets the dimension attribute of the
-            object to the lenght of the list given as input.
+            object to the length of the list given as input.
         Example
             R = QQ[t];
             X = polyPath({t,t^2})
@@ -161,7 +165,7 @@ Node
     Description
         Text
             Takes as input a list of elements in the same ring. Constructs a @TO Path@ object with one piece equal to the list given in input. Automatically sets the dimension attribute of the
-            object to the lenght of the list given as input.
+            object to the length of the list given as input.
         Example
             R = QQ[x_1..x_5];
             X = linPath({x_1, x_2, x_3, x_4, x_5^2})
@@ -181,11 +185,12 @@ Node
         compute the signature of a piecewise polynomial path.
     Description
         Text
-            Given a path $X(t):[0,1]\rightarrow \mathbb{R}^d$, its signature is the linear form $\sigma: T((\mathbb{R}^d)^*)\rightarrow \mathbb{R}$ on the tensor algebra of the dual of 
+            Given a @TO Path@ $X(t):[0,1]\rightarrow \mathbb{R}^d$, its signature is the linear form $\sigma: T((\mathbb{R}^d)^*)\rightarrow \mathbb{R}$ on the tensor algebra of the dual of 
             $\mathbb{R}^d$, whose image on a decomposable tensor $\alpha_1\otimes \dots\otimes \alpha_k$ is the iterated integral $$
-            \alpha_1\otimes \dots\otimes \alpha_k\overset{\sigma}{\mapsto} \int_0^1\int_0^{t_k}\dots\int_0^{t_2}\partial(\alpha_1 X)\dots \partial (\alpha_k X) d t_1\dots dt_k
+            \alpha_1\otimes \dots\otimes \alpha_k\overset{\sigma}{\mapsto} \int_0^1\int_0^{t_k}\dots\int_0^{t_2}\partial(\alpha_1 X)\dots \partial (\alpha_k X) d t_1\dots dt_k.
             $$
-            In this package the easiest way to represent an element of $T((\mathbb{R}^d)^*)$ is by constructing a non commutative algebra over $d$ symbols
+            This form does not depend on the parametrization of $X$.
+            In this package, we identify $T((\mathbb{R}^d)^*)$ with the free associative algebra over the alphabet $\{\texttt{1},\dots,\texttt{d}\}$ via $\texttt{i} \mapsto e_i^*$ where $e_1^*, \dots, e_d^*$ is the dual of the canonical basis of $\mathbb{R}^d$. See also @TO wordAlgebra@.
         Example
             d = 4;
             R = QQ[t];
@@ -193,7 +198,7 @@ Node
             A = wordAlgebra(d) -- create the free associative algebra over d letters
             w = (new Array from (1..d))_A -- the word 1..d
         Text
-            The word $w$ corresponds to the decomposable tensor $e_1^*\otimes\dots  \otimes e_d^*$, where $e_1^*, \dots, e_d^*$ is the dual of the canonical basis of $\mathbb{R}^d$. 
+            In the example above, the word $\texttt{w}$ corresponds to the simple tensor $e_1^*\otimes\dots  \otimes e_d^*$.
             The signature of $X$ on this word can be computed using @TO (sig, Path, NCRingElement)@.
         Example 
             sig(X, w)
@@ -240,11 +245,11 @@ Node
         adjointWord
         (adjointWord, NCRingElement, NCPolynomialRing, List)
     Headline
-        image of a word through the shuffle algebras homomorphism induced by a polynomial map 
+        image of a word through the shuffle algebra homomorphism induced by a polynomial map 
     Inputs 
-        g : NCRingElement --The word to compute the image of
-        T : NCPolynomialRing --The shuffle algebra of the image
-        L : List -- The components of the polynomial map. Each entry should be a polynomial
+        g : NCRingElement -- the word to compute the image of
+        T : NCPolynomialRing --the shuffle algebra of the image
+        L : List -- the components of the polynomial map. each entry should be a polynomial
     Usage
         adjointWord (g, T, L)
     Description
@@ -267,14 +272,14 @@ Node
             wA2 = wordAlgebra(2); -- signatures of paths in dimension 2 
             wA3 = wordAlgebra(3); -- signatures of paths in dimension 3
         Text
-            Then we define a path in the domain space and explicitely compute it's image through the above polynomial map
+            Then we define a path in the domain space and explicitely compute its image under the polynomial map above:
         Example
             R = QQ[t];
             X = polyPath({t,t^2}) -- A path in 2 dimensional space
             PP = apply(p, q -> sub(q, {x=>t, y=>t^2})); 
             Y = polyPath(PP) -- the transformed path in 3 dimensional space
         Text
-            Finally we compute the signature of the transformed path along the @TO signedVolume@ tensor of $\mathbb{R}^3$ and verify the formula in Theorem 2 above
+            Finally we compute the signature of the transformed path along the @TO signedVolume@ tensor of $\mathbb{R}^3$ and verify the formula in Theorem 2 above:
         Example
             vol = signedVolume(wA3); vol // wordFormat -- consider the signed volume in R^3 and display it in word format
             adw = adjointWord(vol, wA2, p); adw // wordFormat -- we compute its image through the induced homomorphism on algebras
@@ -602,18 +607,18 @@ Node
     Headline
         basis element corresponding to a Lyndon word in a Lie algebra
     Inputs
-        l : Array -- A Lyndon word in @TO wordFormat@ notation
+        w : Array -- a Lyndon word in @TO wordFormat@ notation
         R : NCPolynomialRing -- The algebra where the output lives
     Outputs
         b : NCRingElement --An element of R
     Usage
-        b = lieBasis(l, R)
+        b = lieBasis(w, R)
     Description
         Text
-            A word $l$ on the alphabet $\{1,\dots, d\}$ is a {\em Lyndon word} if it is striclty smaller, in lexicographic order, than all of its rotations.
+            A word $l$ on the alphabet $\{1,\dots, d\}$ is a {\em Lyndon word} if it is strictly smaller, in lexicographic order, than all of its rotations.
             To any Lyndon word we can associate an iteretaed Lie braketing $b(l)\in T(\mathbb{R}^d)$ defined iteratively as follows. If $l$ is a letter $i\in \{1,\dots, d\}$
             we simply define $$ b(i) := e_i$$
-            where as ever $e_i$ is the $i-th$ vector in the canonical basis of $\mathbb{R}^d$. For the lenght of $l$ greater than 1 we define $$
+            where as ever $e_i$ is the $i-th$ vector in the canonical basis of $\mathbb{R}^d$. For the length of $l$ greater than 1 we define $$
             b(I) := [b(I_1), b(I_2)]$$
             where $I_1, I_2$ are such that their concatenation $I_1 I_2$ is $I$ and $I_2$ is the longest Lyndon word appering as a proper right factor 
             of $I$. 
@@ -630,33 +635,36 @@ Node
             lieBasis({1,1,1,2}, R) // wordFormat
 
     References
-        @HREF {"https://doi.org/10.1017/fms.2019.3", "VARIETIES OF SIGNATURE TENSORS (doi.org/10.1017/fms.2019.3)"}@
+        @HREF {"https://doi.org/10.1017/fms.2019.3", "Varieties Of Signature Tensors (doi.org/10.1017/fms.2019.3)"}@
 Node
     Key
         lyndonWords
         (lyndonWords, ZZ, ZZ)
     Headline
-        compute all Lyndon words of at most a given lenght on a given number of letters
+        compute all Lyndon words of at most a given length on a given number of letters
     Inputs
         d : ZZ --The number of letters
-        k : ZZ --The maximum lenght 
+        k : ZZ --The maximum length
     Outputs
         L : List -- of all Lyndon words of length at most k in d letters
     Usage
         L = lyndonWords(d, k)
     Description
         Text
-            A word $l$ on the alphabet $\{1,\dots, d\}$ is a {\em Lyndon word} if it is striclty smaller, in lexicographic order, than all of its rotations.
+            A word $l$ on the alphabet $\{1,\dots, d\}$ is a {\em Lyndon word} if it is strictly smaller, in lexicographic order, than all of its rotations.
         Text
-            This method generates a list containing all Lyndon words of lenght at most $k$ on $d$ letters. The Lyndon words are given as @TO List@ in the same convention
+            This method generates a list containing all Lyndon words of length at most $k$ on $d$ letters. The Lyndon words are given as @TO Array@ in the same convention
             of @TO wordFormat@. 
         Example
-            lyndonWords (2,3)
+            words = lyndonWords (2,3)
+            R = wordAlgebra(2);
+            apply(words, i-> i_R)
 
 Node
     Key 
-        (symbol @, NCRingElement, ZZ)
+        tensorArray
         (tensorArray, NCRingElement)
+        (symbol @, NCRingElement, ZZ)
     Headline
         k-th level component of a tensor.
     Inputs
@@ -665,6 +673,7 @@ Node
     Outputs
         sk : List -- The k-th level of s, as a multi-dimensional array
     Usage
+        sk = tensorArray(s,k)
         sk = s@k
     Description
         Text
@@ -681,25 +690,34 @@ Node
 
 Node
     Key
+        inner
         (symbol @, NCRingElement, NCRingElement)
         (inner, NCRingElement, NCRingElement)
-        inner
+    Usage
+        c = inner(f,g)
+        c = f @ g
+    Inputs
+        f : NCRingElement
+        g : NCRingElement
     Headline
-        Compute the inner product of two tensors.
+        compute the inner product of two tensors.
     Description
         Text
-            Let $\mathtt{s}, \mathtt{t}$ be elements of a free associative algebra on the letters $\mathtt{1}, \dots, \mathtt{d}$. Then the inner product of $\mathtt{s}$ and $\mathtt{t}$ is defined on the words $\mathtt{i_1}\cdot \dots\cdot \mathtt{i_k}$ as 
-            $$ \mathtt{i_1}\cdot \dots\cdot \mathtt{i_k} \char"40 \mathtt{t} := t_{i_1\cdot\dots\cdot i_k}$$
-            and then extended by lienarity over the whole associative algebra. Here $t_{i_1\cdot\dots\cdot i_k}$ is the coefficient of $\mathtt{i_1}\cdot \dots\cdot \mathtt{i_k}$ in $\mathtt{t}$.
+            The inner product of two words $\mathtt{w}$ and $\mathtt{v}$ in a free associative algebra is defined as $1$ if $\mathtt{w} = \mathtt{v}$ and $0$ otherwise. This extends bilinearly to an inner product on the whole associative algebra.
         Text
             The inner product can be used to access the coefficient of a tensor over a single word.
         Example
             R = wordAlgebra(3);
             t = 2*[1,2,3]_R + [2,3,1]_R + 4*[3,3,3,3]_R; t //wordFormat
-            [1,2,3]_R @ t == 2
-            [3,3,3,3]_R @ t == 4
-
-
+            [1,2,3]_R @ t
+            [3,3,3,3]_R @ t
+            ([1,2,3]_R @ t) == (t @ [1,2,3]_R)
+        Text
+            It is also a convient way to evaluate linear combinations of tensor entries:
+        Example
+            A = CAxisTensor(3,R);
+            vol = signedVolume(R);
+            A @ vol -- the signed volume of the canonical axis path in 3 dimensions.
 ///
 
 
