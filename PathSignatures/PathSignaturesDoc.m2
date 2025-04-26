@@ -56,7 +56,7 @@ Node
             f = M * sigmaCMon; 
             sigVarietyParam = tensorParametrization(f, CoefficientRing => CC);
         Text
-            Now that once we have the map, any tool for implicitization can be used. We compute its dimension and degree with @HREF {"https://macaulay2.com/doc/Macaulay2/share/doc/Macaulay2/NumericalImplicitization/html/index.html", "NumericalImplicitization"}@.
+            Now that we have the map, any tool for implicitization can be used. We compute its dimension and degree with @HREF {"https://macaulay2.com/doc/Macaulay2/share/doc/Macaulay2/NumericalImplicitization/html/index.html", "NumericalImplicitization"}@.
         Example
             needsPackage "NumericalImplicitization";
             numericalImageDim(sigVarietyParam,ideal 0_R) 
