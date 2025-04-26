@@ -565,7 +565,7 @@ installMethod(symbol >>, NCRingElement, NCRingElement, (f,g)->halfshuffle(f,g))
 
 -- methods for output of nc polynomials
 
--- should mention reference? (copied and adapted code from NCAlgebra package)
+-- the following method is an adaptation of the net function in the NCAlgebra package by Frank Moore, Andrew Conner and Courtney Gibbons.
 wordFormat = method();
 wordFormat NCRingElement := f -> (
    if #(f.terms) == 0 then return net "0";

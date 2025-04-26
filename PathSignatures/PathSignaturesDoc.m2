@@ -11,8 +11,48 @@ Node
             {\em PathSignatures} is a package for studying the signature of piecewise polynomial paths.
         Text
             The package heavily simplifies the process of obtaining data related to signature varieties, e.g. as in @HREF("#ref1","[1]")@. See @TO "Computing Path Varieties"@.
-    
-            
+        Text
+            A polynomial path is a path $X: [0,1] \to \mathbb R^d$ whose coordinate functions are given by polynomials. A piecewise polynomial path is a path $X: [0,1] \to \mathbb R^d$ which is polynomial on each interval in a partition of $[0,1]$.
+        Text
+            Given such a path $X$, its signature is the linear form $\sigma: T((\mathbb{R}^d)^*)\rightarrow \mathbb{R}$ on the tensor algebra of the dual of 
+            $\mathbb{R}^d$, whose image on a decomposable tensor $\alpha_1\otimes \dots\otimes \alpha_k$ is the iterated integral $$
+            \alpha_1\otimes \dots\otimes \alpha_k\overset{\sigma}{\mapsto} \int_0^1\int_0^{t_k}\dots\int_0^{t_2}\partial(\alpha_1 X)\dots \partial (\alpha_k X) d t_1\dots dt_k.
+            $$
+            This form is invariant under translation, reparametrization and tree-like equivalence of $X$ and characterizes $X$ uniquely up to these relations.
+        Text
+            In this package, we identify $T((\mathbb{R}^d)^*)$ with the free associative algebra over the alphabet $\{\texttt{1},\dots,\texttt{d}\}$ via $\texttt{i} \mapsto e_i^*$ where $e_1^*, \dots, e_d^*$ is the dual of the canonical basis of $\mathbb{R}^d$. For example, the word $\texttt{12}$ corresponds to $e_1^* \otimes e_2^*$.
+        Text
+            It is easy to create a polynomial path:
+        Example
+            R = QQ[t];
+            X = polyPath({t + t^2, t^3})
+        Text
+            A piecewise polynomial path is obtained by concatenating polynomial paths:
+        Example
+            Y = X ** X
+        Text
+            Any @TO2 {"NCAlgebra::NCPolynomialRing", "NCPolynomialRing"}@ can serve as a tensor algebra. Use @TO wordAlgebra@ to quickly create one in variables $\texttt{Lt}_i$. The package introduces a convenient notation for words in this algebra.
+        Example
+            A2 = wordAlgebra(2)
+            [1,2]_A2 -- the word 12.
+        Text
+            To evaluate the signature of $\mathtt{X}$ at a tensor $\mathtt{w}$, use @TO sig@. The following computes the @ITALIC "signed volume"@ of the path; also see @TO signedVolume@.
+        Example
+            sig(X,[1,2]_A2-[2,1]_A2)
+        Text
+            @TO sig@ can also be used to obtain the @ITALIC "$k$-th level signature tensor"@. Use @TO wordFormat@ or @TO tensorArray@ to display the tensor in a nicer way.
+        Example
+            T = sig(X,2)
+            T // wordFormat
+            T // tensorArray
+        Text
+            The package allows for the computation of signatures for parametrized families of paths.
+        Example
+            S = QQ[a,b,c]
+            R = S[t]
+            X = polyPath({a*t+b*t^2,c*t^3})
+            Y = X ** X
+            sig(X, signedVolume(A2))
     References
         @LABEL("[1]","id" => "ref1")@ Carlos Améndola, Peter Friz and Bernd Sturmfels, {\em Varieties Of Signature Tensors}, Forum of Mathematics, Sigma. 2019;7:e10. doi:10.1017/fms.2019.3"
             
@@ -56,13 +96,13 @@ Node
             f = M * sigmaCMon; 
             sigVarietyParam = tensorParametrization(f, CoefficientRing => CC);
         Text
-            Now that we have the map, any tool for implicitization can be used. We compute its dimension and degree with @HREF {"https://macaulay2.com/doc/Macaulay2/share/doc/Macaulay2/NumericalImplicitization/html/index.html", "NumericalImplicitization"}@.
+            Now that we have the map, any tool for implicitization can be used. We compute its dimension and degree with @TO2 {"NumericalImplicitization::NumericalImplicitization", "NumericalImplicitization"}@.
         Example
             needsPackage "NumericalImplicitization";
             numericalImageDim(sigVarietyParam,ideal 0_R) 
             numericalImageDegree(sigVarietyParam,ideal 0_R, Verbose => false) 
         Text
-            This agrees with the result in Table 3 of [1], where dimension and degree of the corresponding projective variety is computed.
+            This agrees with the result in Table 3 of @HREF("#ref1","[1]")@, where dimension and degree of the corresponding projective variety is computed.
     References
         @LABEL("[1]","id" => "ref1")@ Carlos Améndola, Peter Friz and Bernd Sturmfels, {\em Varieties Of Signature Tensors}, Forum of Mathematics, Sigma. 2019;7:e10. doi:10.1017/fms.2019.3"
 
@@ -401,11 +441,21 @@ Node
 --         wordAlgebra
 Node
     Key
+        NCRingElement
+    Headline
+        exported from the NCAlgebra package, used to encode tensors
+Node
+    Key
+        NCPolynomialRing
+    Headline
+        exported from the NCAlgebra package, used to encode tensor algebras
+    
+Node
+    Key
         wordAlgebra
         (wordAlgebra, ZZ)
         (wordAlgebra, List)
-        NCRingElement
-        NCPolynomialRing
+        
     Headline
         create a free algebra over a given alphabet
     Description
