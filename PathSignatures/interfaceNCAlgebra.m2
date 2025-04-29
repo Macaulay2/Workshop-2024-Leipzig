@@ -25,10 +25,11 @@ ncMonToList (NCRingElement) := List => f -> (
 
 --linExt extends functions on words to the whole non commutative polynomial algebra
 --It calls fun on each word appearing in w and multiplies the result by the corresponding coefficient
-linExt = method();
-linExt(FunctionClosure, NCRingElement) := RingElement => (fun, w) -> (
+linExt = method(Options=>{CoefficientRing => null});
+linExt(FunctionClosure, NCRingElement) := RingElement => opts -> (fun, w) -> (
     lot := apply(terms w, i -> {leadCoefficient i, ncMonToList(i)});
-    sum(length(lot),i->(lot#i)#0 * fun((lot#i)#1))
+    if (opts.CoefficientRing === null) then sum(length(lot),i->(lot#i)#0 * fun((lot#i)#1)) else 
+            sum(length(lot),i->sub(leadCoefficient (lot#i)#0,opts.CoefficientRing) * fun((lot#i)#1))
 )
 -- methods for output of nc polynomials
 

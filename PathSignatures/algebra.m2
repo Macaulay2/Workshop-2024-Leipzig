@@ -237,9 +237,9 @@ isLyndon = method();
 isLyndon Array := (w) -> (
     l := toList w;
     out := true;
-    scan(1..length(l)-1, i->( out = (l < l_{i..(length(l)-1)})));
-    return(out)
-)
+    scan(1..length(l)-1, i->( if(out==true) then out = (l < l_{i..(length(l)-1)}) ) );
+    return(out);
+);
 
 -- lyndonFact(l) computes the standard decomposition of l
 
@@ -247,9 +247,12 @@ lyndonDecomposition = method();
 lyndonDecomposition Array := (w) -> (
     i := length(w)-1;
     ls := apply(0..length(w)-2,i-> {new Array from w_{0..i},new Array from w_{i+1..length(w)-1}});
-    cand := select(ls,i-> isLyndon(i_0) and isLyndon(i_1));
-    return cand_(-1)
+    cand := select(ls,i-> isLyndon(i_1));
+    cand = cand_0;
+    if(isLyndon(cand#0)) then return cand;
+    return(lyndonDecomposition(cand#0) | {cand#1})
 )
+
 
 -- lieBasis(l, A) yields the basis element corresponding to the Lyndon word l in the free Lie algebra, realized in A
 
@@ -288,4 +291,37 @@ tensorExp (NCRingElement, ZZ) := (p,k) -> (
     comp := unique apply(compositions k, i->delete(0,i));
     t := sum(apply(comp, i-> expTerm(s,i)));
     return(t);
+)
+
+lyndonPoly = method();
+lyndonPoly(List,Ring,NCRing) := (l,R,A) -> ( -- R must be a suitable ring of Lyndon words
+    w := new Array from l;
+    var := hashTable apply(gens R,i-> (last baseName i, i));
+    if isLyndon(w) then return var#w;
+    dec := lyndonDecomposition(w);
+    k := length(w);
+    shuffle := fold(apply(dec, i-> i_A),(i,j)-> i**j);
+    shmon := fold(apply(dec, i-> var#i),(i,j)-> i*j);
+    coef = (product( apply(values tally dec, i-> i !)));
+    rest = shuffle - coef * w_A;
+    if rest == 0 then ( 
+        return (1/coef * shmon);
+    ) else (
+        restpoly := lyndonPoly(rest,R);
+        return(1/coef * (shmon - restpoly));
+    )
+)
+
+lyndonPoly(NCRingElement,Ring) := (f,R) -> (
+    return(linExt(i->lyndonPoly(i,R, ring f),f,CoefficientRing => R))
+)
+
+toLyndonShuffle(NCRingElement) := (f) -> ( -- rewrites a tensor as a shuffle polynomial in lyndon words
+    d := #(gens ring f);
+    k := degree f;
+    ly := getSymbol("ly");
+    var := new Array from apply(lyndonWords(d,k), i-> ly_i);
+    cR := coefficientRing (ring f);
+    R := cR var;
+    return(lyndonPoly(f,R));
 )

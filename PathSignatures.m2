@@ -35,7 +35,8 @@ export {
     "lyndonWords",
     "lie",
     "lieBasis",
-    "tensorExp"
+    "tensorExp",
+    "toLyndonShuffle"
     -- "type",
     -- "pieces",
     -- "dimension",
