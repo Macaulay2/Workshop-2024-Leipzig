@@ -346,8 +346,7 @@ Node
         adjointWord (g, T, L)
     Description
         Text
-            This computes the image of g through the map $M_p$ described in Theorem 1 and Theorem 7 of the paper: Laura Colmenarejo and Rosa Preiß, {\em Signatures of
-             paths transformed by polynomial maps}, Beitr Algebra Geom 61, 695–717 (2020). https://doi.org/10.1007/s13366-020-00493-9. Its importance is evidenced by
+            This computes the image of g through the map $M_p$ described in Theorem 1 and Theorem 7 of @HREF("#ref1","[1]")@. Its importance is evidenced by
             Theorem 2 of the same paper: 
         Text
             Let $X:[0,1]\rightarrow \mathbb{R}^d$ be a piecewise continuously differentiable path
@@ -379,7 +378,7 @@ Node
             sig(X, adw)  -- is given by evaluating at adw for the original path.
 
     References
-        @HREF {"https://doi.org/10.1007/s13366-020-00493-9","Signatures of paths transformed by polynomial maps (doi.org/10.1007/s13366-020-00493-9)"} @
+        @LABEL("[1]","id" => "ref1")@ @HREF {"https://doi.org/10.1007/s13366-020-00493-9","Signatures of paths transformed by polynomial maps (doi.org/10.1007/s13366-020-00493-9)"} @
 Node
     Key
         shuffle
@@ -397,7 +396,7 @@ Node
         v = shuffle(w1, w2, R)
     Description
         Text
-            We start with the mathematical definition of this operation, based on the reference. 
+            We start with the mathematical definition of this operation, based on @HREF("#ref1","[1]")@. 
             Consider $T(\mathbb{R}^d)$, the free algebra on the symbols $1,\dots, d$. Denote 
             by $\bullet$ its concatenation product and by $e$ the neutral element with respect to the concatenation (the empty word). The shuffle product of two words is defined 
             recursively as follows. Let $w, w_1, w_2$ be three words and $a, b$ bet two letters, i.e.
@@ -414,7 +413,7 @@ Node
             f = ([1,2]_R ** [1,2]_R); -- compute the shuffle product
             f // wordFormat --display the result in word notation
     References
-        @HREF {"https://doi.org/10.1007/s13366-020-00493-9","Signatures of paths transformed by polynomial maps (doi.org/10.1007/s13366-020-00493-9)"} @
+                @LABEL("[1]","id" => "ref1")@ @HREF {"https://doi.org/10.1007/s13366-020-00493-9","Signatures of paths transformed by polynomial maps (doi.org/10.1007/s13366-020-00493-9)"} @
     SeeAlso
         wordAlgebra
         wordFormat
@@ -573,7 +572,7 @@ Node
         h = f >> g
     Description
         Text
-            We start on the mathematical definition, based on the reference, where the operation is called {\em right half-shuffle}. Let 
+            We start on the mathematical definition, based on the @HREF("#ref1","[1]")@, where the operation is called {\em right half-shuffle}. Let 
             $T^{\geq 1}(\mathbb{R}^d)$ be the vector space spanned by the non empty words on $d$ letters. Then the half shuffle $>>$ is defined 
             recursively to be $$ w >> i := wi$$ for $w$ a word and $i$ a letter and $$ w >> vi := (w >> v + v >> w)\bullet i$$ for $w, v$ words 
             and $i$ a letter, where $\bullet$ is the contatenation product on words. 
@@ -589,7 +588,7 @@ Node
 
 
     References
-        @HREF {"https://doi.org/10.1007/s13366-020-00493-9","Signatures of paths transformed by polynomial maps (doi.org/10.1007/s13366-020-00493-9)"} @ 
+        @LABEL("[1]","id" => "ref1")@ @HREF {"https://doi.org/10.1007/s13366-020-00493-9","Signatures of paths transformed by polynomial maps (doi.org/10.1007/s13366-020-00493-9)"} @
     SeeAlso
         shuffle
         (symbol _, Array, NCPolynomialRing)
