@@ -29,7 +29,7 @@ linExt = method(Options=>{CoefficientRing => null});
 linExt(FunctionClosure, NCRingElement) := RingElement => opts -> (fun, w) -> (
     lot := apply(terms w, i -> {leadCoefficient i, ncMonToList(i)});
     if (opts.CoefficientRing === null) then sum(length(lot),i->(lot#i)#0 * fun((lot#i)#1)) else 
-            sum(length(lot),i->sub(leadCoefficient (lot#i)#0,opts.CoefficientRing) * fun((lot#i)#1))
+            sum(length(lot),i->sub((lot#i)#0,opts.CoefficientRing) * fun((lot#i)#1))
 )
 -- methods for output of nc polynomials
 

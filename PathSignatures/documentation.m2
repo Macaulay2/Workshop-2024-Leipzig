@@ -581,6 +581,29 @@ Node
             words = lyndonWords (2,3)
             R = wordAlgebra(2);
             apply(words, i-> i_R)
+Node
+    Key
+        toLyndonShuffle
+        (toLyndonShuffle, NCRingElement)
+    Usage
+        f = toLyndonShuffle(T)
+    Inputs
+        T : NCRingElement
+        f : RingElement -- a polynomial in variables y subscripted by Lyndon words
+    Headline
+        compute the representation of a tensor as a shuffle polynomial in Lyndon words
+    Description
+        Text
+            The free associative algebra $k \langle 1, \dots, d \rangle$ is isomorphic to the free commutative algebra over the Lyndon words when equipped with the shuffle product $\char"29E2$. This method represents the corresponding isomorphism
+            $$k \langle 1, \dots, d \rangle_{\char"29E2} \to k[y_w \ | \ w \text{ Lyndon}].$$
+        Example
+            A3 = wordAlgebra(3);
+            T = [3,2,1]_A3;
+            toLyndonShuffle(T)
+        Text
+            Indeed, we check:
+        Example
+            ([1]_A3**[2]_A3**[3]_A3 - [1]_A3**[2,3]_A3 - [1,2]_A3**[3]_A3 + [1,2,3]_A3) // wordFormat
 
 Node
     Key 
@@ -640,6 +663,7 @@ Node
             A = CAxisTensor(3,R);
             vol = signedVolume(R);
             A @ vol -- the signed volume of the canonical axis path in 3 dimensions.
+
 ///
 
 

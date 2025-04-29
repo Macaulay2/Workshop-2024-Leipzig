@@ -293,8 +293,8 @@ tensorExp (NCRingElement, ZZ) := (p,k) -> (
     return(t);
 )
 
-lyndonPoly = method();
-lyndonPoly(List,Ring,NCRing) := (l,R,A) -> ( -- R must be a suitable ring of Lyndon words
+toLyndonShuffleHelper = method();
+toLyndonShuffleHelper(List,Ring,NCRing) := (l,R,A) -> ( -- R must be a suitable ring of Lyndon words
     w := new Array from l;
     var := hashTable apply(gens R,i-> (last baseName i, i));
     if isLyndon(w) then return var#w;
@@ -302,26 +302,27 @@ lyndonPoly(List,Ring,NCRing) := (l,R,A) -> ( -- R must be a suitable ring of Lyn
     k := length(w);
     shuffle := fold(apply(dec, i-> i_A),(i,j)-> i**j);
     shmon := fold(apply(dec, i-> var#i),(i,j)-> i*j);
-    coef = (product( apply(values tally dec, i-> i !)));
-    rest = shuffle - coef * w_A;
+    coef := (product( apply(values tally dec, i-> i !)));
+    rest := shuffle - coef * w_A;
     if rest == 0 then ( 
         return (1/coef * shmon);
     ) else (
-        restpoly := lyndonPoly(rest,R);
+        restpoly := toLyndonShuffleHelper(rest,R);
         return(1/coef * (shmon - restpoly));
     )
 )
 
-lyndonPoly(NCRingElement,Ring) := (f,R) -> (
-    return(linExt(i->lyndonPoly(i,R, ring f),f,CoefficientRing => R))
+toLyndonShuffleHelper(NCRingElement,Ring) := (f,R) -> (
+    return(linExt(i->toLyndonShuffleHelper(i, R, ring f),f,CoefficientRing => R))
 )
 
+toLyndonShuffle = method();
 toLyndonShuffle(NCRingElement) := (f) -> ( -- rewrites a tensor as a shuffle polynomial in lyndon words
     d := #(gens ring f);
     k := degree f;
-    ly := getSymbol("ly");
+    ly := getSymbol("y");
     var := new Array from apply(lyndonWords(d,k), i-> ly_i);
     cR := coefficientRing (ring f);
     R := cR var;
-    return(lyndonPoly(f,R));
+    return(toLyndonShuffleHelper(f,R));
 )
