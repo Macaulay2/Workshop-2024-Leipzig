@@ -1,5 +1,7 @@
 ----------------------------------------------
 --INTERFACE METHODS FOR THE NCAlgebra PACKAGE
+--Including net methods and various notations for   
+--NCRingElements
 ----------------------------------------------
 
 --coefficientHTable returns a Hash table associating the monomials in a nc polynomial to their coefficients
@@ -111,3 +113,6 @@ Array _ NCPolynomialRing := (a, R) -> (
     
     product(a,i->R_(i-1))
 )
+
+
+
