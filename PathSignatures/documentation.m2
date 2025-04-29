@@ -572,7 +572,7 @@ Node
         h = f >> g
     Description
         Text
-            We start on the mathematical definition, based on the @HREF("#ref1","[1]")@, where the operation is called {\em right half-shuffle}. Let 
+            We start on the mathematical definition, based on @HREF("#ref1","[1]")@ (where the operation is called {\em right half-shuffle}). Let 
             $T^{\geq 1}(\mathbb{R}^d)$ be the vector space spanned by the non empty words on $d$ letters. Then the half shuffle $>>$ is defined 
             recursively to be $$ w >> i := wi$$ for $w$ a word and $i$ a letter and $$ w >> vi := (w >> v + v >> w)\bullet i$$ for $w, v$ words 
             and $i$ a letter, where $\bullet$ is the contatenation product on words. 
