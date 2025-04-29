@@ -589,17 +589,23 @@ Node
         f = toLyndonShuffle(T)
     Inputs
         T : NCRingElement
-        f : RingElement -- a polynomial in variables y subscripted by Lyndon words
+        f : HashTable -- representing the shuffle polynomial in Lyndon words
     Headline
         compute the representation of a tensor as a shuffle polynomial in Lyndon words
     Description
         Text
-            The free associative algebra $k \langle 1, \dots, d \rangle$ is isomorphic to the free commutative algebra over the Lyndon words when equipped with the shuffle product $\char"29E2$. This method represents the corresponding isomorphism
-            $$k \langle 1, \dots, d \rangle_{\char"29E2} \to k[y_w \ | \ w \text{ Lyndon}].$$
+            The free associative algebra $k \langle \texttt{1}, \dots, \texttt{d} \rangle$ is isomorphic to the free commutative algebra over the Lyndon words when equipped with the shuffle product $\char"29E2$. This method represents the corresponding isomorphism
+            $$k \langle \texttt{1}, \dots, \texttt{d} \rangle_{\char"29E2} \to k[y_w \ | \ w \text{ Lyndon}].$$
         Example
             A3 = wordAlgebra(3);
             T = [3,2,1]_A3;
-            toLyndonShuffle(T)
+            f = toLyndonShuffle(T)
+        Text
+            The polynomial is represented as in @TO2 {"Macaulay2Doc::standardForm","standard form"}@, with the variable index replaced by the respective Lyndon word. One easily obtains an actual polynomial from this:
+        Example
+            var = new Array from apply(lyndonWords(3,3), i->x_i);
+            R = QQ var
+            sum(pairs f, (term,coef) -> coef * product(pairs term, (word,ex)-> x_word^ex))
         Text
             Indeed, we check:
         Example

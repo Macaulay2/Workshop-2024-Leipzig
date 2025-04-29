@@ -320,9 +320,12 @@ toLyndonShuffle = method();
 toLyndonShuffle(NCRingElement) := (f) -> ( -- rewrites a tensor as a shuffle polynomial in lyndon words
     d := #(gens ring f);
     k := degree f;
-    ly := getSymbol("y");
+    ly := getSymbol("ly");
     var := new Array from apply(lyndonWords(d,k), i-> ly_i);
     cR := coefficientRing (ring f);
     R := cR var;
-    return(toLyndonShuffleHelper(f,R));
+    pol := toLyndonShuffleHelper(f,R);
+    polh := standardForm pol;
+    polh = applyKeys(polh, i-> applyKeys(i,j-> last baseName R_j));
+    return(polh);
 )
