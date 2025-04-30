@@ -68,7 +68,7 @@ R= QQ[t];
 
 X = polyPath({t, t^2});
 assert(getNumberOfPieces X === 1);
-assert(dim p === 2);
+assert(dim X === 2);
 Y = linPath({1,2});
 
 XY = X**Y;
