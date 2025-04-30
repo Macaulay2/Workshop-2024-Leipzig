@@ -329,3 +329,4 @@ toLyndonShuffle(NCRingElement) := (f) -> ( -- rewrites a tensor as a shuffle pol
     polh = applyKeys(polh, i-> applyKeys(i,j-> last baseName R_j));
     return(polh);
 )
+

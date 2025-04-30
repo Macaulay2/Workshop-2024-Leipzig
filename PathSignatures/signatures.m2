@@ -144,3 +144,5 @@ polySigGen (List, List, Ring) := RingElement => (l,w, baseR) ->(
 
 
 
+
+
