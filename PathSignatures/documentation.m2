@@ -662,6 +662,63 @@ Node
             vol = signedVolume(R);
             A @ vol -- the signed volume of the canonical axis path in 3 dimensions.
 
+Node
+    Key
+        matrixAction
+        (symbol *, Matrix, NCRingElement)
+        (matrixAction, Matrix, NCRing, NCRing)
+        (matrixAction, Matrix, NCRingElement, NCRing)
+    Headline
+        Diagonal matrix action on a tensor. 
+    Inputs
+        M : Matrix -- A matrix acting on a tensor
+        f : NCRingElement -- The tensor to act on
+        A : NCRing -- The domain of the action
+        B : NCRing -- The codomain of the action
+    Outputs
+        F : NCRingMap -- The action A->B of M 
+        Mf : NCRingElement -- The action of M on f
+    Usage
+        Mf = M * f -- Computes the matrix action on f in a new algebra
+        F = matrixAction(M, A, B) -- Gives the map A->B corresponding to the action
+        Mf = matrixAction(M, f, B) -- Computes the matrix action on f, as an element in B
+    Description
+        Text
+            Let $\mathtt{A} := R\langle\mathtt{e_1}, \dots, \mathtt{e_a}\rangle$ be a free associative algebra on $\mathtt{a}$ letters and $\mathtt{B}:= \mathtt{R}\langle\mathtt{f_1}, \dots, \mathtt{f_b}\rangle$ be a free associative algebra on $\mathtt{b}$ letters, both with coefficient in a ring $\mathtt{R}$.
+            Let $\mathtt{M}$ be a $\mathtt{b}\times \mathtt{a}$ matrix with entries in $\mathtt{R}$. Then the matrix action of $\mathtt{M}$ from $\mathtt{A}$ to $\mathtt{B}$ is defined on the generators of $\mathtt{A}$ by $$
+            \mathtt{e_j}\mapsto \sum_{i=1}^{\mathtt{a}}\mathtt{M}_{ij}\mathtt{f_i}, \,\,\forall 0<j\leq \mathtt{a}, 
+            $$
+            and then extended by linearity to the whole of $\mathtt{A}$.
+        Text
+            For example if we consider $\mathtt{A}= \mathbb{Q}\langle \mathtt{e_1},\mathtt{e_2}, \mathtt{e_3}, \mathtt{e_4}\rangle$, $\mathtt{B}= \mathbb{Q}\langle \mathtt{f_1},\mathtt{f_2}, \mathtt{f_3}\rangle$ and the matrix $$
+            \mathtt{M} := \begin{pmatrix}
+            0 & 0 & 1 & 1\\
+            0 & 1 & 0 & 0\\
+            1 & 0 & 0 & 1
+            \end{pmatrix}$$
+            we get the map defined by $\mathtt{e_1}\mapsto \mathtt{f_3}$, $\mathtt{e_2}\mapsto \mathtt{f_2}$, $\mathtt{e_3}\mapsto \mathtt{f_1}$, $\mathtt{e_4}\mapsto \mathtt{f_1}+\mathtt{f_3}$. The action of $\mathtt{M}$ on $\mathtt{w}:=\mathtt{e_1}\mathtt{e_2}+2\mathtt{e_4}$ is $$
+            \mathtt{M*w} = \mathtt{f_3 f_1}+ 2 \mathtt{f_1}+2 \mathtt{f_3}
+            $$
+        Text
+            To get the map from $\mathtt{A}$ to $\mathtt{B}$ use @TO (matrixAction, Matrix, NCRing, NCRing)@.
+        Example
+            M = matrix {{0,0,1,1}, {0,1,0,0}, {1,0,0,1}}
+            A = wordAlgebra(4);
+            B = wordAlgebra(3);
+            F = matrixAction(M, A, B)
+        Text
+            To compute the action of $\mathtt{M}$ on a tensor $\mathtt{w}$ as an element of $\mathtt{B}$ use @TO (matrixAction, Matrix, NCRingElement, NCRing)@.
+        Example
+            w = [1,2]_A + 2* [4]_A
+            Mw = matrixAction(M, w, B)
+            F(w) == Mw
+        Text
+            To compute the action of $\mathtt{M}$ on a tensor $\mathtt{w}$ in a new algebra created automatically, use @TO (symbol *, Matrix, NCRingElement)@.
+        Example
+            M * w
+
+
+    
 ///
 
 ----------------------------------
