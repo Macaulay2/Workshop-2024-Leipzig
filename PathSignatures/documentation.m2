@@ -116,6 +116,7 @@ Node
     Key 
         tensorArray
         (tensorArray, NCRingElement)
+        (tensorArray, NCRingElement, ZZ)
         (symbol @, NCRingElement, ZZ)
     Headline
         k-th level component of a tensor.
@@ -124,9 +125,11 @@ Node
         k : ZZ --The level to extract
     Outputs
         sk : List -- The k-th level of s, as a multi-dimensional array
+        L : List -- The list of all levels of s, as multi-dimensional arrays
     Usage
         sk = tensorArray(s,k)
         sk = s@k
+        L = tensorArray(s)
     Description
         Text
             Returns the $k$-level component of a tensor as multi-dimensioal array, represented by a nested @TO List@.
@@ -137,6 +140,11 @@ Node
             A = sig(X,3)@3 -- third level signature as multi-dimensional array
             i = 0; j = 0; k = 0;
             A#i#j#k == (Lt_(i+1)*Lt_(j+1)*Lt_(k+1))@(sig(X, 3)) --The coefficient of (Lt_1)^3 in sig(X, 3)
+        Text
+            If the integer $k$ is not provided, returns a list of all non trivial levels (in nested list form).
+        Example
+            L = tensorArray(sig(X, 3))
+            L#2 == A
     SeeAlso
         (symbol @, NCRingElement, NCRingElement)
 
