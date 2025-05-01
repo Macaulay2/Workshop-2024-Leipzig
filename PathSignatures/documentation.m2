@@ -718,7 +718,34 @@ Node
             M * w
 
 
-    
+Node
+    Key
+        tensorExp
+        (tensorExp, NCRingElement,ZZ)
+    Headline
+        Compute the exponential of a tensor.
+    Description
+        Text
+            Let $T^n(\mathbb{R}^d)$ denote the tensor algebra on $\mathbb{R}^d$ truncated at $n$. $$
+            T^n(\mathbb{R}^d):= \bigoplus_{k=0}^{n} \left(\mathbb{R}^d\right)^{\otimes k}
+            $$
+            Then the tensor exponential is a map $$
+            \mathtt{tensorExp} : T^n(\mathbb{R}^d)\rightarrow T^n(\mathbb{R}^d)
+            $$
+            defined by $$
+            P\mapsto \sum_{r\geq 0} \frac{1}{r!} P^{\otimes k}
+            $$
+            Of particular interest is the image of tensors with $0$ constant term, and this method is implemented only for those.
+        Example
+            R = wordAlgebra(2);
+            P = [1,2]_R + [1]_R
+            tensorExp(P, 2)
+
+
+    Caveat
+        The method is implemented only for tensors with constant term $0$.
+    References
+         @HREF {"https://doi.org/10.1017/fms.2019.3", "Varieties Of Signature Tensors (doi.org/10.1017/fms.2019.3)"}@
 ///
 
 ----------------------------------
