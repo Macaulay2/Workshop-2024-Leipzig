@@ -697,7 +697,7 @@ Node
             1 & 0 & 0 & 1
             \end{pmatrix}$$
             we get the map defined by $\mathtt{e_1}\mapsto \mathtt{f_3}$, $\mathtt{e_2}\mapsto \mathtt{f_2}$, $\mathtt{e_3}\mapsto \mathtt{f_1}$, $\mathtt{e_4}\mapsto \mathtt{f_1}+\mathtt{f_3}$. The action of $\mathtt{M}$ on $\mathtt{w}:=\mathtt{e_1}\mathtt{e_2}+2\mathtt{e_4}$ is $$
-            \mathtt{M*w} = \mathtt{f_3 f_1}+ 2 \mathtt{f_1}+2 \mathtt{f_3}
+            \mathtt{M*w} = \mathtt{f_3 f_2}+ 2 \mathtt{f_1}+2 \mathtt{f_3}
             $$
         Text
             To get the map from $\mathtt{A}$ to $\mathtt{B}$ use @TO (matrixAction, Matrix, NCRing, NCRing)@.
