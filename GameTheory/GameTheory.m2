@@ -206,7 +206,6 @@ getVariableToIndexset(Ring, List) := (R, ki) -> (
    R_p
 )
 
-
 --------------------------------------------------------
 -- assemblePolynomial(Ring, Tensor, List)
 --
@@ -331,14 +330,14 @@ mixedProbabilityRing Tensor := T ->(
 
 differencesFromFirst = L -> (apply(toList(1..#L-1), i->L#i-L#0))
 
-------------------------------------------------------
+---------------------------------------------------------------------------------
 -- monomialFromIndex (List, ZZ, Ring)
 --
 -- Given a list of n-1 strategies (j_0, j_1, ..., j_{i-1}, j_{i+1}, ..., j_{n-1}) 
 -- for each player except for the i-th, and the integer i, 
 -- this function returns the product of p_{k,j_k}, 0<=k<=n-1, k!=i, 
 -- as a monomial in the probability ring R.
-------------------------------------------------------
+---------------------------------------------------------------------------------
 
 monomialFromIndex = method()
 monomialFromIndex (List, ZZ, Ring):= (L, i, R) ->(
@@ -347,12 +346,12 @@ monomialFromIndex (List, ZZ, Ring):= (L, i, R) ->(
     monomial
 )
 
-----------------------------------------------------------------
+------------------------------------------------------------------------------------------------
 -- equilibriumPolynomials (Tensor, ZZ, Ring)
 --
 -- Input: T is the payoff tensor of the u-th player.
--- Output: a list of (d_u - 1) polynomials in the probability ring R, consisting of 
--- the equilibrium conditions from the u-th player (zero-based).
+-- Output: a list of (d_u - 1) polynomials in the probability ring R,
+-- consisting of the equilibrium conditions from the u-th player (zero-based).
 -- 
 -- This function constructs a tensor 'accumulatedHash', of format 
 -- (d_0, d_1, ... d_{u-1}, d_{u+1}, ..., d_{n-1}), implemented as a MutableHashTable. Each entry 
@@ -370,7 +369,7 @@ monomialFromIndex (List, ZZ, Ring):= (L, i, R) ->(
 
 -- Note: accumulatedHash is not implemented with 'zeroTensor' to avoid pre-filling 
 -- zeros, allowing a better performance.
-----------------------------------------------------------------
+-------------------------------------------------------------------------------------------------
 
 equilibriumPolynomials = method()
 equilibriumPolynomials (Tensor, ZZ, Ring) := (T, u, R)->(
@@ -485,7 +484,7 @@ deltaList List := d -> (
     result
 )
 
---------------------------------------------------------------
+--------------------------------------------------------------------------
 -- blockDerangements(List)
 --
 -- Given a format of a tensor, it computes all block derangements
@@ -498,7 +497,7 @@ deltaList List := d -> (
 -- Reference: The Maximal Number of Regular Totally Mixed Nash Equilibria
 -- by R. D. McKelvey, A. McLennan, Journal of Economic Theory, Vol. 72,
 -- Issue 2, February 1997, Pages 411-425. 
---------------------------------------------------------------
+--------------------------------------------------------------------------
 
 blockDerangements = method()
 blockDerangements List := D -> (
@@ -513,7 +512,7 @@ blockDerangements List := D -> (
     return BD
     )
 
--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
 -- numberTMNE(List)
 --
 -- Given a format of a tensor, it computes the number of
@@ -526,7 +525,7 @@ blockDerangements List := D -> (
 
 -- Reference: A vector bundle approach to Nash Equilibria by H. Abo, I. Portakal
 -- L. Sodomaco, arXiv:2504.03456, Theorem 2.7.
--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
 
 numberTMNE = method()
 numberTMNE List := D -> (
@@ -807,16 +806,72 @@ doc ///
   Key
     GameTheory
   Headline
-    A package for computing equilibria in game theory
+    a package for computing equilibria in game theory
   Description
     Text
       {\bf Game Theory} is a package for several equilibrium concepts in game theory. It constructs the algebraic and
-      combinatorial models for Nash, correlated, dependency, and conditional independence equilibria.
-       
-      
-      Here is a typical use of this package.
+      combinatorial models for Nash, correlated, dependency, and conditional independence equilibria. The latter three notions of
+      equilibria are all generalizations of Nash equilibria. A $n$-player game in normal-form is defined by $n$-tensors of format
+      $d_1 \times d_2 \times \cdots \times d_n$ where $d_i$ is the number of pure strategies of player $i$.
+      The entry $\{j_1, j_2, \cdots, j_n\}$ of the $i$th (payoff) tensor for player i is the payoff
+      when player $1$ chooses strategy $j_1$, the player $2$ chooses their strategy $j_2$ etc.
+      One can define a specific game or a random game e.g., a list with random tensors.
     Example
-     example
+     -- Bach or Stravinsky game
+     A = zeroTensor {2,2}
+     B = zeroTensor {2,2}
+     A#{0,0} = 3;  A#{0,1} = 0;  A#{1,0} = 0;  A#{1,1} = 2;
+     B#{0,0} = 2;  B#{0,1} = 0;  B#{1,0} = 0;  B#{1,1} = 3;
+     
+     -- A random 3-player game
+     X = {randomTensor {2,2,2}, randomTensor {2,2,2}, randomTensor {2,2,2}}
+     randomGame {2,2,2}
+    Text
+     The notion of Nash equilibria is one of the central topics in game theory. 
+     @TO nashEquilibriumIdeal@ computes a square system of $d_1 + \cdots + d_n$ polynomials modeling the set of totally mixed Nash equilibria algebraically.
+     In case, the dimension of this ideal is zero (usually refered as a generic game), then one can use mixed volumes of the Newton polytopes of each polynomial in the system
+     to give an upper bound for the number of totally mixed Nash equilibria. The list of those Newton polytopes are given with @TO deltaList@. The mixed volume
+     of these polytopes is equal to counting certain block derangements. The method @TO numberTMNE@ performs faster than @TO mixedVolume@ in this case.
+    Example
+     NR = nashEquilibriumRing X
+     I = nashEquilibriumIdeal(NR,X)
+     dim I
+     degree I
+
+     D = deltaList X
+     mixedVolume D
+     blockDerangements X
+     numberTMNE X
+    Text
+     The set of correlated equilibria of a game forms a convex polytope inside the (probability) simplex which is the standard simplex of dimension $d_1 \cdots d_n -1$.
+     Thus, the variables are taken from @TO probabilityRing@. In particular, the morphism from @TO nashEquilibriumRing@ to @TO probabilityRing@ is the Segre embedding.
+    Example
+     -- A full dimensional polytope which is a double pyramid over a triangular bipyramid
+     CE1 = correlatedEquilibria {A, B}
+     vertices CE1
+     facets CE1
+     -- The correlated equilibrium polytope for a random game
+     CE2 = correlatedEquilibria randomGame{2,2,2}
+     dim CE2
+    Text
+     The algebro-geometric model of dependency equilibria is called Spohn variety. Its defining ideal is given by rank one conditions on Spohn matrices.
+     One can also define Konstanz matrices which is crucial to understand the projection of dependency equilibria to the payoff region.
+    Example
+      PR = probabilityRing({2,2,2});
+      X = randomGame({2,2,2});
+      spohnMatrices(PR,X)
+      spohnIdeal(PR,X);
+      konstanzMatrix(PR,X)
+    Text
+     The algebro-geometric model of conditional independence equilibria is obtained by intersecting the Spohn variety with the conditional independence model of
+     a given set of conditional independence statements, followed by the removal of certain components. The set of conditional independence statements can be generated
+     via graphical models.
+    Example
+      G1 = graph ({}, Singletons => {1,2,3});
+      ciIdeal;
+      G2 = graph ({{1,2}}, Singletons => {3});
+      I1 = spohnCI(PR,X,G1)
+      I2 = spohnCI(PR,X,G2)     
   References
     This package is based on the following papers:
          
@@ -831,14 +886,15 @@ doc ///
 
       - Conditional Independence Equilibria: [@HREF("https://www.sciencedirect.com/science/article/pii/S0021869324006707","I. Portakal and J. Sendra-Arranz: Game theory of undirected graphical models")@]
         Journal of Algebra, Volume 666, 2025.
+	
   Acknowledgement
     We thank Ben Hollering<@HREF"https://sites.google.com/view/benhollering"@> and Mahrud Sayrafi<@HREF"https://www-users.cse.umn.edu/~mahrud/"@> for their support
-    during the Macaulay2 in the Sciences Workshop<@HREF"https://www.mis.mpg.de/de/events/series/macaulay2-in-the-sciences"@> in which this package started.
+    during the Macaulay2 in the Sciences Workshop<@HREF"https://www.mis.mpg.de/de/events/series/macaulay2-in-the-sciences"@> where the development of this package began.
   Contributors
     The following people have generously contributed their time and effort to this project:  
     Luca Sodomaco<@HREF"https://sites.google.com/view/luca-sodomaco/home"@>.
   Caveat
-    GameTheory requires GraphicalModels.m2.
+    GameTheory uses Polyhedra.m2 for the methods of correlated equilibria and GraphicalModels.m2 for the methods of conditional independence equilibria.
 ///
 
 ------------------------------------------
@@ -1585,7 +1641,7 @@ doc ///
       Di = {2,2,3}
       PR = probabilityRing(Di)
       X = randomGame(Di)
-      I = spohnMatrices(PR,X)
+      M = spohnMatrices(PR,X)
 
   SeeAlso
     probabilityRing
@@ -1665,7 +1721,6 @@ doc ///
       Di = {2,2,3};
       PR = probabilityRing(Di);
       X = randomGame(Di);
-
       K = konstanzMatrix(PR,X)
 
     Text
@@ -1733,7 +1788,6 @@ doc ///
   probabilityRing
   gaussianRing
 ///
-
 
 -----------------------------------
 -- Documentation mapToMarkovRing --
@@ -1899,7 +1953,6 @@ doc ///
     ciIdeal
     globalMarkov
 ///
-
 
 -----------------------------------------
 -- Documentation intersectWithCImodel  --
@@ -2473,7 +2526,6 @@ TEST ///
  M = spohnMatrices(PR,X);
  assert(length M == length Di)
  assert(all(0..#Di-1, i -> class M#i === Matrix))
-
 /// 
 
 -----------------------
@@ -2643,7 +2695,7 @@ TEST///
 end
 
 --******************************************--
---           DEVELOPMENT SECTION	      	    --
+--           DEVELOPMENT SECTION	      	    
 --******************************************--
 
 restart
