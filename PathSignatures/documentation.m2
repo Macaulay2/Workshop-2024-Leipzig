@@ -625,12 +625,16 @@ Node
         Example
             var = new Array from apply(lyndonWords(3,3), i->x_i)
             R = QQ var;
-            sum(pairs f, (term,coef) -> coef * product(pairs term, (word,ex)-> x_word^ex))
+            pol = sum(pairs f, (term,coef) -> coef * product(pairs term, (word,ex)-> x_word^ex))
         Text
             Indeed, we check:
         Example
             ([1]_A3**[2]_A3**[3]_A3 - [1]_A3**[2,3]_A3 - [1,2]_A3**[3]_A3 + [1,2,3]_A3) // wordFormat
-
+        Text
+            In general, one can "shuffle out" a polynomial like $\texttt{pol}$ in two steps as follows:
+        Example
+            polh = applyKeys(standardForm pol, i-> applyKeys(i,j-> last baseName R_j));
+            sum(pairs polh, (term,coef) -> coef * fold(flatten apply(pairs term, (word,ex)-> toList (ex:(word_A3))),(i,j)->i**j)) // wordFormat
 Node
     Key
         inner
