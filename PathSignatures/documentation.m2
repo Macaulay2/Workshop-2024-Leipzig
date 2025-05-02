@@ -390,9 +390,9 @@ Node
             PP = apply(p, q -> sub(q, {x=>t, y=>t^2})); 
             Y = polyPath(PP) -- the transformed path in 3 dimensional space
         Text
-            Finally we compute the signature of the transformed path along the @TO signedVolume@ tensor of $\mathbb{R}^3$ and verify the formula in Theorem 2 above:
+            Finally we compute the signature of the transformed path along the @TO signedVolumeForm@ tensor of $\mathbb{R}^3$ and verify the formula in Theorem 2 above:
         Example
-            vol = signedVolume(wA3); vol // wordFormat -- consider the signed volume in R^3 and display it in word format
+            vol = signedVolumeForm(wA3); vol // wordFormat -- consider the signed volume in R^3 and display it in word format
             adw = adjointWord(vol, wA2, p); adw // wordFormat -- we compute its image through the induced homomorphism on algebras
             sig(Y, vol)  -- the signed volume of the transformed path
             sig(X, adw)  -- is given by evaluating at adw for the original path.
@@ -673,7 +673,7 @@ Node
             It is also a convient way to evaluate linear combinations of tensor entries:
         Example
             A = CAxisTensor(3,R);
-            vol = signedVolume(R);
+            vol = signedVolumeForm(R);
             A @ vol -- the signed volume of the canonical axis path in 3 dimensions.
 
 Node
@@ -762,19 +762,19 @@ Node
 
 Node
     Key
-        signedVolume
-        (signedVolume, NCPolynomialRing)
+        signedVolumeForm
+        (signedVolumeForm, NCPolynomialRing)
     Headline 
         The signed volume form of an algebra.
     Description
         Text
-            The signed volume of $\mathbb{R}^d$ is the tensor $$\frac{1}{d!}\sum_{\sigma} (-1)^{\operatorname{sign}(\sigma)} e_{\sigma(1)}^{*}\otimes \dots\otimes \sigma(d)^{*}$$
+            The {em signed volume form} of $\mathbb{R}^d$ is the tensor $$\frac{1}{d!}\sum_{\sigma} (-1)^{\operatorname{sign}(\sigma)} e_{\sigma(1)}^{*}\otimes \dots\otimes e_{\sigma(d)}^{*}$$
             where the sum is taken over all permutations of ${1, \dots, d}$.
         Text
             This method computes the signed volume tensor in the dimension corresponding to the number of generators of the given @TO NCPolynomialRing@. The output is in the same ring.
         Example
             R = wordAlgebra(3)
-            signedVolume(R) // wordFormat
+            signedVolumeForm(R) // wordFormat
 
     References
         @HREF {"https://doi.org/10.1007/978-3-031-38271-0_45", "Convex Hulls of Curves: Volumes and Signatures (doi.org/10.1007/978-3-031-38271-0_45)"}@
@@ -800,7 +800,7 @@ Node
             For a key use example see @TO "Computing Path Varieties"@.
         Example
             A = wordAlgebra(2)
-            T = signedVolume(A)
+            T = signedVolumeForm(A)
             tensorParametrization(T)
 Node
     Key
