@@ -749,13 +749,12 @@ Node
             defined by $$
             P\mapsto \sum_{r\geq 0} \frac{1}{r!} P^{\otimes k}
             $$
-            Of particular interest is the image of tensors with $0$ constant term, and this method is implemented only for those.
+            If the constant term of the input is not $0$, the constant termo of its exponential might not be a rational number
+            anymore. To avoid this cases, the method is only implemented for tensors with constant term equal to $0$.
         Example
             R = wordAlgebra(2);
             P = [1,2]_R + [1]_R
             tensorExp(P, 2)
-
-
     Caveat
         The method is implemented only for tensors with constant term $0$.
     References
