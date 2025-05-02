@@ -1,7 +1,7 @@
 newPackage(
    "GameTheory",
    Version => "1.0",
-   Date => "April, 2025",
+   Date => "May, 2025",
    Authors => {
       {Name => "Erin Connelly",
          Email => "erin.connelly@uni-osnabrueck.de",
@@ -33,7 +33,7 @@ newPackage(
    },
    Headline => "A package for computing equilibria in game theory",
    Keywords => {"Game Theory","Equilibria","Nash","Correlated","Dependency","Spohn","Conditional Independence"},
-   PackageExports => {"Polyhedra","Elimination","GraphicalModels"},
+   PackageExports => {"Polyhedra","GraphicalModels"},
    PackageImports => {"Polyhedra"}
    )
 
@@ -54,6 +54,7 @@ export {
    "blockDerangements",
    "numberTMNE",
    "probabilityRing",
+   "probabilitySumIdeal",
    "ProbabilityVariableName",
    "KonstanzVariableName",
    "randomGame",
@@ -69,12 +70,9 @@ export {
 }
 
 
-
-
 --***************************************--
 --   METHODS FOR CORRELATED EQUILIBRIA   --
 --***************************************--
-
 
 ---------------------------------------------------
 -- enumerateTensorIndices ZZ
@@ -101,7 +99,7 @@ enumerateTensorIndices List := s -> (
          for r in rest do
             result = append(result, join(s,r));
       result
-)
+      )
 
 ---------------------------------------------------------
 -- Defines a new type "Tensor" based on MutableHashTable.
@@ -126,14 +124,13 @@ zeroTensor(Ring,List) := (R,dims) -> (
    result#"coefficients" = R;
    result#"indexes" = indexset;
    result
-)
+   )
 
 ---------------------------------------------------------------------
 -- randomTensor (Ring, List)
 --
 -- The method creates a random tensor with the given format and ring.
 ---------------------------------------------------------------------
-
 
 randomTensor = method()
 randomTensor List := dims -> randomTensor(QQ,dims)
@@ -146,7 +143,7 @@ randomTensor(Ring,List) := (R,dims) -> (
    result#"coefficients" = R;
    result#"indexes" = indexset;
    result
-)
+   )
 
 ----------------------------------------------
 -- format Tensor
@@ -178,7 +175,6 @@ indexset Tensor := T -> T#"indexes"
 -- where d_i is the corresponding dimension size.
 -----------------------------------------------------
 
-
 slice = method()
 slice (Tensor, List, List) := (T, Lstart, Lend) -> (
    dims := format T;
@@ -189,8 +185,7 @@ slice (Tensor, List, List) := (T, Lstart, Lend) -> (
       result = append(result, T#mindex);
    );
    result
-)
-
+   )
 
 ---------------------------------------------------
 -- getVariableToIndexset(Ring, List)
@@ -199,12 +194,11 @@ slice (Tensor, List, List) := (T, Lstart, Lend) -> (
 -- indices,returns the corresponding generator.
 ---------------------------------------------------
 
-
 getVariableToIndexset = method()
 getVariableToIndexset(Ring, List) := (R, ki) -> (
    p := position(apply(gens R, i -> last baseName i), i -> i == ki);
    R_p
-)
+   )
 
 --------------------------------------------------------
 -- assemblePolynomial(Ring, Tensor, List)
@@ -221,7 +215,6 @@ getVariableToIndexset(Ring, List) := (R, ki) -> (
 --        k = current strategy
 --        l = deviating strategy
 -------------------------------------------------------
-
 
 assemblePolynomial = method()
 assemblePolynomial(Ring, Tensor, List) := (PR, Xi, ikl) -> (
@@ -240,7 +233,7 @@ assemblePolynomial(Ring, Tensor, List) := (PR, Xi, ikl) -> (
    lterm := sum apply(lindices , li->(tmp := new MutableList from li; tmp#i=k; a := toList tmp; Xi#li*reverseVarMap#a));
    ineq := kterm-lterm;
    ineq
-)
+   )
 
 ------------------------------------------------
 -- assemblePlayeriPolynomials(Ring, Tensor, ZZ)
@@ -248,7 +241,6 @@ assemblePolynomial(Ring, Tensor, List) := (PR, Xi, ikl) -> (
 -- Returns a list of all polynomials for a given
 -- player i in a correlated equilibrium.
 ------------------------------------------------
-
 
 assemblePlayeriPolynomials = method()
 assemblePlayeriPolynomials(Ring, Tensor, ZZ) := (PR, Xi, i) -> (
@@ -261,7 +253,7 @@ assemblePlayeriPolynomials(Ring, Tensor, ZZ) := (PR, Xi, i) -> (
       );
    );
    result
-)
+   )
 
 -------------------------------------------------------------
 -- correlatedEquilibria(List)
@@ -272,7 +264,6 @@ assemblePlayeriPolynomials(Ring, Tensor, ZZ) := (PR, Xi, i) -> (
 -- Assembles all incentive constraint polynomials and returns
 -- a polytope by adding the probability constraints.
 -------------------------------------------------------------
-
 
 correlatedEquilibria = method()
 correlatedEquilibria List := X -> (
@@ -290,15 +281,12 @@ correlatedEquilibria List := X -> (
    eq := matrix {toList ((numColumns ineqs):1_F)};
    eqrhs := matrix {{1_F}};
    polyhedronFromHData(-ineqs, ineqsrhs,eq,eqrhs)
-)
-
-
+   )
 
 
 --***************************************--
 --     METHODS FOR NASH EQUILIBRIA       --
 --***************************************--
-
 
 -----------------------------------------------------------
 -- mixedProbabilityRing (List)
@@ -314,11 +302,11 @@ mixedProbabilityRing List := L ->(
     p := getSymbol "p";
     probabilityRing := QQ[flatten apply(#L, i -> apply(L#i, j->p_{i,j}))];
     probabilityRing
-)
+    )
 mixedProbabilityRing Tensor := T ->(
     indexSet := format T;
     mixedProbabilityRing indexSet
-)
+    )
 
 -------------------------------------------------------------
 -- differencesFromFirst (List)
@@ -344,7 +332,7 @@ monomialFromIndex (List, ZZ, Ring):= (L, i, R) ->(
     p := getSymbol "p";
     monomial := product toList apply(pairs L, (j,r)->(s := if j >= i then j + 1 else j; p_{s,r}_R));
     monomial
-)
+    )
 
 ------------------------------------------------------------------------------------------------
 -- equilibriumPolynomials (Tensor, ZZ, Ring)
@@ -383,13 +371,14 @@ equilibriumPolynomials (Tensor, ZZ, Ring) := (T, u, R)->(
         monomialIndex := drop(tensorIndex,{u,u});
         if not (accumulatedHash #? monomialIndex) then accumulatedHash#monomialIndex = new MutableList from nStrategies: 0;
         accumulatedHash#monomialIndex#thisStrategy = newCoefficient;
-    );
+	);
     polynomials := apply(pairs accumulatedHash, (k,v)->(
         monomial := monomialFromIndex(k, u, R);
         apply(differencesFromFirst v, i-> i_R * monomial)
-    ));
+	)
+    );
     sum polynomials
-)
+    )
 
 -----------------------------------------------------------
 -- nashEquilibriumRing (List)
@@ -409,7 +398,7 @@ nashEquilibriumRing List := L -> (
     indexSet := format first L;
     polyRing := mixedProbabilityRing indexSet;
     polyRing
-)
+    )
 
 ----------------------------------------------------------------
 -- nashEquilibriumIdeal (Ring, List)
@@ -431,7 +420,7 @@ nashEquilibriumIdeal (Ring, List) := (R, L) -> (
     linearRelations := apply(pairs indexSet, (i,j)-> sum(j, k->p_{i,k}_probabilityRing) - 1);
     fullGeneratingSet := join(completeGeneratingSet, linearRelations);
     ideal fullGeneratingSet
-)
+    )
 
 ---------------------------------------------------------------
 -- directProductList (List)
@@ -445,9 +434,9 @@ directProductList List := L -> (
     P := L#0;
     for i from 1 to (#L - 1) do (
         P = directProduct(P, L#i);
-    );
+	);
     P
-)
+    )
 
 ------------------------------------------------------------------
 -- deltaList (Ring, List)
@@ -479,10 +468,10 @@ deltaList List := d -> (
         P := directProductList(polyFactors);
         for rep from 1 to (d#i - 1) do (
             result = append(result, P)
-        );
-    );
+	    );
+	);
     result
-)
+    )
 
 --------------------------------------------------------------------------
 -- blockDerangements(List)
@@ -534,22 +523,19 @@ numberTMNE List := D -> (
     R := KK[h_0..h_(#D-1)];
     return sub(contract(product(#D, j -> h_(j)^(D#j-1)),
                         product(#D, j -> (sum(#D, i -> h_(i))-h_(j))^(D#j-1))), KK)
-    )
-
-
+		)
 
 
 --***************************************--
 --   METHODS FOR DEPENDENCY EQUILIBRIA   --
 --***************************************--
 
--------------------------------------------------
+--------------------------------------------------
 -- probabilityRing (List)
 --
 -- Given a list Di this constructs a ring of joint 
 -- probabilities for a game of format Di
--------------------------------------------------
-
+--------------------------------------------------
 
 probabilityRing = method(Options => { CoefficientRing => QQ, ProbabilityVariableName => "p" })
 probabilityRing List := Ring => opts -> Di -> (
@@ -563,8 +549,23 @@ probabilityRing List := Ring => opts -> Di -> (
     R#"probabilityVariable" = P;
 
     R#"gameFormat" = Di;
-    R)
+    R
+    )
 
+-------------------------------------------------
+-- probabilitySumIdeal (Ring)
+--
+-- Given a ring, it constructs a principal ideal
+-- generated by the sum of the generators of the
+-- ring minus one. 
+-------------------------------------------------
+
+probabilitySumIdeal = method()
+probabilitySumIdeal Ring := Ideal => R -> (
+    vars := gens R;
+    summing := sum(vars, x->x);
+    return ideal(summing - 1);
+    )
 
 ------------------------------------------------
 -- randomGame (List)
@@ -576,16 +577,16 @@ probabilityRing List := Ring => opts -> Di -> (
 randomGame = method(Options => {CoefficientRing => QQ})
 randomGame List := List => opts -> Di -> (
     K := opts.CoefficientRing;
-    apply(length Di, i -> randomTensor(K, Di)))
+    apply(length Di, i -> randomTensor(K, Di)
+	)
+    )
 
-
----------------------------------------------------------
+--------------------------------------------------------
 -- spohnMatrices (Ring, List)
 --
 -- Given the underlying probability ring R and a game X 
 -- this constructs the Spohn matrices for X
----------------------------------------------------------
-
+--------------------------------------------------------
 
 spohnMatrices = method()
 spohnMatrices (Ring, List) := List => (PR, X) -> (
@@ -594,7 +595,10 @@ spohnMatrices (Ring, List) := List => (PR, X) -> (
     d := format X_0;
     J := indexset X_0;
     apply(n, i -> matrix apply(d_i, k -> {sum(select(J, j -> j_i==k), j -> p#j),
-                                          sum(select(J, j -> j_i==k), j -> (X_i)#j * p#j) })))
+                                          sum(select(J, j -> j_i==k), j -> (X_i)#j * p#j) }
+				      )
+				  )
+			      )
 
 --------------------------------------------------------
 -- spohnIdeal (Ring, List)
@@ -603,14 +607,15 @@ spohnMatrices (Ring, List) := List => (PR, X) -> (
 -- this constructs the Spohn ideal for X
 -------------------------------------------------------- 
 			  
-
 spohnIdeal = method()
 spohnIdeal (Ring, List) := List => (PR, X) -> (
     M := spohnMatrices(PR, X);
-    sum(M, m -> minors(2, m)))
+    sum(M, m -> minors(2, m)
+	)
+    )
 
 --------------------------------------------------------
---konstanzMatrix (Ring, List)
+-- konstanzMatrix (Ring, List)
 --
 -- Given the underlying probability ring R and a game X 
 -- this constructs the Konstanz Matrix for X
@@ -625,17 +630,22 @@ konstanzMatrix (Ring, List) := Matrix => opts -> (PR, X) -> (
     J := enumerateTensorIndices Di;
     konstanzRing := PR[apply(n, i -> k_i)];
     M := spohnMatrices(PR, X);
-    LinearForms := apply(n, i -> (M_i * matrix{{(k_i)_konstanzRing}, {-1}} ));
+    LinearForms := apply(n, i -> (M_i * matrix{{(k_i)_konstanzRing}, {-1}})
+	);
     P := vector(apply(J, j -> p#j));
     fold((M0, M1) -> M0 || M1, 
          apply(n, i -> transpose matrix apply(Di_i,
-                                              j -> diff(P, (LinearForms_i)_(j, 0))))))
+                                              j -> diff(P, (LinearForms_i)_(j, 0))
+					      )
+					  )
+				      )
+				  )
 
 
 
---****************************************************--
---  METHODS FOR CONDITIONAL INDEPENDENCE EQUILIBRIA   --
---****************************************************--
+--*****************************************************--
+--   METHODS FOR CONDITIONAL INDEPENDENCE EQUILIBRIA   --
+--*****************************************************--
 
 ----------------------------------
 -- toMarkovRing Ring
@@ -686,8 +696,6 @@ mapToProbabilityRing Ring := R -> (
 -- as an ideal of the given probabilityRing
 -----------------------------------------------------------------
 
-
-
 ciIdeal = method()
 ciIdeal (Ring, List, List) := (PR, Stmts, PlayerNames) -> (
     markovR := toMarkovRing(PR);
@@ -716,7 +724,6 @@ ciIdeal (Ring, Graph) := (PR, G) -> (
 -- intersectWithCImodel (V, G, PlayerNames)
 -- intersectWithCImodel (V, G)
 -----------------------------------------------
-
 
 intersectWithCImodel = method(Options => {Verbose => false})
 intersectWithCImodel (Ideal, List, List) := o -> (V, Stmts, PlayerNames) -> (
@@ -772,7 +779,6 @@ intersectWithCImodel (Ideal, Graph) := o -> (V, G) -> (
 -- spohnCI (PR, X, Stmts, PlayerNames)
 --------------------------------------
 
-
 spohnCI = method(Options => {Verbose => false})
 spohnCI (Ring, List, Graph) := o -> (PR, X, G) -> (
     v := o.Verbose;
@@ -796,9 +802,9 @@ spohnCI (Ring, List, List, List) := o -> (PR, X, Stmts, PlayerNames) -> (
     )
 
 
---******************************************--
---             DOCUMENTATION                -- 
---******************************************--
+--********************************--
+--         DOCUMENTATION          -- 
+--********************************--
 
 beginDocumentation()
 
@@ -809,13 +815,12 @@ doc ///
     a package for computing equilibria in game theory
   Description
     Text
-      {\bf Game Theory} is a package for several equilibrium concepts in game theory. It constructs the algebraic and
-      combinatorial models for Nash, correlated, dependency, and conditional independence equilibria. The latter three notions of
-      equilibria are all generalizations of Nash equilibria. A $n$-player game in normal-form is defined by $n$-tensors of format
-      $d_1 \times d_2 \times \cdots \times d_n$ where $d_i$ is the number of pure strategies of player $i$.
-      The entry $\{j_1, j_2, \cdots, j_n\}$ of the $i$th (payoff) tensor for player i is the payoff
-      when player $1$ chooses strategy $j_1$, the player $2$ chooses their strategy $j_2$ etc.
-      One can define a specific game or a random game e.g., a list with random tensors.
+     {\bf Game Theory} is a package for several equilibrium concepts in game theory. It constructs the algebro-geometric and
+     combinatorial models for Nash, correlated, dependency, and conditional independence equilibria. The latter three notions of
+     equilibria are all generalizations of Nash equilibria. An $n$-player game in normal form is defined by $n$-tensors of format
+     $d_1 \times d_2 \times \cdots \times d_n$, where $d_i$ is the number of pure strategies of player $i$.
+     The entry $\{j_1, j_2, \cdots, j_n\}$ of the $i$th (payoff) tensor for player $i$ is the payoff when player $1$ chooses
+     strategy $j_1$, player $2$ chooses strategy $j_2$, and so on. One can define a specific game or a random game, e.g., a list with random tensors.
     Example
      -- Bach or Stravinsky game
      A = zeroTensor {2,2}
@@ -829,24 +834,25 @@ doc ///
     Text
      The notion of Nash equilibria is one of the central topics in game theory. 
      @TO nashEquilibriumIdeal@ computes a square system of $d_1 + \cdots + d_n$ polynomials modeling the set of totally mixed Nash equilibria algebraically.
-     In case, the dimension of this ideal is zero (usually refered as a generic game), then one can use mixed volumes of the Newton polytopes of each polynomial in the system
-     to give an upper bound for the number of totally mixed Nash equilibria. The list of those Newton polytopes are given with @TO deltaList@. The mixed volume
-     of these polytopes is equal to counting certain block derangements. The method @TO numberTMNE@ performs faster than @TO mixedVolume@ in this case.
+     In the case where the dimension of this ideal is zero (commonly referred to as a generic game), one can use the mixed volume of the Newton polytopes 
+     of each polynomial in the system to obtain an upper bound on the number of totally mixed Nash equilibria. The list of these Newton polytopes is 
+     provided by @TO deltaList@. The mixed volume of these polytopes equals the number of certain block derangements. The method @TO numberTMNE@ 
+     is typically faster than @TO mixedVolume@ in this case.
     Example
      NR = nashEquilibriumRing X
      I = nashEquilibriumIdeal(NR,X)
      dim I
      degree I
-
+     -- For a generic game
      D = deltaList X
      mixedVolume D
      blockDerangements X
      numberTMNE X
     Text
      The set of correlated equilibria of a game forms a convex polytope inside the (probability) simplex which is the standard simplex of dimension $d_1 \cdots d_n -1$.
-     Thus, the variables are taken from @TO probabilityRing@. In particular, the morphism from @TO nashEquilibriumRing@ to @TO probabilityRing@ is the Segre embedding.
+     Thus, the variables are taken from @TO probabilityRing@. In particular, the map from @TO nashEquilibriumRing@ to @TO probabilityRing@ is the Segre embedding.
     Example
-     -- A full dimensional polytope which is a double pyramid over a triangular bipyramid
+     -- A full dimensional polytope which is a triangular bipyramid
      CE1 = correlatedEquilibria {A, B}
      vertices CE1
      facets CE1
@@ -865,13 +871,16 @@ doc ///
     Text
      The algebro-geometric model of conditional independence equilibria is obtained by intersecting the Spohn variety with the conditional independence model of
      a given set of conditional independence statements, followed by the removal of certain components. The set of conditional independence statements can be generated
-     via graphical models.
+     via graphical models. 
     Example
       G1 = graph ({}, Singletons => {1,2,3});
-      ciIdeal;
       G2 = graph ({{1,2}}, Singletons => {3});
       I1 = spohnCI(PR,X,G1)
-      I2 = spohnCI(PR,X,G2)     
+      I2 = spohnCI(PR,X,G2)
+      -- One can also consider the linear constraint coming from the probabilities
+      J = probabilitySumIdeal(PR)
+      J1 = I1 + J
+      J2 = I1 + J
   References
     This package is based on the following papers:
          
@@ -1291,7 +1300,6 @@ doc ///
 ----------------------------------------
 
 doc ///
- Node
   Key
    (nashEquilibriumRing, List)
    nashEquilibriumRing
@@ -1331,7 +1339,6 @@ doc ///
 ----------------------------------------
 
 doc ///
- Node
   Key
    (nashEquilibriumIdeal, Ring, List)
    nashEquilibriumIdeal
@@ -1383,7 +1390,6 @@ doc ///
 ----------------------------------------
 
 doc ///
- Node
   Key
    (deltaList, List)
    deltaList
@@ -1426,7 +1432,6 @@ doc ///
 -----------------------------------
 
 doc ///
- Node
   Key
    (numberTMNE, List)
    numberTMNE
@@ -1469,7 +1474,6 @@ doc ///
 -------------------------------------
 
 doc ///
- Node
   Key
    (blockDerangements, List)
    blockDerangements
@@ -1506,59 +1510,90 @@ doc ///
 -----------------------------------
 
 doc ///
-    Key
-        probabilityRing
-        (probabilityRing, List)
-    Headline
-        Ring of probability distributions of a game indexed by ordered multi-indices
-    Usage
-        probabilityRing(Di)
-    Inputs
-        Di:List
-           a list of natural numbers $d_0,\dots,d_{n-1}$
-    -- Optional inputs
-    --     CoefficientRing => ..., default value QQ, optional input to choose the base field
-    --     ProbabilityVariableName => ..., default value "p", symbol used for the tensor of probability variables
-    Outputs
-        :Ring  
-         a polynomial ring with a tensor of variables $p_{i_0,\dots,i_{n-1}}$
-         such that $i_j$ runs from $0$ to $d_j-1$.
-    Description
-        Text
-            The list $Di$ represents the format of the game.
-            In this example we create a ring of probability distributions coming from a
-            game with format {2, 3, 2}. This format can be accessed from the ring through
-            the field "gameFormat".
-            
-            The variables $p#i$ are the entries of the tensor $p$, which can be
-            accessed from the ring through the field "probabilityVariable".
+  Key
+      probabilityRing
+      (probabilityRing, List)
+  Headline
+      Ring of probability distributions of a game indexed by ordered multi-indices
+  Usage
+      probabilityRing(Di)
+  Inputs
+      Di:List
+         a list of natural numbers $d_0,\dots,d_{n-1}$
+  -- Optional inputs
+  --     CoefficientRing => ..., default value QQ, optional input to choose the base field
+  --     ProbabilityVariableName => ..., default value "p", symbol used for the tensor of probability variables
+  Outputs
+      :Ring  
+       a polynomial ring with a tensor of variables $p_{i_0,\dots,i_{n-1}}$
+       such that $i_j$ runs from $0$ to $d_j-1$.
+  Description
+      Text
+          The list $Di$ represents the format of the game.
+          In this example we create a ring of probability distributions coming from a
+          game with format {2, 3, 2}. This format can be accessed from the ring through
+          the field "gameFormat".
+          
+          The variables $p#i$ are the entries of the tensor $p$, which can be
+          accessed from the ring through the field "probabilityVariable".
 
-        Example
-            Di = {2,1,2};
-            PR = probabilityRing Di;
-            numgens PR
-            pairs PR#"probabilityVariable"
-      
-        Text 
-            The optional argument "CoefficientRing" allows to change the base field. If no choice is
-            specified, the base field is set to QQ. It is also possible to change the name of the
-            variable tensor through the optional argument "ProbabilityVariableName", which is set to
-            the string "p" by default.
- 
-        Example
-            PR2 = probabilityRing (Di, Coefficients=>RR, ProbabilityVariableName=>q);
-            coefficientRing PR2
-            pairs PR2#"probabilityVariable"
-      
-        -- Figure out all of the functions which require a probabilityRing
-        Text
-            Some functions such as @TO spohnIdeal@, @TO konstanzMatrix@, @TO ciIdeal@ or @TO spohnCI@  require the ring to be created by this function
-            or in a similar manner.
-    SeeAlso
-	spohnIdeal
-	konstanzMatrix
-	ciIdeal
-	spohnCI
+      Example
+          Di = {2,1,2};
+          PR = probabilityRing Di;
+          numgens PR
+          pairs PR#"probabilityVariable"
+    
+      Text 
+          The optional argument "CoefficientRing" allows to change the base field. If no choice is
+          specified, the base field is set to QQ. It is also possible to change the name of the
+          variable tensor through the optional argument "ProbabilityVariableName", which is set to
+          the string "p" by default.
+
+      Example
+          PR2 = probabilityRing (Di, Coefficients=>RR, ProbabilityVariableName=>q);
+          coefficientRing PR2
+          pairs PR2#"probabilityVariable"
+    
+      -- Figure out all of the functions which require a probabilityRing
+      Text
+          Some functions such as @TO spohnIdeal@, @TO konstanzMatrix@, @TO ciIdeal@ or @TO spohnCI@  require the ring to be created by this function
+          or in a similar manner.
+  SeeAlso
+      spohnIdeal
+      konstanzMatrix
+      ciIdeal
+      spohnCI
+///
+
+-----------------------------------------
+-- Documentation probabilitySumIdeal --
+-----------------------------------------
+
+doc ///
+  Key
+      probabilitySumIdeal
+      (probabilitySumIdeal, Ring)
+  Headline
+      Ideal enforcing that a probability distribution sums to 1
+  Usage
+      probabilitySumIdeal R
+  Inputs
+      R:Ring
+          a ring from @TO probabilityRing@
+  Outputs
+      :Ideal
+          the ideal generated by the sum of all probabilities minus 1
+  Description
+      Text
+          Constructs the ideal expressing normalization of a joint probability distribution.
+          If given a list, it first calls @TO probabilityRing@ with default options.
+      Example
+          R = probabilityRing {2,3,4};
+          probabilitySumIdeal R
+  SeeAlso
+      probabilityRing
+      spohnIdeal
+      spohnCI
 ///
 
 ------------------------------
@@ -1697,7 +1732,6 @@ doc ///
 doc ///
   Key
     konstanzMatrix
-    
   Headline
     constructs the Konstanz matrix of a given game
   Usage
@@ -1755,38 +1789,38 @@ doc ///
 --------------------------------
 
 doc ///
- Key
-  toMarkovRing
-  (toMarkovRing, Ring)
- Headline
-  ring of joint probability distributions created with the markovRing function from the GraphicalModels package
- Usage
-  toMarkovRing R
- Inputs
-  R:PolynomialRing
-   created using the probabilityRing method
- Outputs
-  :PolynomialRing
-   a polynomial ring isomorphic to the input ring created by the markovRing method from the GraphicalModels package,
-   with variables $q_{(i_1+1, \dots , i_k+1)}$ corresponding to the variables $p_{\{i_1, \ldots, i_k\}}$
-   of the input ring
- Description
-  Text
-   Given a ring created with the probabilityRing function, this function creates the canonically isomorphic ring
-   defined by the markovRing function from the GraphicalModels package.
-   The variable name of the output ring is set to be different from the variable name of the input ring:
-   the default variable name of the output ring is "p",
-   and if the variable name of the input ring is "p" then the variable name of the output ring becomes "q".  
+  Key
+   toMarkovRing
+   (toMarkovRing, Ring)
+  Headline
+   ring of joint probability distributions created with the markovRing function from the GraphicalModels package
+  Usage
+   toMarkovRing R
+  Inputs
+   R:PolynomialRing
+    created using the probabilityRing method
+  Outputs
+   :PolynomialRing
+    a polynomial ring isomorphic to the input ring created by the markovRing method from the GraphicalModels package,
+    with variables $q_{(i_1+1, \dots , i_k+1)}$ corresponding to the variables $p_{\{i_1, \ldots, i_k\}}$
+    of the input ring
+  Description
+   Text
+    Given a ring created with the probabilityRing function, this function creates the canonically isomorphic ring
+    defined by the markovRing function from the GraphicalModels package.
+    The variable name of the output ring is set to be different from the variable name of the input ring:
+    the default variable name of the output ring is "p",
+    and if the variable name of the input ring is "p" then the variable name of the output ring becomes "q".   
 
-  Example
-   R = probabilityRing({2,3,4}, CoefficientRing => ZZ/32003, ProbabilityVariableName => "x")
-   markovR = toMarkovRing R
-   numgens markovR
-   R_0, R_11, R_23
+   Example
+    R = probabilityRing({2,3,4}, CoefficientRing => ZZ/32003, ProbabilityVariableName => "x")
+    markovR = toMarkovRing R
+    numgens markovR
+    R_0, R_11, R_23 
 
- SeeAlso
-  probabilityRing
-  gaussianRing
+  SeeAlso
+   probabilityRing
+   gaussianRing
 ///
 
 -----------------------------------
@@ -1794,37 +1828,37 @@ doc ///
 -----------------------------------
 
 doc ///
- Key
-  mapToMarkovRing
-  (mapToMarkovRing, Ring)
- Headline
-  ring isomorphism from the given probabilityRing to the corresponding markovRing
- Usage
-  mapToMarkovRing R
- Inputs
-  R:Ring
-   must be a probabilityRing
- Outputs
-  :RingMap
-   the isomorphism identifying R with toMarkovRing(R).
-   The variable $p_{\{i_1, \ldots, i_k\}}$ is sent to $q_{(i_1+1, \dots , i_k+1)}$.
+  Key
+   mapToMarkovRing
+   (mapToMarkovRing, Ring)
+  Headline
+   ring isomorphism from the given probabilityRing to the corresponding markovRing
+  Usage
+   mapToMarkovRing R
+  Inputs
+   R:Ring
+    must be a probabilityRing
+  Outputs
+   :RingMap
+    the isomorphism identifying R with toMarkovRing(R).
+    The variable $p_{\{i_1, \ldots, i_k\}}$ is sent to $q_{(i_1+1, \dots , i_k+1)}$.
   
- Description
-  Text
-   This function creates the RingMap from a given probabilityRing to its canonically isomorphic
-   markovRing.
-  Example
-   R = probabilityRing {2,3,4}
-   markovR = toMarkovRing R
-   F = mapToMarkovRing R
-   target F
-   source F
-   isInjective F
-   F.matrix  
+  Description
+   Text
+    This function creates the RingMap from a given probabilityRing to its canonically isomorphic
+    markovRing.
+   Example
+    R = probabilityRing {2,3,4}
+    markovR = toMarkovRing R
+    F = mapToMarkovRing R
+    target F
+    source F
+    isInjective F
+    F.matrix  
 
- SeeAlso
-  toMarkovRing
-  mapToProbabilityRing
+  SeeAlso
+   toMarkovRing
+   mapToProbabilityRing
 ///
 
 ----------------------------------------
@@ -1832,126 +1866,127 @@ doc ///
 ----------------------------------------
 
 doc ///
- Key
-  mapToProbabilityRing
-  (mapToProbabilityRing, Ring)
- Headline
-  ring isomorphism to the given probabilityRing from the corresponding markovRing
- Usage
-  mapToProbabilityRing R
- Inputs
-  R:Ring
-   must be a probabilityRing
- Outputs
-  :RingMap
-   the isomorphism identifying R with toMarkovRing(R).
-   The variable $q_{(i_1+1, \dots , i_k+1)}$ is sent to $p_{\{i_1, \ldots, i_k\}}$.
+  Key
+   mapToProbabilityRing
+   (mapToProbabilityRing, Ring)
+  Headline
+   ring isomorphism to the given probabilityRing from the corresponding markovRing
+  Usage
+   mapToProbabilityRing R
+  Inputs
+   R:Ring
+    must be a probabilityRing
+  Outputs
+   :RingMap
+    the isomorphism identifying R with toMarkovRing(R).
+    The variable $q_{(i_1+1, \dots , i_k+1)}$ is sent to $p_{\{i_1, \ldots, i_k\}}$.
   
- Description
-  Text
-   This function creates the RingMap to a given probabilityRing from its canonically isomorphic
-   markovRing.
-  Example
-   R = probabilityRing {2,3,4}
-   markovR = toMarkovRing R
-   F = mapToProbabilityRing R
-   target F
-   source F
-   isInjective F
-   F.matrix
+  Description
+   Text
+    This function creates the RingMap to a given probabilityRing from its canonically isomorphic
+    markovRing.
+   Example
+    R = probabilityRing {2,3,4}
+    markovR = toMarkovRing R
+    F = mapToProbabilityRing R
+    target F
+    source F
+    isInjective F
+    F.matrix
 
- SeeAlso
-  toMarkovRing
-  mapToProbabilityRing
+  SeeAlso
+   toMarkovRing
+   mapToProbabilityRing
 ///
 
 ---------------------------
 -- Documentation ciIdeal --
 ---------------------------
+
 doc ///
- Key
-  ciIdeal
-  (ciIdeal, Ring, List)
-  (ciIdeal, Ring, Graph)
-  (ciIdeal, Ring, List, List)
-  (ciIdeal, Ring, Graph, List)
- Headline
-  the ideal of a list of conditional independence statements
- Usage
-  ciIdeal (R, Stmts)
-  ciIdeal (R, G)
-  ciIdeal (R, Stmts, PlayerNames)
-  ciIdeal (R, G, PlayerNames)
- Inputs
-  R:Ring
-    must be created using probabilityRing
-  Stmts:List
-    the list of conditional independence statements 
-  G:Graph
-    the graph modelling the conditional dependencies between players
-  PlayerNames:List
-    the ordered list of players - the names of the random variables in the conditional independence
-    statements or vertices of the graph. If PlayerNames is omitted, the players
-    (or the vertices of G) are assumed to be labelled 1..n.
- Outputs
-  :Ideal
-   the ideal in R of conditional independence relations
- Description
-  Text
-   {\tt ciIdeal} computes the ideal of a list of conditional independence statements.
-   The input can be the list of conditional independence statements itself,
-   or a graph modelling the conditional dependencies between players.  
+  Key
+   ciIdeal
+   (ciIdeal, Ring, List)
+   (ciIdeal, Ring, Graph)
+   (ciIdeal, Ring, List, List)
+   (ciIdeal, Ring, Graph, List)
+  Headline
+   the ideal of a list of conditional independence statements
+  Usage
+   ciIdeal (R, Stmts)
+   ciIdeal (R, G)
+   ciIdeal (R, Stmts, PlayerNames)
+   ciIdeal (R, G, PlayerNames)
+  Inputs
+   R:Ring
+     must be created using probabilityRing
+   Stmts:List
+     the list of conditional independence statements 
+   G:Graph
+     the graph modelling the conditional dependencies between players
+   PlayerNames:List
+     the ordered list of players - the names of the random variables in the conditional independence
+     statements or vertices of the graph. If PlayerNames is omitted, the players
+     (or the vertices of G) are assumed to be labelled 1..n.
+  Outputs
+   :Ideal
+    the ideal in R of conditional independence relations
+  Description
+   Text
+    {\tt ciIdeal} computes the ideal of a list of conditional independence statements.
+    The input can be the list of conditional independence statements itself,
+    or a graph modelling the conditional dependencies between players.  
 
-   A single conditional independence statement is a list consisting of three disjoint
-   lists of indices for random variables, e.g. $\{ \{1,2\},\{4\}, \{3\} \}$
-   which represents the conditional independence statement ``$(X_1, X_2)$
-   is conditionally independent of $X_4$ given $X_3$''.
-   Given an undirected graph $G$, the conditional independence statements are produced via
-   the globalMarkov function from the GraphicalModels package. A global Markov statement
-   for $G$ is a list $\{A, B, C\}$ of three disjoint lists of vertices of $G$, where the
-   subset $C$ separates the subset $A$ from the subset $B$ in the graph $G$.   
+    A single conditional independence statement is a list consisting of three disjoint
+    lists of indices for random variables, e.g. $\{ \{1,2\},\{4\}, \{3\} \}$
+    which represents the conditional independence statement ``$(X_1, X_2)$
+    is conditionally independent of $X_4$ given $X_3$''.
+    Given an undirected graph $G$, the conditional independence statements are produced via
+    the globalMarkov function from the GraphicalModels package. A global Markov statement
+    for $G$ is a list $\{A, B, C\}$ of three disjoint lists of vertices of $G$, where the
+    subset $C$ separates the subset $A$ from the subset $B$ in the graph $G$.   
 
-   The output is an ideal of the given ring PR, which must be created using the
-   probabilityRing function. This function computes the ideal using the
-   conditionalIndependenceIdeal function from the GraphicalModels package, then
-   maps it to an ideal of PR via the mapToProbabilityRing function.
+    The output is an ideal of the given ring PR, which must be created using the
+    probabilityRing function. This function computes the ideal using the
+    conditionalIndependenceIdeal function from the GraphicalModels package, then
+    maps it to an ideal of PR via the mapToProbabilityRing function.
 
-  Example
-     FF = ZZ/32003
-     d = {2,3,2};
-     PR = probabilityRing (d, CoefficientRing => FF);
-     G = graph ({}, Singletons => {1,2,3});
-     I = ciIdeal (PR, G)
-
-  Text
-      Here is an example where the vertices of the graph need to be relabeled.
-      
-  Example  
-     FF = ZZ/32003
-     d = {2,3,2};
-     PR = probabilityRing (d, CoefficientRing => FF);
-     G = graph {{John,Matthew},{Matthew,Sarah}};
-     I = ciIdeal (PR, G, {John,Matthew,Sarah})
-     
-  Text
-      Here is an example where the conditional independence relations are given with a List.
-
-  Example
+   Example
       FF = ZZ/32003
       d = {2,3,2};
       PR = probabilityRing (d, CoefficientRing => FF);
-      G = graph {{1,2},{2,3}};
-      L = {{{1},{3},{2}}}
-      I1 = ciIdeal (PR,G)
-      I2 = ciIdeal (PR,L)
-      I1 == I2
+      G = graph ({}, Singletons => {1,2,3});
+      I = ciIdeal (PR, G)
+
+   Text
+       Here is an example where the vertices of the graph need to be relabeled.
+      
+   Example  
+      FF = ZZ/32003
+      d = {2,3,2};
+      PR = probabilityRing (d, CoefficientRing => FF);
+      G = graph {{John,Matthew},{Matthew,Sarah}};
+      I = ciIdeal (PR, G, {John,Matthew,Sarah})
+     
+   Text
+       Here is an example where the conditional independence relations are given with a List.
+
+   Example
+       FF = ZZ/32003
+       d = {2,3,2};
+       PR = probabilityRing (d, CoefficientRing => FF);
+       G = graph {{1,2},{2,3}};
+       L = {{{1},{3},{2}}}
+       I1 = ciIdeal (PR,G)
+       I2 = ciIdeal (PR,L)
+       I1 == I2
  
- SeeAlso
-    conditionalIndependenceIdeal 
-    mapToProbabilityRing
-    toMarkovRing
-    ciIdeal
-    globalMarkov
+  SeeAlso
+     conditionalIndependenceIdeal 
+     mapToProbabilityRing
+     toMarkovRing
+     ciIdeal
+     globalMarkov
 ///
 
 -----------------------------------------
@@ -2177,9 +2212,9 @@ doc ///
 ///
 
 
---******************************************--
---                 TESTS              	    --
---******************************************--
+--*************************--
+--          TESTS          --
+--*************************--
 
 -----------------------------------
 --- TEST enumerateTensorIndices ---
@@ -2317,61 +2352,63 @@ assert(vertices CE ==  matrix{
 --- TEST mixedProbabilityRing (List) ---
 ----------------------------------------
 TEST ///
-  debug needsPackage "GameTheory"
-  L = {2,3,2};
-  R1 = mixedProbabilityRing L;
-  expectedVars = {p_{0,0},p_{0,1},p_{1,0},p_{1,1},p_{1,2},p_{2,0},p_{2,1}};
-  assert(toString gens R1 === toString expectedVars);
+debug needsPackage "GameTheory"
+L = {2,3,2};
+R1 = mixedProbabilityRing L;
+expectedVars = {p_{0,0},p_{0,1},p_{1,0},p_{1,1},p_{1,2},p_{2,0},p_{2,1}};
+assert(toString gens R1 === toString expectedVars);
 ///
 
 ------------------------------------------
 --- TEST mixedProbabilityRing (Tensor) ---
 ------------------------------------------
 TEST ///
-  debug needsPackage "GameTheory"
-  T = randomTensor {2,3,2};
-  R2 = mixedProbabilityRing T;
-  -- should match the List‐case for {2,3,2}
-  assert(toString gens R2 == toString gens (mixedProbabilityRing {2,3,2}));
+debug needsPackage "GameTheory"
+T = randomTensor {2,3,2};
+R2 = mixedProbabilityRing T;
+-- should match the List‐case for {2,3,2}
+assert(toString gens R2 == toString gens (mixedProbabilityRing {2,3,2}));
 ///
 
 ---------------------------------
 --- TEST differencesFromFirst ---
 ---------------------------------
 TEST ///
-  debug needsPackage "GameTheory"
-  assert(differencesFromFirst {2,3,10,15} == {1,8,13});
+debug needsPackage "GameTheory"
+assert(differencesFromFirst {2,3,10,15} == {1,8,13});
 ///
 
 ------------------------------
 --- TEST monomialFromIndex ---
 ------------------------------
 TEST ///
-    debug needsPackage "GameTheory"
-    L = {5,5,5,5};
-    R = mixedProbabilityRing L;
-    assert(monomialFromIndex({3,2,0},0,R) == p_{1,3} * p_{2,2} * p_{3,0})
-    assert(monomialFromIndex({3,2,0},1,R) == p_{0,3} * p_{2,2} * p_{3,0})
-    assert(monomialFromIndex({3,2,0},2,R) == p_{0,3} * p_{1,2} * p_{3,0})
-    assert(monomialFromIndex({3,2,0},3,R) == p_{0,3} * p_{1,2} * p_{2,0})
-    assert(monomialFromIndex({1,3,4},3,R) == p_{0,1} * p_{1,3} * p_{2,4})
+debug needsPackage "GameTheory"
+L = {5,5,5,5};
+R = mixedProbabilityRing L;
+assert(monomialFromIndex({3,2,0},0,R) == p_{1,3} * p_{2,2} * p_{3,0})
+assert(monomialFromIndex({3,2,0},1,R) == p_{0,3} * p_{2,2} * p_{3,0})
+assert(monomialFromIndex({3,2,0},2,R) == p_{0,3} * p_{1,2} * p_{3,0})
+assert(monomialFromIndex({3,2,0},3,R) == p_{0,3} * p_{1,2} * p_{2,0})
+assert(monomialFromIndex({1,3,4},3,R) == p_{0,1} * p_{1,3} * p_{2,4})
 ///
 
 -----------------------------------
 --- TEST equilibriumPolynomials ---
 -----------------------------------
 TEST ///
-    debug needsPackage "GameTheory"
-    testIndices = enumerateTensorIndices {2,2,2};
-    T = zeroTensor {2,2,2};
-    TE = {0, 3, 4, 2, 5, 1, 0, 3};
-    scan(pairs testIndices, (j,i)->(T#i = TE#j));
-    R = nashEquilibriumRing toList(3:T);
-    polysPlayer0 = equilibriumPolynomials(T,0,R);
-    polysPlayer1 = equilibriumPolynomials(T,1,R);
-    polysPlayer2 = equilibriumPolynomials(T,2,R);
-    Targetpolys = {{5 * p_{1, 0} * p_{2, 0} - 4 * p_{1, 1} * p_{2, 0} - 2 * p_{1, 0} * p_{2, 1} + p_{1, 1} * p_{2, 1}}, {4 * p_{0, 0} * p_{2, 0} - 5 * p_{0, 1} * p_{2, 0} - p_{0, 0} * p_{2, 1} + 2 * p_{0, 1} * p_{2, 1}}, {3 * p_{0, 0} * p_{1, 0} - 4 * p_{0, 1} * p_{1, 0} - 2 * p_{0, 0} * p_{1, 1} + 3 * p_{0, 1} * p_{1, 1}}};
-    assert({polysPlayer0, polysPlayer1, polysPlayer2} == Targetpolys)
+debug needsPackage "GameTheory"
+testIndices = enumerateTensorIndices {2,2,2};
+T = zeroTensor {2,2,2};
+TE = {0, 3, 4, 2, 5, 1, 0, 3};
+scan(pairs testIndices, (j,i)->(T#i = TE#j));
+R = nashEquilibriumRing toList(3:T);
+polysPlayer0 = equilibriumPolynomials(T,0,R);
+polysPlayer1 = equilibriumPolynomials(T,1,R);
+polysPlayer2 = equilibriumPolynomials(T,2,R);
+Targetpolys = {{5 * p_{1, 0} * p_{2, 0} - 4 * p_{1, 1} * p_{2, 0} - 2 * p_{1, 0} * p_{2, 1} + p_{1, 1} * p_{2, 1}},
+    {4 * p_{0, 0} * p_{2, 0} - 5 * p_{0, 1} * p_{2, 0} - p_{0, 0} * p_{2, 1} + 2 * p_{0, 1} * p_{2, 1}},
+    {3 * p_{0, 0} * p_{1, 0} - 4 * p_{0, 1} * p_{1, 0} - 2 * p_{0, 0} * p_{1, 1} + 3 * p_{0, 1} * p_{1, 1}}};
+assert({polysPlayer0, polysPlayer1, polysPlayer2} == Targetpolys)
 ///
 
 --------------------------------
@@ -2379,88 +2416,89 @@ TEST ///
 --------------------------------
 
 TEST ///
-    tensorList = apply(3, i -> randomTensor {2,2,2});
-    R = nashEquilibriumRing tensorList;
-    L = {p_{0,0}, p_{0,1}, p_{1,0}, p_{1,1}, p_{2,0}, p_{2,1}};
-    assert(gens R == L)
+tensorList = apply(3, i -> randomTensor {2,2,2});
+R = nashEquilibriumRing tensorList;
+L = {p_{0,0}, p_{0,1}, p_{1,0}, p_{1,1}, p_{2,0}, p_{2,1}};
+assert(gens R == L)
 ///
 
 ---------------------------------
 --- TEST nashEquilibriumIdeal ---
 ---------------------------------
 TEST ///
-    tensorList = apply(3, i -> randomTensor {2,2,2});
-    R = nashEquilibriumRing tensorList;
-    I = nashEquilibriumIdeal(R, tensorList);
-    assert(isIdeal I)
+tensorList = apply(3, i -> randomTensor {2,2,2});
+R = nashEquilibriumRing tensorList;
+I = nashEquilibriumIdeal(R, tensorList);
+assert(isIdeal I)
 ///
 
 TEST ///
-    testIndices = enumerateTensorIndices {2,2,2};
-    TList = apply(3, i-> zeroTensor {2,2,2});
-    TE = {{2, 2, 0, 1, 2, 2, 1, 1}, {2, 2, 0, 2, 2, 0, 1, 2}, {1, 1, 1, 2, 0, 0, 2, 1}};
-    scan(3, k->scan(pairs testIndices, (j,i)->(TList#k#i = TE#k#j)));
-    R2 = nashEquilibriumRing TList;
-    I = nashEquilibriumIdeal(R2, TList);
-    ComputedGens = first entries gens I;
-    TargetGens = {p_{1,1} * p_{2,0}, -2 * p_{0,0} * p_{2,0} - p_{0,1} * p_{2,0} + 2 * p_{0,1} * p_{2,1}, p_{0,0} * p_{1,1} - p_{0,1} * p_{1,1}, p_{0,0} + p_{0,1} - 1, p_{1,0} + p_{1,1} - 1, p_{2,0} + p_{2,1} - 1};
-    assert(ComputedGens == TargetGens)
+testIndices = enumerateTensorIndices {2,2,2};
+TList = apply(3, i-> zeroTensor {2,2,2});
+TE = {{2, 2, 0, 1, 2, 2, 1, 1}, {2, 2, 0, 2, 2, 0, 1, 2}, {1, 1, 1, 2, 0, 0, 2, 1}};
+scan(3, k->scan(pairs testIndices, (j,i)->(TList#k#i = TE#k#j)));
+R2 = nashEquilibriumRing TList;
+I = nashEquilibriumIdeal(R2, TList);
+ComputedGens = first entries gens I;
+TargetGens = {p_{1,1} * p_{2,0}, -2 * p_{0,0} * p_{2,0} - p_{0,1} * p_{2,0} + 2 * p_{0,1} * p_{2,1},
+    p_{0,0} * p_{1,1} - p_{0,1} * p_{1,1}, p_{0,0} + p_{0,1} - 1, p_{1,0} + p_{1,1} - 1, p_{2,0} + p_{2,1} - 1};
+assert(ComputedGens == TargetGens)
 ///
 
 ------------------------------
 --- TEST directProductList ---
 ------------------------------
 TEST ///
-  debug needsPackage "GameTheory"
-  P1 = simplex 1;   -- dim=1
-  P2 = simplex 2;   -- dim=2
-  P = directProductList {P1,P2};
-  assert(dim P == 3);
+debug needsPackage "GameTheory"
+P1 = simplex 1;   -- dim=1
+P2 = simplex 2;   -- dim=2
+P = directProductList {P1,P2};
+assert(dim P == 3);
 
-  v1 = entries transpose vertices P1;
-  v2 = entries transpose vertices P2;
-  expectedVerts = flatten apply(v1, u -> apply(v2, w -> u | w));
-  assert(sort entries transpose vertices P == sort expectedVerts)
+v1 = entries transpose vertices P1;
+v2 = entries transpose vertices P2;
+expectedVerts = flatten apply(v1, u -> apply(v2, w -> u | w));
+assert(sort entries transpose vertices P == sort expectedVerts)
 ///
 
 TEST ///
-  Q = simplex 3;  -- a tetrahedron should just return that unchanged
-  assert(directProductList {Q} === Q)
+Q = simplex 3;  -- a tetrahedron should just return that unchanged
+assert(directProductList {Q} === Q)
 ///
 
 ----------------------
 --- TEST deltaList ---
 ----------------------
 TEST ///
-    DL = deltaList {2,4,5};
-    d = apply(DL, p->dim p);
-    assert(d == {7, 5, 5, 5, 4, 4, 4, 4})
-    ad = apply(DL, p->ambDim p);
-    assert(ad == toList (8 : 8))
+DL = deltaList {2,4,5};
+d = apply(DL, p->dim p);
+assert(d == {7, 5, 5, 5, 4, 4, 4, 4})
+ad = apply(DL, p->ambDim p);
+assert(ad == toList (8 : 8))
 ///
 
 TEST ///
-    DL2 = deltaList {2,2,2};
-    ComputedV = apply(DL2, p->entries vertices p);
-    TargetV = {{{0, 0, 0, 0}, {0, 1, 0, 1}, {0, 0, 1, 1}}, {{0, 1, 0, 1}, {0, 0, 0, 0}, {0, 0, 1, 1}}, {{0, 1, 0, 1}, {0, 0, 1, 1}, {0, 0, 0, 0}}};
-    assert(ComputedV == TargetV)
+DL2 = deltaList {2,2,2};
+ComputedV = apply(DL2, p->entries vertices p);
+TargetV = {{{0, 0, 0, 0}, {0, 1, 0, 1}, {0, 0, 1, 1}}, {{0, 1, 0, 1}, {0, 0, 0, 0}, {0, 0, 1, 1}}, {{0, 1, 0, 1}, {0, 0, 1, 1}, {0, 0, 0, 0}}};
+assert(ComputedV == TargetV)
 ///
 
 --singleton skipped test
 TEST ///
-  D = {1,2,3};
-  DL = deltaList D;
+D = {1,2,3};
+DL = deltaList D;
 
-  --  (1–1)+(2–1)+(3–1) = 0+1+2 = 3 polytopes
-  expectedCount = sum apply(D, i -> i-1);
-  assert(#DL == expectedCount);
+--  (1–1)+(2–1)+(3–1) = 0+1+2 = 3 polytopes
+expectedCount = sum apply(D, i -> i-1);
+assert(#DL == expectedCount);
 
-  --  one for i=1: dim = (1–1)+(3–1) = 0+2 = 2,
-  --  two for i=2: dim = (1–1)+(2–1) = 0+1 = 1.
-  assert(apply(DL, p -> dim p) == {2,1,1});
+--  one for i=1: dim = (1–1)+(3–1) = 0+2 = 2,
+--  two for i=2: dim = (1–1)+(2–1) = 0+1 = 1.
+assert(apply(DL, p -> dim p) == {2,1,1});
 
-  --  ambient dim = (1–1)+(2–1)+(3–1) = 3
-  assert(apply(DL, p -> ambDim p) == toList(3 : expectedCount));
+--  ambient dim = (1–1)+(2–1)+(3–1) = 3
+assert(apply(DL, p -> ambDim p) == toList(3 : expectedCount));
 ///
 
 ------------------------------
@@ -2468,9 +2506,9 @@ TEST ///
 ------------------------------
 
 TEST ///
-    BD = blockDerangements{2,2,2};
-    L = {{set {(2, 0)}, set {(0, 0)}, set {(1, 0)}}, {set {(1, 0)}, set {(2, 0)}, set {(0, 0)}}};
-    assert(BD == L)
+BD = blockDerangements{2,2,2};
+L = {{set {(2, 0)}, set {(0, 0)}, set {(1, 0)}}, {set {(1, 0)}, set {(2, 0)}, set {(0, 0)}}};
+assert(BD == L)
 ///
 
 -----------------------
@@ -2478,10 +2516,10 @@ TEST ///
 -----------------------
 
 TEST ///
-    mv = numberTMNE {2,2,2};
-    assert(mv == 2)
-    mv2 = numberTMNE {3,3,3};
-    assert(mv2 == 10)
+mv = numberTMNE {2,2,2};
+assert(mv == 2)
+mv2 = numberTMNE {3,3,3};
+assert(mv2 == 10)
 ///
 
 ----------------------------
@@ -2505,14 +2543,24 @@ Q#{1,1,1}=q_{1,1,1};
 assert(all for j in enumerateTensorIndices Di list Q#j === q_j)
 ///
 
+--------------------------------
+--- TEST probabilitySumIdeal ---
+--------------------------------
+
+TEST ///
+R = probabilityRing {2,2};
+I = probabilitySumIdeal R;
+assert(generators I == matrix{{R_0 + R_1 + R_2 + R_3 - 1}})
+///
+
 -----------------------
 --- TEST randomGame ---
 -----------------------
 
 TEST /// 
- Di = {2,2,3};
- X = randomGame(Di);
- assert(#X == #Di and all(#Di, i -> format(X#i) == Di))
+Di = {2,2,3};
+X = randomGame(Di);
+assert(#X == #Di and all(#Di, i -> format(X#i) == Di))
 /// 
 
 --------------------------
@@ -2520,12 +2568,12 @@ TEST ///
 --------------------------
 
 TEST /// 
- Di = {2,2,3};
- PR = probabilityRing(Di);
- X = randomGame(Di);
- M = spohnMatrices(PR,X);
- assert(length M == length Di)
- assert(all(0..#Di-1, i -> class M#i === Matrix))
+Di = {2,2,3};
+PR = probabilityRing(Di);
+X = randomGame(Di);
+M = spohnMatrices(PR,X);
+assert(length M == length Di)
+assert(all(0..#Di-1, i -> class M#i === Matrix))
 /// 
 
 -----------------------
@@ -2533,11 +2581,11 @@ TEST ///
 -----------------------
 
 TEST /// 
- Di = {2,2,3};
- PR = probabilityRing(Di);
- X = randomGame(Di);
- I = spohnIdeal(PR,X)
- assert(I == sum(spohnMatrices(PR,X), m -> minors(2, m)))
+Di = {2,2,3};
+PR = probabilityRing(Di);
+X = randomGame(Di);
+I = spohnIdeal(PR,X)
+assert(I == sum(spohnMatrices(PR,X), m -> minors(2, m)))
 /// 
 
 ---------------------------
@@ -2545,157 +2593,167 @@ TEST ///
 ---------------------------
 
 TEST /// 
- Di = {2,2,3};
- PR = probabilityRing(Di);
- X = randomGame(Di);
- K = konstanzMatrix(PR,X);
- P = vector gens PR;
- R = QQ[apply(enumerateTensorIndices Di, j -> p_j), apply(#Di, i -> k_i)];
- I = substitute(eliminate({k_0,k_1,k_2},substitute(ideal entries(K*P), R)), PR);
- assert(I == spohnIdeal(PR,X))
-/// 
+A = zeroTensor {2,2};
+B = zeroTensor {2,2};
+A#{0,0} = 3;  A#{0,1} = 0;  A#{1,0} = 0;  A#{1,1} = 2;
+B#{0,0} = 2;  B#{0,1} = 0;  B#{1,0} = 0;  B#{1,1} = 3;
+PR = probabilityRing {2,2};
+KM = konstanzMatrix(PR, {A,B});
+assert instance(KM, Matrix)
+assert(numrows KM == 4)
+assert(numcols KM == 4) 
+///
 
+TEST ///
+Di = {2,2,3};
+PR = probabilityRing(Di);
+X = randomGame(Di);
+K = konstanzMatrix(PR,X);
+P = vector gens PR;
+R = QQ[apply(enumerateTensorIndices Di, j -> p_j), apply(#Di, i -> k_i)];
+I = substitute(eliminate({k_0,k_1,k_2},substitute(ideal entries(K*P), R)), PR);
+assert(I == spohnIdeal(PR,X))
+///
 
------------------------
--- TEST toMarkovRing --
------------------------
+-------------------------
+--- TEST toMarkovRing ---
+-------------------------
 
-TEST///
-    R = probabilityRing({2,3,4}, CoefficientRing => ZZ/32003, ProbabilityVariableName => "x");
-    markovR = toMarkovRing R;
-    correctGens = {p_(1,1,1), p_(1,1,2), p_(1,1,3), p_(1,1,4), p_(1,2,1), p_(1,2,2),
-      p_(1,2,3), p_(1,2,4), p_(1,3,1), p_(1,3,2), p_(1,3,3), p_(1,3,4),
-      p_(2,1,1), p_(2,1,2), p_(2,1,3), p_(2,1,4), p_(2,2,1), p_(2,2,2),
-      p_(2,2,3), p_(2,2,4), p_(2,3,1), p_(2,3,2), p_(2,3,3), p_(2,3,4)};
-    assert(toString gens markovR === toString correctGens)
+TEST ///
+R = probabilityRing({2,3,4}, CoefficientRing => ZZ/32003, ProbabilityVariableName => "x");
+markovR = toMarkovRing R;
+correctGens = {p_(1,1,1), p_(1,1,2), p_(1,1,3), p_(1,1,4), p_(1,2,1), p_(1,2,2),
+p_(1,2,3), p_(1,2,4), p_(1,3,1), p_(1,3,2), p_(1,3,3), p_(1,3,4),
+p_(2,1,1), p_(2,1,2), p_(2,1,3), p_(2,1,4), p_(2,2,1), p_(2,2,2),
+p_(2,2,3), p_(2,2,4), p_(2,3,1), p_(2,3,2), p_(2,3,3), p_(2,3,4)};
+assert(toString gens markovR === toString correctGens)
+///
+
+----------------------------
+--- TEST mapToMarkovRing ---
+----------------------------
+
+TEST ///
+R = probabilityRing({2,3,4}, CoefficientRing => ZZ/32003, ProbabilityVariableName => "x");
+markovR = toMarkovRing R;
+F = mapToMarkovRing R;
+assert(target F === markovR)
+assert(source F === R)
+assert(isInjective F)
 ///
 
 
---------------------------
--- TEST mapToMarkovRing --
---------------------------
+---------------------------------
+--- TEST mapToProbabilityRing ---
+---------------------------------
 
-TEST///
-    R = probabilityRing({2,3,4}, CoefficientRing => ZZ/32003, ProbabilityVariableName => "x");
-    markovR = toMarkovRing R;
-    F = mapToMarkovRing R;
-    assert(target F === markovR)
-    assert(source F === R)
-    assert(isInjective F)
+TEST ///
+R = probabilityRing({2,3,4}, CoefficientRing => ZZ/32003, ProbabilityVariableName => "x");
+markovR = toMarkovRing R;
+F = mapToProbabilityRing R;
+assert(target F === R)
+assert(source F === markovR)
+assert(isInjective F)
 ///
 
+--------------------
+--- TEST ciIdeal ---
+--------------------
 
--------------------------------
--- TEST mapToProbabilityRing --
--------------------------------
-
-TEST///
-    R = probabilityRing({2,3,4}, CoefficientRing => ZZ/32003, ProbabilityVariableName => "x");
-    markovR = toMarkovRing R;
-    F = mapToProbabilityRing R;
-    assert(target F === R)
-    assert(source F === markovR)
-    assert(isInjective F)
+TEST ///
+FF = ZZ/32003;
+d = {2,2,2};
+PR = probabilityRing(d, CoefficientRing => FF);
+G1 = graph ({{1,2},{2,3},{1,3}});
+G2 = graph ({}, Singletons => {1,2,3});
+I1 = ciIdeal(PR, G1);
+I2 = ciIdeal(PR, G2);
+assert(I1_0==0)
+assert(numcols mingens I2 == 9)
 ///
 
-------------------
--- TEST ciIdeal --
-------------------
-
-TEST///
-     FF = ZZ/32003;
-     d = {2,2,2};
-     PR = probabilityRing(d, CoefficientRing => FF);
-     G1 = graph ({{1,2},{2,3},{1,3}});
-     G2 = graph ({}, Singletons => {1,2,3});
-     I1 = ciIdeal(PR, G1);
-     I2 = ciIdeal(PR, G2);
-     assert(I1_0==0)
-     assert(numcols mingens I2 == 9)
+TEST ///
+FF = ZZ/32003;
+d = {2,2,2};
+PR = probabilityRing(d, CoefficientRing => FF);
+G = graph ({{1,2},{2,3}});
+I = ciIdeal(PR, G);
+L = gens PR;
+J = ideal(-L_1*L_4+L_0*L_5,-L_3*L_6+L_2*L_7);  
+assert(I==J)
 ///
 
-TEST///
-     FF = ZZ/32003;
-     d = {2,2,2};
-     PR = probabilityRing(d, CoefficientRing => FF);
-     G = graph ({{1,2},{2,3}});
-     I = ciIdeal(PR, G);
-     L = gens PR;
-     J = ideal(-L_1*L_4+L_0*L_5,-L_3*L_6+L_2*L_7);  
-     assert(I==J)
+---------------------------------
+--- TEST intersectWithCImodel ---
+---------------------------------
+
+TEST ///
+FF = ZZ/32003
+d = {2,3,2};
+X = randomGame(d, CoefficientRing => FF);
+PR = probabilityRing(d, CoefficientRing => FF);
+G = graph ({{1,2}},Singletons => {3});
+L={{{1,2},{3},{}}};
+V = spohnIdeal(PR, X);
+I1 = intersectWithCImodel(V, L);
+I2 = intersectWithCImodel(V, G);
+assert(I1==I2)
+assert(numcols mingens I1 == 20)
 ///
 
--------------------------------
--- TEST intersectWithCImodel --
--------------------------------
-
-TEST///
-     FF = ZZ/32003
-     d = {2,3,2};
-     X = randomGame(d, CoefficientRing => FF);
-     PR = probabilityRing(d, CoefficientRing => FF);
-     G = graph ({{1,2}},Singletons => {3});
-     L={{{1,2},{3},{}}};
-     V = spohnIdeal(PR, X);
-     I1 = intersectWithCImodel(V, L);
-     I2 = intersectWithCImodel(V, G);
-     assert(I1==I2)
-     assert(numcols mingens I1 == 20)
+TEST ///
+FF = ZZ/32003
+d = {2,2,2};
+X = randomGame(d, CoefficientRing => FF);
+PR = probabilityRing(d, CoefficientRing => FF);
+G = graph ({{1,2},{2,3},{1,3}});
+V = spohnIdeal(PR, X);
+I = intersectWithCImodel(V, G);
+assert(V==I)
 ///
 
-TEST///
-     FF = ZZ/32003
-     d = {2,2,2};
-     X = randomGame(d, CoefficientRing => FF);
-     PR = probabilityRing(d, CoefficientRing => FF);
-     G = graph ({{1,2},{2,3},{1,3}});
-     V = spohnIdeal(PR, X);
-     I = intersectWithCImodel(V, G);
-     assert(V==I)
+--------------------
+--- TEST spohnCI ---
+--------------------
+
+TEST ///
+FF = ZZ/32003
+d = {2,2,2};
+X = randomGame(d, CoefficientRing => FF);
+PR = probabilityRing(d, CoefficientRing => FF);
+G = graph ({{1,2}},Singletons => {3});
+L={{{1,2},{3},{}}};
+V = spohnIdeal(PR, X);
+I1 = spohnCI(PR, X, L);
+I2 = spohnCI(PR, X, G);
+assert(I1==I2)
 ///
 
-------------------
--- TEST spohnCI --
-------------------
-
-TEST///
-     FF = ZZ/32003
-     d = {2,2,2};
-     X = randomGame(d, CoefficientRing => FF);
-     PR = probabilityRing(d, CoefficientRing => FF);
-     G = graph ({{1,2}},Singletons => {3});
-     L={{{1,2},{3},{}}};
-     V = spohnIdeal(PR, X);
-     I1 = spohnCI(PR, X, L);
-     I2 = spohnCI(PR, X, G);
-     assert(I1==I2)
+TEST ///
+FF = ZZ/32003
+d = {2,2,2};
+X = randomGame(d, CoefficientRing => FF);
+PR = probabilityRing(d, CoefficientRing => FF);
+V = spohnIdeal(PR, X);
+G = graph ({{1,2},{2,3}});
+I = spohnCI(PR, X, G);
+assert(numcols mingens I==8)
 ///
 
-TEST///
-     FF = ZZ/32003
-     d = {2,2,2};
-     X = randomGame(d, CoefficientRing => FF);
-     PR = probabilityRing(d, CoefficientRing => FF);
-     V = spohnIdeal(PR, X);
-     G = graph ({{1,2},{2,3}});
-     I = spohnCI(PR, X, G);
-     assert(numcols mingens I==8)
-///
-
-TEST///
-     FF = ZZ/32003
-     d = {2,2,2};
-     X = randomGame(d, CoefficientRing => FF);
-     PR = probabilityRing(d, CoefficientRing => FF);
-     G = graph ({{1,2},{2,3},{1,3}});
-     V = spohnIdeal(PR, X);
-     I = spohnCI(PR, X, G);
-     assert(V==I)
+TEST ///
+FF = ZZ/32003
+d = {2,2,2};
+X = randomGame(d, CoefficientRing => FF);
+PR = probabilityRing(d, CoefficientRing => FF);
+G = graph ({{1,2},{2,3},{1,3}});
+V = spohnIdeal(PR, X);
+I = spohnCI(PR, X, G);
+assert(V==I)
 ///
 end
 
 --******************************************--
---           DEVELOPMENT SECTION	      	    
+--           DEVELOPMENT SECTION	    --   	    
 --******************************************--
 
 restart
