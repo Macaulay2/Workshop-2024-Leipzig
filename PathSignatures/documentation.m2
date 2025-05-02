@@ -38,6 +38,12 @@ Node
         NCPolynomialRing
     Headline
         exported from the NCAlgebra package, used to encode tensor algebras
+Node
+    Key 
+        ambient
+        (ambient, NCPolynomialRing)
+    Headline
+        eported from the NCALgebra package.
 
 Node
     Key
@@ -754,6 +760,63 @@ Node
         The method is implemented only for tensors with constant term $0$.
     References
          @HREF {"https://doi.org/10.1017/fms.2019.3", "Varieties Of Signature Tensors (doi.org/10.1017/fms.2019.3)"}@
+
+Node
+    Key
+        signedVolume
+        (signedVolume, NCPolynomialRing)
+    Headline 
+        The signed volume form of an algebra.
+    Description
+        Text
+            The signed volume of $\mathbb{R}^d$ is the tensor $$\frac{1}{d!}\sum_{\sigma} (-1)^{\operatorname{sign}(\sigma)} e_{\sigma(1)}^{*}\otimes \dots\otimes \sigma(d)^{*}$$
+            where the sum is taken over all permutations of ${1, \dots, d}$.
+        Text
+            This method computes the signed volume tensor in the dimension corresponding to the number of generators of the given @TO NCPolynomialRing@. The output is in the same ring.
+        Example
+            R = wordAlgebra(3)
+            signedVolume(R) // wordFormat
+
+    References
+        @HREF {"https://doi.org/10.1007/978-3-031-38271-0_45", "Convex Hulls of Curves: Volumes and Signatures (doi.org/10.1007/978-3-031-38271-0_45)"}@
+
+Node
+    Key
+        tensorParametrization
+        (tensorParametrization, NCRingElement)
+        [tensorParametrization, CoefficientRing]
+    Headline
+        Constructs the polynomial map corresponding to a tensor.
+    Inputs
+        T : NCRingElement --The tensor encoding the parametrization
+        CoefficientRing => QQ --The target ring, and the coefficient ring of the domain polynomial ring
+    Outputs
+        m : RingMap -- The parametrization encoded by T
+    Usage
+        m = tenrosParametrization(f)
+    Description
+        Text
+            Takes a tensor $\mathtt{T}$, constructs a polynomial ring $\mathtt{R}$ over $\mathtt{CoefficientRing}$ with one variable for each word appearing in $\mathtt{T}$
+            and creates the map $\mathtt{m}: \mathtt{R}\rightarrow \mathtt{CoefficientRing}$ that sends each variable to the coefficient of the corresponding word in $\mathtt{T}$.  
+            For a key use example see @TO "Computing Path Varieties"@.
+        Example
+            A = wordAlgebra(2)
+            T = signedVolume(A)
+            tensorParametrization(T)
+Node
+    Key
+        (antipode, NCRingElement)
+    Headline
+        The antipode of a tensor 
+    Description
+        Text
+            Consider a free associative algebra $\mathtt{R}$ on the letters $\mathtt{1}, \dots, \mathtt{d}$. We define the {\em antipode} map $\mathtt{a}:\mathtt{R}\rightarrow \mathtt{R}$ first on a word $w:=\mathtt{i_1}\cdot\dots \cdot\mathtt{i_k}$ to be $$
+            \mathtt{a}(w) := (-1)^k \mathtt{i_k}\cdot\dots\cdot \mathtt{i_1}$$
+            and then extending it by linearity to the whole algebra.
+        Example
+            R = wordAlgebra(3)
+            f = [1,2,3]_R + 2* [3,2]_R; f//wordFormat
+            antipode(f) //wordFormat
 ///
 
 ----------------------------------
