@@ -38,6 +38,12 @@ Node
         NCPolynomialRing
     Headline
         exported from the NCAlgebra package, used to encode tensor algebras
+Node
+    Key 
+        ambient
+        (ambient, NCPolynomialRing)
+    Headline
+        eported from the NCALgebra package.
 
 Node
     Key
@@ -116,6 +122,7 @@ Node
     Key 
         tensorArray
         (tensorArray, NCRingElement)
+        (tensorArray, NCRingElement, ZZ)
         (symbol @, NCRingElement, ZZ)
     Headline
         k-th level component of a tensor.
@@ -124,9 +131,11 @@ Node
         k : ZZ --The level to extract
     Outputs
         sk : List -- The k-th level of s, as a multi-dimensional array
+        L : List -- The list of all levels of s, as multi-dimensional arrays
     Usage
         sk = tensorArray(s,k)
         sk = s@k
+        L = tensorArray(s)
     Description
         Text
             Returns the $k$-level component of a tensor as multi-dimensioal array, represented by a nested @TO List@.
@@ -137,6 +146,11 @@ Node
             A = sig(X,3)@3 -- third level signature as multi-dimensional array
             i = 0; j = 0; k = 0;
             A#i#j#k == (Lt_(i+1)*Lt_(j+1)*Lt_(k+1))@(sig(X, 3)) --The coefficient of (Lt_1)^3 in sig(X, 3)
+        Text
+            If the integer $k$ is not provided, returns a list of all non trivial levels (in nested list form).
+        Example
+            L = tensorArray(sig(X, 3))
+            L#2 == A
     SeeAlso
         (symbol @, NCRingElement, NCRingElement)
 
@@ -666,6 +680,147 @@ Node
             vol = signedVolume(R);
             A @ vol -- the signed volume of the canonical axis path in 3 dimensions.
 
+Node
+    Key
+        matrixAction
+        (symbol *, Matrix, NCRingElement)
+        (matrixAction, Matrix, NCRing, NCRing)
+        (matrixAction, Matrix, NCRingElement, NCRing)
+    Headline
+        Diagonal matrix action on a tensor. 
+    Inputs
+        M : Matrix -- A matrix acting on a tensor
+        f : NCRingElement -- The tensor to act on
+        A : NCRing -- The domain of the action
+        B : NCRing -- The codomain of the action
+    Outputs
+        F : NCRingMap -- The action A->B of M 
+        Mf : NCRingElement -- The action of M on f
+    Usage
+        Mf = M * f -- Computes the matrix action on f in a new algebra
+        F = matrixAction(M, A, B) -- Gives the map A->B corresponding to the action
+        Mf = matrixAction(M, f, B) -- Computes the matrix action on f, as an element in B
+    Description
+        Text
+            Let $\mathtt{A} := R\langle\mathtt{e_1}, \dots, \mathtt{e_a}\rangle$ be a free associative algebra on $\mathtt{a}$ letters and $\mathtt{B}:= \mathtt{R}\langle\mathtt{f_1}, \dots, \mathtt{f_b}\rangle$ be a free associative algebra on $\mathtt{b}$ letters, both with coefficient in a ring $\mathtt{R}$.
+            Let $\mathtt{M}$ be a $\mathtt{b}\times \mathtt{a}$ matrix with entries in $\mathtt{R}$. Then the matrix action of $\mathtt{M}$ from $\mathtt{A}$ to $\mathtt{B}$ is defined on the generators of $\mathtt{A}$ by $$
+            \mathtt{e_j}\mapsto \sum_{i=1}^{\mathtt{a}}\mathtt{M}_{ij}\mathtt{f_i}, \,\,\forall 0<j\leq \mathtt{a}, 
+            $$
+            and then extended by linearity to the whole of $\mathtt{A}$.
+        Text
+            For example if we consider $\mathtt{A}= \mathbb{Q}\langle \mathtt{e_1},\mathtt{e_2}, \mathtt{e_3}, \mathtt{e_4}\rangle$, $\mathtt{B}= \mathbb{Q}\langle \mathtt{f_1},\mathtt{f_2}, \mathtt{f_3}\rangle$ and the matrix $$
+            \mathtt{M} := \begin{pmatrix}
+            0 & 0 & 1 & 1\\
+            0 & 1 & 0 & 0\\
+            1 & 0 & 0 & 1
+            \end{pmatrix}$$
+            we get the map defined by $\mathtt{e_1}\mapsto \mathtt{f_3}$, $\mathtt{e_2}\mapsto \mathtt{f_2}$, $\mathtt{e_3}\mapsto \mathtt{f_1}$, $\mathtt{e_4}\mapsto \mathtt{f_1}+\mathtt{f_3}$. The action of $\mathtt{M}$ on $\mathtt{w}:=\mathtt{e_1}\mathtt{e_2}+2\mathtt{e_4}$ is $$
+            \mathtt{M*w} = \mathtt{f_3 f_2}+ 2 \mathtt{f_1}+2 \mathtt{f_3}
+            $$
+        Text
+            To get the map from $\mathtt{A}$ to $\mathtt{B}$ use @TO (matrixAction, Matrix, NCRing, NCRing)@.
+        Example
+            M = matrix {{0,0,1,1}, {0,1,0,0}, {1,0,0,1}}
+            A = wordAlgebra(4);
+            B = wordAlgebra(3);
+            F = matrixAction(M, A, B)
+        Text
+            To compute the action of $\mathtt{M}$ on a tensor $\mathtt{w}$ as an element of $\mathtt{B}$ use @TO (matrixAction, Matrix, NCRingElement, NCRing)@.
+        Example
+            w = [1,2]_A + 2* [4]_A
+            Mw = matrixAction(M, w, B)
+            F(w) == Mw
+        Text
+            To compute the action of $\mathtt{M}$ on a tensor $\mathtt{w}$ in a new algebra created automatically, use @TO (symbol *, Matrix, NCRingElement)@.
+        Example
+            M * w
+
+
+Node
+    Key
+        tensorExp
+        (tensorExp, NCRingElement,ZZ)
+    Headline
+        Compute the exponential of a tensor.
+    Description
+        Text
+            Let $T^n(\mathbb{R}^d)$ denote the tensor algebra on $\mathbb{R}^d$ truncated at $n$. $$
+            T^n(\mathbb{R}^d):= \bigoplus_{k=0}^{n} \left(\mathbb{R}^d\right)^{\otimes k}
+            $$
+            Then the tensor exponential is a map $$
+            \mathtt{tensorExp} : T^n(\mathbb{R}^d)\rightarrow T^n(\mathbb{R}^d)
+            $$
+            defined by $$
+            P\mapsto \sum_{r\geq 0} \frac{1}{r!} P^{\otimes k}
+            $$
+            Of particular interest is the image of tensors with $0$ constant term, and this method is implemented only for those.
+        Example
+            R = wordAlgebra(2);
+            P = [1,2]_R + [1]_R
+            tensorExp(P, 2)
+
+
+    Caveat
+        The method is implemented only for tensors with constant term $0$.
+    References
+         @HREF {"https://doi.org/10.1017/fms.2019.3", "Varieties Of Signature Tensors (doi.org/10.1017/fms.2019.3)"}@
+
+Node
+    Key
+        signedVolume
+        (signedVolume, NCPolynomialRing)
+    Headline 
+        The signed volume form of an algebra.
+    Description
+        Text
+            The signed volume of $\mathbb{R}^d$ is the tensor $$\frac{1}{d!}\sum_{\sigma} (-1)^{\operatorname{sign}(\sigma)} e_{\sigma(1)}^{*}\otimes \dots\otimes \sigma(d)^{*}$$
+            where the sum is taken over all permutations of ${1, \dots, d}$.
+        Text
+            This method computes the signed volume tensor in the dimension corresponding to the number of generators of the given @TO NCPolynomialRing@. The output is in the same ring.
+        Example
+            R = wordAlgebra(3)
+            signedVolume(R) // wordFormat
+
+    References
+        @HREF {"https://doi.org/10.1007/978-3-031-38271-0_45", "Convex Hulls of Curves: Volumes and Signatures (doi.org/10.1007/978-3-031-38271-0_45)"}@
+
+Node
+    Key
+        tensorParametrization
+        (tensorParametrization, NCRingElement)
+        [tensorParametrization, CoefficientRing]
+    Headline
+        Constructs the polynomial map corresponding to a tensor.
+    Inputs
+        T : NCRingElement --The tensor encoding the parametrization
+        CoefficientRing => QQ --The target ring, and the coefficient ring of the domain polynomial ring
+    Outputs
+        m : RingMap -- The parametrization encoded by T
+    Usage
+        m = tenrosParametrization(f)
+    Description
+        Text
+            Takes a tensor $\mathtt{T}$, constructs a polynomial ring $\mathtt{R}$ over $\mathtt{CoefficientRing}$ with one variable for each word appearing in $\mathtt{T}$
+            and creates the map $\mathtt{m}: \mathtt{R}\rightarrow \mathtt{CoefficientRing}$ that sends each variable to the coefficient of the corresponding word in $\mathtt{T}$.  
+            For a key use example see @TO "Computing Path Varieties"@.
+        Example
+            A = wordAlgebra(2)
+            T = signedVolume(A)
+            tensorParametrization(T)
+Node
+    Key
+        (antipode, NCRingElement)
+    Headline
+        The antipode of a tensor 
+    Description
+        Text
+            Consider a free associative algebra $\mathtt{R}$ on the letters $\mathtt{1}, \dots, \mathtt{d}$. We define the {\em antipode} map $\mathtt{a}:\mathtt{R}\rightarrow \mathtt{R}$ first on a word $w:=\mathtt{i_1}\cdot\dots \cdot\mathtt{i_k}$ to be $$
+            \mathtt{a}(w) := (-1)^k \mathtt{i_k}\cdot\dots\cdot \mathtt{i_1}$$
+            and then extending it by linearity to the whole algebra.
+        Example
+            R = wordAlgebra(3)
+            f = [1,2,3]_R + 2* [3,2]_R; f//wordFormat
+            antipode(f) //wordFormat
 ///
 
 ----------------------------------

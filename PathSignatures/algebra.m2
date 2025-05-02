@@ -24,8 +24,7 @@ Matrix * NCRingElement := (M, f) -> (
     tf := length gens ring f;
     if(m != tf) then (error("A " | toString(n) | "x" | toString(m) | " matrix can not act on a tensor over " | toString(tf) | "-dimensional space.");)
     else (
-    t := new IndexedVariableTable;
-    B := (coefficientRing ring f){local t_1..local t_n};
+    B := wordAlgebra(n, CoefficientRing => (coefficientRing ring f));
     return(matrixAction(M, f, B));)
 )
 
