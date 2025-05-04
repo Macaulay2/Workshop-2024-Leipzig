@@ -819,12 +819,13 @@ doc ///
      combinatorial models for Nash, correlated, dependency, and conditional independence equilibria. The latter three notions of
      equilibria are all generalizations of Nash equilibria. An $n$-player game in normal form is defined by $n$-tensors of format
      $d_1 \times d_2 \times \cdots \times d_n$, where $d_i$ is the number of pure strategies of player $i$.
-     The entry $\{j_1, j_2, \cdots, j_n\}$ of the $i$th (payoff) tensor for player $i$ is the payoff when player $1$ chooses
-     strategy $j_1$, player $2$ chooses strategy $j_2$, and so on. One can define a specific game or a random game, e.g., a list with random tensors.
+     The entry $\{j_1, j_2, \cdots, j_n\}$ of the $i$-th (payoff) tensor for player $i$ is the payoff when player $1$ chooses
+     strategy $j_1$, player $2$ chooses strategy $j_2$, and so on. One can define a specific game or a random game, e.g.,
+     a list with random tensors.
     Example
      -- Bach or Stravinsky game
-     A = zeroTensor {2,2}
-     B = zeroTensor {2,2}
+     A = zeroTensor {2,2};
+     B = zeroTensor {2,2};
      A#{0,0} = 3;  A#{0,1} = 0;  A#{1,0} = 0;  A#{1,1} = 2;
      B#{0,0} = 2;  B#{0,1} = 0;  B#{1,0} = 0;  B#{1,1} = 3;
      
@@ -833,27 +834,28 @@ doc ///
      randomGame {2,2,2}
     Text
      The notion of Nash equilibria is one of the central topics in game theory. 
-     @TO nashEquilibriumIdeal@ computes a square system of $d_1 + \cdots + d_n$ polynomials modeling the set of totally mixed Nash equilibria algebraically.
+     @TO nashEquilibriumIdeal@ computes a square system of $d_1 + \cdots + d_n$ polynomials that algebraically model the set of totally mixed Nash equilibria.
      In the case where the dimension of this ideal is zero (commonly referred to as a generic game), one can use the mixed volume of the Newton polytopes 
      of each polynomial in the system to obtain an upper bound on the number of totally mixed Nash equilibria. The list of these Newton polytopes is 
      provided by @TO deltaList@. The mixed volume of these polytopes equals the number of certain block derangements. The method @TO numberTMNE@ 
      is typically faster than @TO mixedVolume@ in this case.
     Example
-     NR = nashEquilibriumRing X
+     NR = nashEquilibriumRing X;
      I = nashEquilibriumIdeal(NR,X)
      dim I
      degree I
      -- For a generic game
-     D = deltaList X
+     D = deltaList {2,2,2}
      mixedVolume D
-     blockDerangements X
-     numberTMNE X
+     blockDerangements {2,2,2}
+     numberTMNE {2,2,2}
     Text
      The set of correlated equilibria of a game forms a convex polytope inside the (probability) simplex which is the standard simplex of dimension $d_1 \cdots d_n -1$.
      Thus, the variables are taken from @TO probabilityRing@. In particular, the map from @TO nashEquilibriumRing@ to @TO probabilityRing@ is the Segre embedding.
     Example
      -- A full dimensional polytope which is a triangular bipyramid
      CE1 = correlatedEquilibria {A, B}
+     dim CE1
      vertices CE1
      facets CE1
      -- The correlated equilibrium polytope for a random game
@@ -863,8 +865,8 @@ doc ///
      The algebro-geometric model of dependency equilibria is called Spohn variety. Its defining ideal is given by rank one conditions on Spohn matrices.
      One can also define Konstanz matrices which is crucial to understand the projection of dependency equilibria to the payoff region.
     Example
-      PR = probabilityRing({2,2,2});
-      X = randomGame({2,2,2});
+      PR = probabilityRing {2,2,2};
+      X = randomGame {2,2,2};
       spohnMatrices(PR,X)
       spohnIdeal(PR,X);
       konstanzMatrix(PR,X)
@@ -877,7 +879,8 @@ doc ///
       G2 = graph ({{1,2}}, Singletons => {3});
       I1 = spohnCI(PR,X,G1)
       I2 = spohnCI(PR,X,G2)
-      -- One can also consider the linear constraint coming from the probabilities
+      -- One can also add the linear constraint coming from the probabilities.
+      -- For generic games, the ideal J1 models totally mixed Nash equilibria.
       J = probabilitySumIdeal(PR)
       J1 = I1 + J
       J2 = I1 + J
@@ -904,6 +907,9 @@ doc ///
     Luca Sodomaco<@HREF"https://sites.google.com/view/luca-sodomaco/home"@>.
   Caveat
     GameTheory uses Polyhedra.m2 for the methods of correlated equilibria and GraphicalModels.m2 for the methods of conditional independence equilibria.
+    Throughout the package, we followed Macaulay2's convention of zero-based indexing. This can be seen e.g., in the methods of @TO nashEquilibriumRing@
+    and @TO probabilityRing@. In particular, for an $n$-player game, the players are labeled $0, \ldots, n-1$, and if player $i$ has $d_i$ pure strategies,
+    they are labeled $0, \ldots, d_i-1$.
 ///
 
 ------------------------------------------
@@ -955,7 +961,7 @@ doc ///
   Headline
     a mutable hash table representing a tensor
   Usage
-    T = zeroTensor(QQ, {2,3})
+    T = zeroTensor(R, d)
   Outputs
     :Tensor
       A Tensor object storing values at multi-indices.
@@ -1003,11 +1009,11 @@ doc ///
       is that indexset can only be used with a Tensor object. @TO indexset@ retrieves precomputed indices stored as metadata in a @TO Tensor@.
 
     Example
-      T = zeroTensor(QQ, {2,3,4})
+      T = zeroTensor(QQ, {2,3,4});
       indexset T
 
     Example
-      T = zeroTensor(QQ, {2})
+      T = zeroTensor(QQ, {2});
       indexset T
   SeeAlso
     zeroTensor
@@ -1025,7 +1031,7 @@ doc ///
     (zeroTensor, List)
     (zeroTensor, Ring, List)
   Headline
-    Construct a tensor with zero entries from a given ring.
+    construct a tensor with zero entries from a given ring.
   Usage
     zeroTensor format
     zeroTensor(R, format)
@@ -1048,11 +1054,11 @@ doc ///
       a custom tensor.
       
     Example
-      T = zeroTensor {2,2}
-      T#{0,0} = 1
-      T#{0,1} = 2
-      T#{1,0} = 3
-      T#{1,1} = 4
+      T = zeroTensor {2,2};
+      T#{0,0} = 1;
+      T#{0,1} = 2;
+      T#{1,0} = 3;
+      T#{1,1} = 4;
       format T
       peek T
 
@@ -1091,11 +1097,10 @@ doc ///
       tensor as well.
 
     Example
-      T = randomTensor {2,2,2}
-      T#{0,1,1}
-      format T
-      peek T
-
+      T1 = randomTensor {2,2,2};
+      T1#{0,1,1}
+      T2 = randomTensor(ZZ/101, {2,2});
+      peek T2
   SeeAlso
       zeroTensor
 /// 
@@ -1130,11 +1135,12 @@ doc ///
 
     Example
       T = zeroTensor(QQ, {2,3,2});
-      T#{{0,0,0}} = 5;
-      T#{{0,1,0}} = 6;
-      T#{{0,2,0}} = 7;
-      slice(T, {0}, {0}) -- should return {5,6,7}
+      T#{0,0,0} = 5;
+      T#{0,1,0} = 6;
+      T#{0,2,0} = 7;
+      slice(T, {0}, {0})
   SeeAlso
+    enumerateTensorIndices
     Tensor
 ///
 
@@ -1200,8 +1206,8 @@ doc ///
       This function computes a linear inequality encoding the condition for a correlated equilibrium:
       the expected utility from playing $k$ should be no less than from playing $l$.
     Example
-      R = QQ[p_{0,0}, p_{0,1}, p_{1,0}, p_{1,1}]
-      Xi = randomTensor(R, {2,2})
+      R = QQ[p_{0,0}, p_{0,1}, p_{1,0}, p_{1,1}];
+      Xi = randomTensor(QQ, {2,2});
       assemblePolynomial(R, Xi, {0,0,1})
   SeeAlso
     probabilityRing
@@ -1234,11 +1240,11 @@ doc ///
   Description
     Text
       For a given player $i$, this method computes all incentive constraint polynomials
-      $\forall k,l \in S_i$, representing deviations from strategy $k$ to $l$.
+      $\forall k,l \in [d_i]$, representing deviations from strategy $k$ to $l$.
 
     Example
-      R = QQ[p_{0,0}, p_{0,1}, p_{1,0}, p_{1,1}]
-      Xi = randomTensor(R, {2,2})
+      R = QQ[p_{0,0}, p_{0,1}, p_{1,0}, p_{1,1}];
+      Xi = randomTensor(QQ, {2,2});
       assemblePlayeriPolynomials(R, Xi, 0)
   SeeAlso
     probabilityRing
@@ -1255,17 +1261,16 @@ doc ///
     correlatedEquilibria
     (correlatedEquilibria, List)
   Headline
-    compute the correlated equilibria polytope for a game
+    compute the correlated equilibrium polytope for a game
   Usage
     correlatedEquilibria X
   Inputs
     X: List
-      A list of tensors, one for each player. Each tensor encodes the payoffs for that player.
+      A list of payoff tensors, one for each player. 
   Outputs
     :Polyhedron
       The polytope representing the set of correlated equilibria for the game.
   Description
-
     Text
       This method constructs and returns the correlated equilibrium polytope for a finite game.
       The input is a list of payoff tensors, one for each player. The tensor at position i gives the payoffs for player i.
@@ -1273,23 +1278,18 @@ doc ///
     Example
       X1 = zeroTensor(QQ, {2,2});
       X2 = zeroTensor(QQ, {2,2});
-      X0#{0,0} = -99; X0#{0,1} = 1; X0#{1,0} = 0; X0#{1,1} = 0;
-      X1#{0,0} = -99; X1#{0,1} = 0; X1#{1,0} = 1; X1#{1,1} = 0;
+      X1#{0,0} = -99; X1#{0,1} = 1; X1#{1,0} = 0; X1#{1,1} = 0;
+      X2#{0,0} = -99; X2#{0,1} = 0; X2#{1,0} = 1; X2#{1,1} = 0;
       
       CE = correlatedEquilibria {X1, X2}
       vertices CE
       facets CE
+      fVector CE
 
     Example
-      X1 = randomTensor(QQ, {2,2,3})
-      X2 = randomTensor(QQ, {2,2,3})
-      X3 = randomTensor(QQ, {2,2,3})
-      
-      CE = correlatedEquilibria {X1, X2, X3}
-      vertices CE
-      dim CE
-
-      
+      X = randomGame {2,2,3};      
+      CE = correlatedEquilibria X;
+      dim CE      
   SeeAlso
     assemblePolynomial
     assemblePlayeriPolynomials
@@ -1304,27 +1304,23 @@ doc ///
    (nashEquilibriumRing, List)
    nashEquilibriumRing
   Headline
-    make the Nash Equilibrium ring
+    define the Nash Equilibrium ring
   Usage
     nashEquilibriumRing L
   Inputs
     L:List 
-     a list of n-@TO Tensor@s with uniform dimensions
+     a list of n-@TO Tensor@s with same dimensions
   Outputs
     :Ring
-     a polynomial ring generated from the mixed probabilities
+     a polynomial ring generated by mixed strategies
   Description
    Text
-    An $n$-player game consists of players labeled with $0,1,\cdots, n-1$. The $i$-th player can choose from $d_i$ pure strategies.
-    Let $p_{i,j}$ be the probability of the $i$-th player choosing the $j$-th strategy, where $j=0,\cdots, d_j-1$.
+    Let $p_{i,j}$ be the probability of $i$-th player choosing the $j$-th strategy, where $j \in \{0, \cdots, d_j-1\}$.
     The ideal of the totally mixed Nash equilibria of the game is defined in the polynomial ring over a field $k$
-    with generators $\{p_{i,j}:0\leq i\leq n-1, 0\leq j\leq d_j-1\}$.
-    
-    This method computes this ring over $k=\mathbb{Q}$ from a list of tensors representing the payoff matrices of all the $n$ players.
-    The ring generators are ordered lexicographically.
+    with generators $\{p_{i,j} \ | \ 0\leq i\leq n-1, 0\leq j\leq d_j-1\}$. The ring generators are ordered lexicographically.
    Example
-    tensors = apply(3, i -> randomTensor {2,4,3})
-    R = nashEquilibriumRing tensors
+    tensors = randomGame {2,4,3};
+    R = nashEquilibriumRing tensors;
     baseRing R
     gens R
   SeeAlso
@@ -1350,34 +1346,22 @@ doc ///
     R:Ring 
      the Nash Equilibrium ring. Typically obtained via @TO nashEquilibriumRing@
     L:List
-     a list of n payoff tensors {T_0, T_1, ..., T_{n-1}} of all the n players
+     a list of n payoff tensors
   Outputs
     :Ideal
-      An ideal in the Nash Equilibrium ring R generated by the Nash equilibrium polynomials,
-      along with the linear relations of those probabilities variables, that the probabilities of each players sum to 1
+      an ideal in the Nash Equilibrium ring R generated by the Nash equilibrium polynomials, along with the linear relations of the probability variables
   Description
    Text
-    For an $n$-player game, the totally mixed Nash equilibria are the zero loci in the interior of the polytope of a system of polynomials
-    in the variables $\{p_{i,j}:0\leq i\leq n-1, 0\leq j\leq d_j-1\}$. The coefficients of these polynomials are differences of the entries
-    of the payoff matrices. From an algebraic-geometric point of view, these polynomials, together with the linear constraints that
-    $\sum_j p_{i,j}=1$ for each $i$, generate an ideal in the polynomial ring computed by @TO nashEquilibriumRing@.
-
-    This method computes this Nash equilibrium ideal by generating the polynomials from the payoff matrices first, and appending the
-    linear relations that the sum of probabilities for each player is one.
+    For an $n$-player game, the totally mixed Nash equilibria are the zero loci of a system of polynomials in the interior of product of probability simplices.
+    The coefficients of these polynomials are certain differences of the entries of the payoff tensors. These polynomials, together with the linear constraints
+    $\sum^{d_i -1}_{j=0} p_{i,j}=1$ for each player $i$, generate an ideal in the polynomial ring computed by @TO nashEquilibriumRing@.
    Example
-    tensors = apply(3, i -> randomTensor {2,2,2})
-    R = nashEquilibriumRing tensors
-    gens R
+    tensors = randomGame {2,2,2};
+    R = nashEquilibriumRing tensors;
     I = nashEquilibriumIdeal(R, tensors)
    Text
-    Here the embient ring $R$ is explicitly computed before finding the ideal $I$.
-    Alternatively, one can assign both the ring and the ideal to variables in the same line:
-   Example
-    I2 = nashEquilibriumIdeal(R2 = nashEquilibriumRing tensors, tensors)
-    gens R2
-   Text
     An introduction together with the relevant definitions is given in Chapter 6, Sturmfels, Bernd, @EM "Solving Systems of Polynomial Equations"@. American Mathematical Society,
-    2002. ISBN 978-0-8218-3251-6 and in Abo, Hirotachi, Portakal, Irem, and Sodomaco, Luca, @EM "A vector bundle approach to Nash equilibria"@, arXiv504.03456.
+    2002 and in Abo, Hirotachi, Portakal, Irem, and Sodomaco, Luca, @EM "A vector bundle approach to Nash equilibria"@, arXiv:2504.03456.
   SeeAlso
    nashEquilibriumRing
    deltaList
@@ -1394,27 +1378,27 @@ doc ///
    (deltaList, List)
    deltaList
   Headline
-    generates a list of delta polytopes for a game
+    generate the list of Newton polytopes for a generic game
   Usage
     deltaList d
   Inputs
     d:List
-     A list of positive integers, representing the numbers of pure strategies of the players
+     a list of positive integers, representing the format of the game
   Outputs
     :List
-     A list of polytopes formed by taking the direct product of certain convex sets and simplices
+     a list of polytopes formed by taking the product of certain convex sets and simplices
   Description
    Text
-    For an $n$-player game where the $i$-th player has $d_i$ pure strategies, the maximum number of
+    For a generic $n$-player game where the $i$-th player has $d_i$ pure strategies, the maximum number of
     isolated totally mixed Nash equilibria is given by the mixed volume of the following list of polytopes:
 
-    \[ (\Delta^{(0)}, \cdots, \Delta^{(0)},\Delta^{(1)}, \cdots, \Delta^{(1)}, \cdots, \Delta^{(n-1)}, \cdots, \Delta^{(n-1)}),\]
+    \[ (\Delta^{(1)}, \cdots, \Delta^{(1)},\Delta^{(2)}, \cdots, \Delta^{(2)}, \cdots, \Delta^{(n)}, \cdots, \Delta^{(n)}),\]
 
-    where each $\Delta^{(i)}$ repeats itself $d_i - 1$ times, and is the direct product of simplices
+    where each $\Delta^{(i)}$ repeats itself $d_i - 1$ times, and is the product of simplices
 
-    \[ \Delta^{(i)} := \Delta_{d_1-1}\times \Delta_{d_2-1} \times \cdots \Delta_{d_{i-2}-1} \times \{0\} \times \Delta_{d_{i}-1} \times \cdots \times \Delta_{d_{i-1}-1}.\]
+    \[ \Delta^{(i)} := \Delta_{d_{1}-1}\times \Delta_{d_{2}-1} \times \cdots \times \Delta_{d_{i-1}-1} \times \{0\} \times \Delta_{d_{i+1}-1} \times \cdots \times \Delta_{d_{n}-1}.\]
 
-    This function constructs and returns this list of polytopes. Each $\Delta^{(i)}$ is a polytope in an ambient vector space of dimension $d_0+d_1+\cdots+d_{n-1}-n$.
+    This function constructs and returns this list of polytopes. Each $\Delta^{(i)}$ is a polytope in an ambient vector space of dimension $d_1+d_2+\cdots+d_{n}-n$.
    Example
     DL = deltaList {2,2,2}
    Text
@@ -1436,15 +1420,15 @@ doc ///
    (numberTMNE, List)
    numberTMNE
   Headline
-    compute the maximum number of totally mixed Nash equilibria
+    compute the maximum number of totally mixed Nash equilibria for a generic game
   Usage
     numberTMNE d
   Inputs
     d:List
-     a list of integers representing the dimensions of the game
+     a list of integers representing the format of the game
   Outputs
     :ZZ
-     an integer value, the degree of the top Chern class of a vector bundle on a product of projective spaces, representing the maximum number of totally mixed Nash equilibria of a game of format $\mathbf{d}$.
+     an integer value, the degree of the top Chern class of a vector bundle on a product of projective spaces, representing the maximum number of totally mixed Nash equilibria of a generic game of format $\mathbf{d}$.
   Description
    Text
     For an $n$-player game where the $i$-th player has $d_i$ pure strategies, the maximum number of isolated totally mixed Nash equilibria is given
@@ -1452,10 +1436,10 @@ doc ///
 
     \[ E \coloneqq \bigoplus_{i=0}^{n-1} \ko_{\mathbb{P}^{\mathbf{d}}}({\mathbf{1}}_i)^{\oplus(d_i-1)},\]
 
-    where $\mathbb{P}^{\mathbf{d}}=\prod_{i=0}^{n-1}\mathbb{P}^{d_i-1}$ and $\mathbf{1}_i=(1,\ldots,1,0,1,\ldots,1)$, where the entry $0$ is in the $i$th component.
+    where $\mathbb{P}^{\mathbf{d}}=\prod_{i=0}^{n-1}\mathbb{P}^{d_i-1}$ and $\mathbf{1}_i=(1,\ldots,1,0,1,\ldots,1)$, where the entry $0$ is in the $i$-th component.
     In particular, this function computes the integer $c(\mathbf{d})$ as the coefficient of the monomial
     $\prod_{i=0}^{n-1} h_i^{d_i-1}$ in $\prod_{i=0}^{n-1} \hat{h}_i^{d_i-1}$ with $\hat{h}_i\coloneqq \sum_{j\neq i}h_j$,
-    where $h_i$ denotes the pullback of the hyperplane class on the $i$th factor $\mathbb{P}^{d_i-1}$ of $\PP^\bd$ via the projection map.
+    where $h_i$ denotes the pullback of the hyperplane class on the $i$-th factor $\mathbb{P}^{d_i-1}$ of $\PP^\bd$ via the projection map.
 
    Example
     d = {2,2,2};
@@ -1478,30 +1462,33 @@ doc ///
    (blockDerangements, List)
    blockDerangements
   Headline
-    compute the number of block derangements
+    compute the block derangements
   Usage
     blockDerangements D
   Inputs
     D:List
-     a list of integers representing the number of elements in each block, plus one
+     a list of integers representing the format of the game
   Outputs
     :List
      a list of block derangements with respect to D.
   Description
    Text
-    Given a partition $\{F_0,\ldots,F_{n-1}\}$ of a finite set $F$, a block derangement of $F$ with respect to $\{F_1,\ldots,F_n\}$ is a permutation $P\colon F\to F$ of $F$ such that $P(F_i)\cap F_i=\emptyset$ for every $i\in\{0,\ldots,n-1\}$.
+    Given a partition $\{F_0,\ldots,F_{n-1}\}$ of a finite set $F$, a block derangement of $F$ with respect to $\{F_0,\ldots,F_{n-1}\}$ is
+    a permutation $P\colon F\to F$ of $F$ such that $P(F_i)\cap F_i=\emptyset$ for every $i\in\{0,\ldots,n-1\}$.
 
-    The function considers the input $D=(d_0,\ldots,d_{n-1})$, defines the set $F=F_0\cup\cdots\cup F_{n-1}$, where $F_i=\{(i,j)\mid j\in\{0,\ldots,d_i-2\}\}$ for every $i\in\{0,\ldots,n-1\}$, and computes the set of permutations of F.
+    The function considers the input $D=(d_0,\ldots,d_{n-1})$, defines the set $F=F_0\cup\cdots\cup F_{n-1}$, where $F_i=\{(i,j)\mid j\in\{0,\ldots,d_i-2\}\}$
+    for every $i\in\{0,\ldots,n-1\}$, and computes the set of permutations of F.
     Then, it creates an empty list BD, and for each permutation $P$, if $P(F_i)\cap F_i=\emptyset$ for every $i\in\{0,\ldots,n-1\}$, then $P$ is added to the list BD.
     The function returns the list BD.
     
-    The number of elements of BD corresponds to the maximum number of totally mixed Nash equilibria of an $n$-player game where the $i$-th player has $d_i$ pure strategies.
+    The number of elements of BD corresponds to the maximum number of totally mixed Nash equilibria of a generic game of a given format.
    
    Example
     D = {3,3,3};
     BD = blockDerangements D;
     netList BD
   SeeAlso
+    deltaList
     numberTMNE
 ///
 
@@ -1514,15 +1501,12 @@ doc ///
       probabilityRing
       (probabilityRing, List)
   Headline
-      Ring of probability distributions of a game indexed by ordered multi-indices
+      ring of probability distributions of a game indexed by ordered multi-indices
   Usage
       probabilityRing(Di)
   Inputs
       Di:List
          a list of natural numbers $d_0,\dots,d_{n-1}$
-  -- Optional inputs
-  --     CoefficientRing => ..., default value QQ, optional input to choose the base field
-  --     ProbabilityVariableName => ..., default value "p", symbol used for the tensor of probability variables
   Outputs
       :Ring  
        a polynomial ring with a tensor of variables $p_{i_0,\dots,i_{n-1}}$
@@ -1530,31 +1514,26 @@ doc ///
   Description
       Text
           The list $Di$ represents the format of the game.
-          In this example we create a ring of probability distributions coming from a
-          game with format {2, 3, 2}. This format can be accessed from the ring through
+          In this example, we create a ring of probability distributions coming from a
+          game of format {2, 3, 2}. This format can be accessed from the ring through
           the field "gameFormat".
           
           The variables $p#i$ are the entries of the tensor $p$, which can be
           accessed from the ring through the field "probabilityVariable".
-
       Example
-          Di = {2,1,2};
+          Di = {2,3,2};
           PR = probabilityRing Di;
           numgens PR
-          pairs PR#"probabilityVariable"
-    
+          pairs PR#"probabilityVariable"  
       Text 
           The optional argument "CoefficientRing" allows to change the base field. If no choice is
           specified, the base field is set to QQ. It is also possible to change the name of the
           variable tensor through the optional argument "ProbabilityVariableName", which is set to
           the string "p" by default.
-
       Example
-          PR2 = probabilityRing (Di, Coefficients=>RR, ProbabilityVariableName=>q);
+          PR2 = probabilityRing (Di, CoefficientRing=>RR, ProbabilityVariableName=>"q");
           coefficientRing PR2
           pairs PR2#"probabilityVariable"
-    
-      -- Figure out all of the functions which require a probabilityRing
       Text
           Some functions such as @TO spohnIdeal@, @TO konstanzMatrix@, @TO ciIdeal@ or @TO spohnCI@  require the ring to be created by this function
           or in a similar manner.
@@ -1574,12 +1553,12 @@ doc ///
       probabilitySumIdeal
       (probabilitySumIdeal, Ring)
   Headline
-      Ideal enforcing that a probability distribution sums to 1
+      ideal enforcing that a probability distribution sums to 1
   Usage
       probabilitySumIdeal R
   Inputs
       R:Ring
-          a ring from @TO probabilityRing@
+          a ring typically from @TO probabilityRing@
   Outputs
       :Ideal
           the ideal generated by the sum of all probabilities minus 1
@@ -1602,43 +1581,36 @@ doc ///
 
 doc ///
   Key
-    randomGame
-    
+    randomGame 
   Headline
-    constructs game of a given format with arbitrary payoffs
+    construct a game of a given format with arbitrary payoffs
   Usage
     randomGame(Di)
   Inputs
     Di:List 
-      with positive integer entries $d_1,\dots ,d_n$ describing the format of the game
-  --Optional inputs
-  --  CoefficientRing => ..., default value QQ, optional input to choose another ring of coefficients
+      a list describing the format of the game
   Outputs
     :List  
-      a list of n tensors of format $d_1 \times \dots \times d_n$ that are the payoff tensors of a random game
+      a list of n tensors of the given format that are the payoff tensors of a random game
   Description
     Text 
-      The list $Di = \{d_1,\dots ,d_n \}$ represents the format of the game. 
+      The list $Di$ represents the format of the game. 
       This example creates a random game of format $2 \times 2$.
       
     Example
-      X = randomGame({2,2})
+      X = randomGame({2,2});
+      peek X#0
       peek X#1
-      peek X#2
-
     Text
       The optional argument CoefficientRing allows to change the ring of payoffs. 
       If no coefficient choice is specified, the payoffs will be rational numbers.
       This example creates a random game of format $2 \times 2$ with integer coefficients.
-
     Example
-      X = randomGame({2,2}, CoefficientRing => ZZ)
+      X = randomGame({2,2}, CoefficientRing => ZZ);
+      peek X#0
       peek X#1
-      peek X#2
-
     Text
      Outputs of this function can be used as input for the functions @TO nashEquilibriumIdeal@, @TO spohnMatrices@, @TO spohnIdeal@ and @TO konstanzMatrix@. 
-
   SeeAlso
     nashEquilibriumIdeal
     spohnMatrices
@@ -1652,32 +1624,31 @@ doc ///
 
 doc ///
   Key
-    spohnMatrices
-    
+    spohnMatrices   
   Headline
     compute the list of Spohn matrices of a given game
   Usage
     spohnMatrices(PR,X)
   Inputs
      PR:Ring 
-      a probability ring obtained via probabilityRing(Di), where $Di = \{ d_1, \ldots, d_n \}$ is the format of the game
+      a probability ring obtained via probabilityRing(Di), where $Di$ is the format of the game
      X:List 
-      a list of n tensors of format $d_1 \times \ldots \times d_n$ specifying the payoffs of the game
+      a list of n tensors of format $D_i$ describing the payoffs of the game
   Outputs
     :List  
-      the list of Spohn matrices $(M_1, \ldots , M_n)$ describing the dependency equilibria of the game $X$
+      the list of n Spohn matrices describing the dependency equilibria of the game $X$
   Description
     Text 
-      The list $Di = \{d_1,\dots ,d_n \}$ represents the format of the game. It is crucial that the formats in PR and X match up.
-      For $i=1,\ldots, n$ the Spohn matrix $M_i$ is the $d_i \times 2$ matrix describing the expected payoff of the $i$-th player.
-      The Spohn matrices $M_1,\ldots , M_n$ have rank one at the dependency equilibria of the game $X$.
+      It is crucial that the formats in PR and X match up.
+      The Spohn matrix $M_i$ is the $d_i \times 2$ matrix encoding the denominators and nominators
+      of the conditional expected payoffs of the $i$-th player.
+      The Spohn matrices have rank one at the dependency equilibria of the game $X$.
       
     Example
-      Di = {2,2,3}
-      PR = probabilityRing(Di)
-      X = randomGame(Di)
+      Di = {2,2,3};
+      PR = probabilityRing(Di);
+      X = randomGame(Di);
       M = spohnMatrices(PR,X)
-
   SeeAlso
     probabilityRing
     randomGame
@@ -1692,32 +1663,29 @@ doc ///
 doc ///
   Key
     spohnIdeal
-    
   Headline
     compute the ideal of the Spohn variety of a given game
   Usage
     spohnIdeal(PR,X)
   Inputs
      PR:Ring 
-      a probability ring obtained via probabilityRing(Di), where $Di = \{ d_1, \ldots, d-n \}$ is the format of the game
+      a probability ring obtained via probabilityRing(Di), where $Di$ is the format of the game
      X:List 
-      a list of n tensors of format $d_1 \times \ldots \times d_n$ specifying the payoffs of the game
+      a list of n tensors of format $D_i$ describing the payoffs of the game
   Outputs
     :List  
       the ideal generated by the $2\times 2$ minors of the Spohn matrices of the game $X$
   Description
     Text 
-      The list $Di = \{d_1,\dots ,d_n \}$ represents the format of the game. It is crucial that the formats in PR and X match up.
+      It is crucial that the formats in PR and X match up.
       The Spohn ideal $I_X$ is the ideal defining the Spohn variety of a game $X$, which contains the dependency equilibria of the game $X$.
       Its generators are given by the $2\times 2$ minors of the Spohn matrices.
-      This function uses the function spohnMatrices to compute the Spohn matrices of the given game.
-      
+      This function uses the function spohnMatrices to compute the Spohn matrices of the given game.     
     Example
-      Di = {2,2,3}
-      PR = probabilityRing(Di)
-      X = randomGame(Di)
+      Di = {2,2,3};
+      PR = probabilityRing(Di);
+      X = randomGame(Di);
       I = spohnIdeal(PR,X)
-
   SeeAlso
     probabilityRing
     randomGame
@@ -1733,48 +1701,34 @@ doc ///
   Key
     konstanzMatrix
   Headline
-    constructs the Konstanz matrix of a given game
+    construct the Konstanz matrix of a given game
   Usage
     konstanzMatrix(PR, X)
   Inputs
     PR:Ring 
-      a probability ring obtained via probabilityRing(Di), where $Di = \{ d_1, \ldots, d-n \}$ is the format of the game
+      a probability ring obtained via probabilityRing(Di), where $Di = \{d_1 , \cdots , d_n\}$ is the format of the game
     X:List 
-      a list of n tensors of format $d_1 \times \ldots \times d_n$ specifying the payoffs of the game
-  --Optional inputs
-  --  KonstanzVariableName => ..., default value k, optional input to choose another variable name
+      a list of n tensors of format $D_i$ describing the payoffs of the game
   Outputs
     :Matrix  
-      the $(d_1 + \ldots + d_n) \times (d-1 \cdots d_n)$-dimensional Konstanz matrix 
+      the $(d_1 + \ldots + d_n) \times (d-1 \cdots d_n)$-dimensional Konstanz matrix  
   Description
     Text 
-      The list $Di = \{d_1,\dots ,d_n \}$ represents the format of the game. It is crucial that the formats in PR and X match up.
-      The Konstanz matrix $K_X(k)$ is the unique matrix with monic polynomials as entries such that the Spohn variety is the union $\bigcup_{k \in (\mathbb P^1)^n} \ker K_X(k)$.
-      
+      It is crucial that the formats in PR and X match up.
+      The Konstanz matrix $K_X(k)$ is the unique matrix with monic polynomials as entries such that the Spohn variety is
+      the union $\bigcup_{k \in (\mathbb P^1)^n} \ker K_X(k)$.   
     Example
       Di = {2,2,3};
       PR = probabilityRing(Di);
       X = randomGame(Di);
       K = konstanzMatrix(PR,X)
-
-    Text
-     Indeed, then we can obtain the Spohn variety from the Konstanz matrix as described above.
-
-    Example
-      P = vector gens PR;
-      R = QQ[apply(enumerateTensorIndices Di, j -> p_j), apply(#Di, i -> k_i)];
-      I = substitute(eliminate({k_0,k_1,k_2},substitute(ideal entries(K*P), R)), PR);
-      I == spohnIdeal(PR,X)
-
     Text
       The optional argument KonstanzVariableName allows to change the name of the variables. 
-      If no variable name choice is specified, the variables will be named with k.
-      
+      If no variable name choice is specified, the variables will be named with k.    
     Example
       Di = {2,2};
       PR = probabilityRing(Di);
       X = randomGame(Di);
-
       K = konstanzMatrix(PR,X, KonstanzVariableName => "z")
 
   SeeAlso
@@ -1814,7 +1768,7 @@ doc ///
 
    Example
     R = probabilityRing({2,3,4}, CoefficientRing => ZZ/32003, ProbabilityVariableName => "x")
-    markovR = toMarkovRing R
+    markovR = toMarkovRing R;
     numgens markovR
     R_0, R_11, R_23 
 
@@ -1848,8 +1802,8 @@ doc ///
     This function creates the RingMap from a given probabilityRing to its canonically isomorphic
     markovRing.
    Example
-    R = probabilityRing {2,3,4}
-    markovR = toMarkovRing R
+    R = probabilityRing {2,3,4};
+    markovR = toMarkovRing R;
     F = mapToMarkovRing R
     target F
     source F
@@ -1886,8 +1840,8 @@ doc ///
     This function creates the RingMap to a given probabilityRing from its canonically isomorphic
     markovRing.
    Example
-    R = probabilityRing {2,3,4}
-    markovR = toMarkovRing R
+    R = probabilityRing {2,3,4};
+    markovR = toMarkovRing R;
     F = mapToProbabilityRing R
     target F
     source F
@@ -1935,7 +1889,9 @@ doc ///
    Text
     {\tt ciIdeal} computes the ideal of a list of conditional independence statements.
     The input can be the list of conditional independence statements itself,
-    or a graph modelling the conditional dependencies between players.  
+    or a graph modelling the conditional dependencies between players.
+    This method is the same as @TO conditionalIndependenceIdeal@ from GameTheory.m2,
+    included here for convenience and compatibility with this package.   
 
     A single conditional independence statement is a list consisting of three disjoint
     lists of indices for random variables, e.g. $\{ \{1,2\},\{4\}, \{3\} \}$
@@ -1948,7 +1904,7 @@ doc ///
 
     The output is an ideal of the given ring PR, which must be created using the
     probabilityRing function. This function computes the ideal using the
-    conditionalIndependenceIdeal function from the GraphicalModels package, then
+    @TO conditionalIndependenceIdeal@ function from the GraphicalModels package, then
     maps it to an ideal of PR via the mapToProbabilityRing function.
 
    Example
@@ -2001,7 +1957,7 @@ doc ///
     (intersectWithCImodel, Ideal, Graph)
     (intersectWithCImodel, Ideal, Graph, List) 
   Headline
-    The ideal of the intersection of a given variety with the conditional independence model
+    ideal of the intersection of a given variety with the conditional independence model
   Usage
     intersectWithCImodel(V, Stmts)
     intersectWithCImodel(V, Stmts, PlayerNames)
@@ -2009,7 +1965,7 @@ doc ///
     intersectWithCImodel(V, G, PlayerNames)
   Inputs
     V:Ideal 
-      An ideal of a ring created with probabilityRing 
+      an ideal of a ring created with probabilityRing 
     Stmts:List
       the list of conditional independence statements 
     G:Graph
@@ -2115,7 +2071,7 @@ doc ///
     (spohnCI, Ring, List, List)
     (spohnCI, Ring, List, List, List) 
   Headline
-    The ideal of the Spohn conditional independence (CI) variety
+    ideal of the Spohn conditional independence (CI) variety
   Usage
     spohnCI(PR, X, G)
     spohnCI(PR, X, G, PlayerNames)
@@ -2123,13 +2079,13 @@ doc ///
     spohnCI(PR, X, Stmts, PlayerNames)
   Inputs
     PR:Ring 
-      The probability ring (must be created with {\tt probabilityRing})
+      the probability ring (must be created with @TO probabilityRing@)
     X:List 
-      The game tensor
+      the n tensors defining the game 
     G:Graph
-      The graph specifying the conditional independence conditions
+      the graph specifying the conditional independence conditions
     Stmts:List
-      A list of lists {L1,L2,L3} corresponding to the relation "L1 and L2 are conditionally independent given L3".    
+      a list of lists {L1,L2,L3} corresponding to the relation "L1 and L2 are conditionally independent given L3".    
     PlayerNames:List
       the ordered list of players - the names of the random variables in the conditional independence
       statements or vertices of the graph. If PlayerNames is omitted, the players
@@ -2602,17 +2558,6 @@ KM = konstanzMatrix(PR, {A,B});
 assert instance(KM, Matrix)
 assert(numrows KM == 4)
 assert(numcols KM == 4) 
-///
-
-TEST ///
-Di = {2,2,3};
-PR = probabilityRing(Di);
-X = randomGame(Di);
-K = konstanzMatrix(PR,X);
-P = vector gens PR;
-R = QQ[apply(enumerateTensorIndices Di, j -> p_j), apply(#Di, i -> k_i)];
-I = substitute(eliminate({k_0,k_1,k_2},substitute(ideal entries(K*P), R)), PR);
-assert(I == spohnIdeal(PR,X))
 ///
 
 -------------------------
