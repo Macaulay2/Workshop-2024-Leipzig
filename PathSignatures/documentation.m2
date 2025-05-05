@@ -1137,3 +1137,39 @@ Node
 
 
 ///
+
+TEST ///
+d = 4;
+R = QQ[t];
+X = polyPath(for i from 1 to d list t^i) -- the moment path in dimension d
+A = wordAlgebra(d) -- create the free associative algebra over d letters
+w = (new Array from (1..d))_A -- the word 1..d
+assert(sig(X, w) == 2/15)
+assert(sig(X, [1]_A) == 1)
+assert(sig(X,[2,3]_A) == 3/5)
+
+T = 1 + sig(X, 1, A) + sig(X, 2, A);
+S = T * T;
+Ma = matrix (S@2) -- the second component of S as a matrix
+Y = X ** X -- X concatenated with itself
+Mb = matrix (sig(Y, 2, A)@2) -- the signature matrix of Y
+assert(Ma == Mb)
+///
+
+TEST ///
+M = id_(QQ^3); -- identity matrix
+CAxisPath = pwLinPath(M) -- the canonical axis path in dimension d
+Cd2 = sig(CAxisPath, 2)
+R = wordAlgebra(3);
+Cd = CAxisTensor(2, R);
+assert ( Cd // wordString == Cd2 // wordString)
+///
+
+TEST ///
+R = wordAlgebra(3);
+Cd = CMonTensor(2, R);
+R=QQ[t];
+CMonPath = polyPath(for i from 1 to 3 list t^i) -- The canonical axis path in dimension d
+Cd2 = sig(CMonPath, 2);
+assert (Cd //wordString == Cd2 //wordString)
+///
