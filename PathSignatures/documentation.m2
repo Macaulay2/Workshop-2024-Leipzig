@@ -168,8 +168,8 @@ assert(f === product gens R)
 
 TEST ///
 R = wordAlgebra(2);
-f = ([1,2]_R ** [1,2]_R)
-assert (f == 2 * Lt_1 * Lt_2 * Lt_1 * Lt_2  +  4 * Lt_1 * Lt_1 * Lt_2 * Lt_2)   
+f = ([1,2]_R  +  2 * [2,1]_R)
+assert (f == Lt_1 * Lt_2  +  2 * Lt_2 * Lt_1)   
 ///
 
 TEST ///
@@ -184,12 +184,12 @@ X = polyPath({t,t^2});
 assert(sig(X,2)@2 == {{1/2, 2/3} , {1/3, 1/2}})
 assert(sig(X,3)@3 == {{{1/6 , 1/4}, {1/6 , 4/15}}, {{1/12 , 2/15}, {1/10 , 1/6}}})
 ///
+
+TEST ///
 R = QQ[t];
 X = polyPath({t,t^2});
 A = sig(X, 2)
 assert( tensorArray(A, 2) == A @ 2);
-TEST ///
-
 ///
 -------------------------------
 --TYPES
@@ -565,7 +565,7 @@ Node
         h = f >> g
     Description
         Text
-            We start on the mathematical definition, based on @HREF("#ref1","[1]")@ (where the operation is called {\em right half-shuffle}). Let 
+            We start with the mathematical definition, based on @HREF("#ref1","[1]")@ (where the operation is called {\em right half-shuffle}). Let 
             $T^{\geq 1}(\mathbb{R}^d)$ be the vector space spanned by the non empty words on $d$ letters. Then the half shuffle $>>$ is defined 
             recursively to be $$ w >> i := wi$$ for $w$ a word and $i$ a letter and $$ w >> vi := (w >> v + v >> w)\bullet i$$ for $w, v$ words 
             and $i$ a letter, where $\bullet$ is the contatenation product on words. 
@@ -800,7 +800,7 @@ Node
             defined by $$
             P\mapsto \sum_{r\geq 0} \frac{1}{r!} P^{\otimes k}
             $$
-            If the constant term of the input is not $0$, the constant termo of its exponential might not be a rational number
+            If the constant term of the input is not $0$, the constant term of its exponential might not be a rational number
             anymore. To avoid this cases, the method is only implemented for tensors with constant term equal to $0$.
         Example
             R = wordAlgebra(2);
@@ -882,6 +882,146 @@ Node
             antipode(f) //wordFormat
 ///
 
+TEST ///
+S = QQ[x,y]; 
+p = {x^2,x*y,y^2} -- A map of affine spaces, the degree 2 Veronese morphism R^2 -> R^3
+wA2 = wordAlgebra(2); -- signatures of paths in dimension 2 
+wA3 = wordAlgebra(3);
+R = QQ[t];
+X = polyPath({t,t^2}) -- A path in 2 dimensional space
+PP = apply(p, q -> sub(q, {x=>t, y=>t^2})); 
+Y = polyPath(PP)
+vol = signedVolumeForm(wA3); vol // wordFormat -- consider the signed volume in R^3 and display it in word format
+adw = adjointWord(vol, wA2, p); adw // wordFormat -- we compute its image through the induced homomorphism on algebras
+assert( sig(Y, vol) == sig(X, adw))
+///
+
+TEST ///
+R = wordAlgebra(2);
+f = ([1,2]_R ** [1,2]_R)
+assert (f == 2 * Lt_1 * Lt_2 * Lt_1 * Lt_2  +  4 * Lt_1 * Lt_1 * Lt_2 * Lt_2)  
+///
+
+TEST ///
+l1 = {getSymbol "a", getSymbol "b", getSymbol "c"};
+A = wordAlgebra(l1)
+assert( gens A == {Lt_a, Lt_b, Lt_c} )
+
+l2 = toList(1..5);
+B = wordAlgebra(l2)
+assert(gens B == {Lt_1, Lt_2, Lt_3, Lt_4, Lt_5})
+
+C = wordAlgebra(5);
+assert( {Lt_1, Lt_2, Lt_3, Lt_4, Lt_5} == gens C)
+
+assert(instance(1_(coefficientRing B), QQ))
+C = wordAlgebra(5, CoefficientRing => CC)
+assert(instance(1_(coefficientRing C), CC))
+///
+
+TEST ///
+R = wordAlgebra(5)
+c = [1]_R >> [2,3]_R
+assert(c == [2,1,3]_R + [1,2,3]_R)
+///
+
+TEST ///
+R = wordAlgebra(3);
+w = [1]_R
+v = [1,2,3]_R
+s = w ** v --shuffle product of w, v
+hsSymm = (w >> v) + (v >> w) --half-shuffle product symmetrization of w, v
+assert(s == hsSymm)
+///
+
+TEST ///
+R = wordAlgebra (3);
+a = [1]_R
+b = [2]_R
+assert(lie(a,b) == -1*[2,1]_R + [1,2]_R)
+///
+
+TEST ///
+R = wordAlgebra(2);
+assert(lieBasis([1,1,1,2], R) == [1,1,1,2]_R - 3 * [1,1,2,1]_R + 3 * [1,2,1,1]_R - [2,1,1,1]_R)
+assert(lieBasis([1,1,2,2], R) == [1,1,2,2]_R - 2 * [1,2,1,2]_R + 2 * [2,1,2,1]_R - [2,2,1,1]_R)
+assert(lieBasis([1,2,2,2], R) == [1,2,2,2]_R - 3 * [2,1,2,2]_R + 3 * [2,2,1,2]_R - [2,2,2,1]_R)
+assert(lieBasis({1,1,1,2}, R) == lieBasis([1,1,1,2], R))
+///
+
+TEST ///
+words = lyndonWords (2,3)
+R = wordAlgebra(2);
+assert(words == {[1], [1, 1, 2], [1, 2], [1, 2, 2], [2]})
+apply(words, i-> i_R)
+assert(apply(words, i-> i_R) == {Lt_1 , Lt_1^2 * Lt_2 , Lt_1 *  Lt_2 , Lt_1 * Lt_2^2  , Lt_2 })
+///
+
+TEST ///
+A3 = wordAlgebra(3);
+T = [3,2,1]_A3;
+f = toLyndonShuffle(T)
+var = new Array from apply(lyndonWords(3,3), i->x_i)
+R = QQ var;
+assert(sum(pairs f, (term,coef) -> coef * product(pairs term, (word,ex)-> x_word^ex)) == x_[1] * x_[2] * x_[3]  -  x_[1] * x_[2,3]  -  x_[1,2] * x_[3]  +  x_[1,2,3])
+assert(([1]_A3**[2]_A3**[3]_A3 - [1]_A3**[2,3]_A3 - [1,2]_A3**[3]_A3 + [1,2,3]_A3) == [3,2,1]_A3)
+///
+
+TEST ///
+R = wordAlgebra(3);
+t = 2*[1,2,3]_R + [2,3,1]_R + 4*[3,3,3,3]_R; 
+assert([1,2,3]_R @ t == 2)
+assert([3,3,3,3]_R @ t == 4)
+assert(([1,2,3]_R @ t) == (t @ [1,2,3]_R))
+///
+
+TEST ///
+R = wordAlgebra(3)
+A = CAxisTensor(3,R);
+vol = signedVolumeForm(R);
+assert(A @ vol == 1/6)
+///
+
+TEST ///
+M = matrix {{0,0,1,1}, {0,1,0,0}, {1,0,0,1}}
+A = wordAlgebra(4);
+B = wordAlgebra(3);
+F = matrixAction(M, A, B)
+assert(F([1]_A) == [3]_B and F([2]_A) == [2]_B and F([3]_A) == [1]_B and F([4]_A) == [1]_B + [3]_B)
+w = [1,2]_A + 2* [4]_A
+Mw = matrixAction(M, w, B)
+assert(F(w) == Mw)
+assert(M * w //wordString == Mw //wordString)
+///
+
+TEST ///
+R = wordAlgebra(2);
+P = [1,2]_R + [1]_R
+assert(tensorExp(P, 2) == [1,2]_R  +  1/2 * [1,1]_R)
+///
+
+TEST ///
+R = wordAlgebra(3)
+v = signedVolumeForm(R); 
+assert(v == -1/6 * [3, 2, 1]_R  +  1/6 * [3, 1, 2]_R  +  1/6 * [2, 3, 1]_R  -  1/6 * [2, 1, 3]_R  -  1/6 * [1, 3, 2]_R  +  1/6 * [1, 2, 3]_R)
+
+X = linPath({1,0,0})**linPath({0,1,0})**linPath({0,0,1})
+assert(v @ sig(X, 3)  == 1/6)
+///
+
+TEST ///
+A = wordAlgebra(2)
+T = signedVolumeForm(A)
+F = tensorParametrization(T)
+S = gens source F
+assert(F(S#0) == 1/2 and F(S#1) == -1/2)
+///
+
+TEST ///
+R = wordAlgebra(3)
+f = [1,2,3]_R + 2* [3,2]_R; 
+assert(antipode(f) == - [3, 2, 1]_R  +  2 * [2,3]_R)  
+///
 ----------------------------------
 --SIGNATURES
 ---------------------------------
