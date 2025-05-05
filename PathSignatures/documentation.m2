@@ -67,7 +67,7 @@ Node
         Example
             d = 5;
             R = wordAlgebra(d); -- create a free associative algebra over Lt_1,..., Lt_d
-            a = new Array from for i from 1 to 5 list i; -- The array [1,...,d]
+            a = new Array from for i from 1 to d list i; -- The array [1,...,d]
             f = a_R  -- The word associated to a
             g = product gens R -- The word Lt_1*...Lt_d
             f === product gens R
@@ -157,7 +157,40 @@ Node
 
 ///
 
+TEST ///
+d = 5;
+R = wordAlgebra(d);
+a = new Array from for i from 1 to d list i;
+f = a_R  
+g = product gens R 
+assert(f === product gens R)    
+///
 
+TEST ///
+R = wordAlgebra(2);
+f = ([1,2]_R ** [1,2]_R)
+assert (f == 2 * Lt_1 * Lt_2 * Lt_1 * Lt_2  +  4 * Lt_1 * Lt_1 * Lt_2 * Lt_2)   
+///
+
+TEST ///
+R = wordAlgebra(3);
+w = [1,2,3]_R + 2 * [3,2,1]_R; w // wordFormat
+assert ((w // wordString) == "2 [3, 2, 1] + [1, 2, 3]")  
+///
+
+TEST ///
+R = QQ[t];
+X = polyPath({t,t^2});
+assert(sig(X,2)@2 == {{1/2, 2/3} , {1/3, 1/2}})
+assert(sig(X,3)@3 == {{{1/6 , 1/4}, {1/6 , 4/15}}, {{1/12 , 2/15}, {1/10 , 1/6}}})
+///
+R = QQ[t];
+X = polyPath({t,t^2});
+A = sig(X, 2)
+assert( tensorArray(A, 2) == A @ 2);
+TEST ///
+
+///
 -------------------------------
 --TYPES
 -------------------------------
@@ -343,6 +376,24 @@ Node
             pwLinPath(M)
     SeeAlso
         Path
+///
+
+TEST ///
+R = QQ[t];
+X = polyPath({t,2*t^2,3*t^3})
+Y = polyPath({{({1},1)},{({2},2)},{({3},3)}})
+assert((getPieces X == getPieces Y) and (dim X == dim Y) and (getNumberOfPieces X == getNumberOfPieces Y))
+Z = X ** Y
+assert (getPieces Z_0 == {{{({1}, 1)}, {({2}, 2)}, {({3}, 3)}}})
+assert( (getPieces (Z ^ 2)) == (getPieces(Z ** Z)))
+assert( getPieces(Z) == getPieces(Z_{0, -1}))
+assert( getPieces(X^(-1)) == {{{({1}, -1), ({0}, 1)}, {({2}, 2), ({1}, -4), ({0}, 2)}, {({3}, -3), ({2}, 9), ({1}, -9), ({0}, 3)}}})
+///
+
+TEST ///
+X = pwLinPath(matrix({{1,0,0},{0,1,0},{0,0,1}}))
+Y = linPath({1,0,0}) ** linPath({0,1,0}) ** linPath({0,0,1})
+assert((getPieces X == getPieces Y) and (dim X == dim Y) and (getNumberOfPieces X == getNumberOfPieces Y))
 ///
 
 

@@ -127,13 +127,7 @@ concatPath(Path,Path) := Path => (X,Y) -> (
 
 Path ** Path := Path => (X,Y) -> concatPath(X,Y);
 
-TEST ///
-pR = QQ[t];
-X = polyPath({t,t^2})
 
-<<<<<<< HEAD
-X**X
-///
 
 Path ^ ZZ := Path => (X,n) -> (
     if(n > 0) then return(fold(n:X, (X,Y) -> X**Y));
@@ -155,13 +149,7 @@ Path ^ ZZ := Path => (X,n) -> (
     return(polyPath(toList(X.dimension:(0_(auxR)))))
 )
 
-TEST ///
-pR = QQ[t];
-X = polyPath({t,t^2})
 
-<<<<<<< HEAD
-X^(-1)
-///
 
 
 --------------------------------------------------------------
@@ -217,4 +205,3 @@ isListForm Thing := (L) ->(
         if length(i#0)!=l or (not(instance(i#(-1), Number)) and not(instance(#i(-1), RingElement))) then return false);
     return true
 );
-

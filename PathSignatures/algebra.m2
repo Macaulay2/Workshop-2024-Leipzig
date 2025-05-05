@@ -99,10 +99,7 @@ antipode NCRingElement := (f) -> (
     linExt(w -> (-1)^(length(w)) * (new Array from reverse(w))_R, f)
 );
 
-TEST ///
-A3 = wordAlgebra(3);
-assert((antipode (antipode [1,2,3,2,1]_A3)) == [1,2,3,2,1]_A3)
-///
+
 
 -- define halfshuffle on nc polynomials and words, then extend to nc pols via linExt
 halfshuffleHelper = method();
@@ -328,4 +325,5 @@ toLyndonShuffle(NCRingElement) := (f) -> ( -- rewrites a tensor as a shuffle pol
     polh = applyKeys(polh, i-> applyKeys(i,j-> last baseName R_j));
     return(polh);
 )
+
 

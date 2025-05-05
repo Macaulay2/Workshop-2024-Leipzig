@@ -46,38 +46,6 @@ export {
 
 exportFrom("NCAlgebra",{"NCRingElement", "NCPolynomialRing"})
 
-
-
-
-
-TEST ///
-R = QQ{symbol s_1..symbol s_5};
-f = 1/2*(s_1*s_2 - s_2*s_1);
-A = QQ[symbol x_1..symbol x_3]
-
-pR = A[t];
-X = polyPath({0,x_2*t^2}) ** polyPath({x_3*t^3 + 3*t, t^2 - 1})
-<<<<<<< HEAD
-r = sig(X,f)
-///
-
-
-
-TEST ///
-R= QQ[t];
-
-X = polyPath({t, t^2});
-assert(getNumberOfPieces X === 1);
-assert(dim X === 2);
-Y = linPath({1,2});
-
-XY = X**Y;
-assert(getNumberOfPieces XY === 2);
-assert(dim XY === 2);
-///
-
-
-
 --------------------------------------------
 --Include interface for NCAlgebra
 load "./PathSignatures/interfaceNCAlgebra.m2"
@@ -205,6 +173,7 @@ Node
     References
         @LABEL("[1]","id" => "ref1")@ Carlos Améndola, Peter Friz and Bernd Sturmfels, {\em Varieties Of Signature Tensors}, Forum of Mathematics, Sigma. 2019;7:e10. doi:10.1017/fms.2019.3"
 ///
+
 
 endPackage;
 
