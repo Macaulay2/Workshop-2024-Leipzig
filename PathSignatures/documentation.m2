@@ -67,7 +67,7 @@ Node
         Example
             d = 5;
             R = wordAlgebra(d); -- create a free associative algebra over Lt_1,..., Lt_d
-            a = new Array from for i from 1 to 5 list i; -- The array [1,...,d]
+            a = new Array from for i from 1 to d list i; -- The array [1,...,d]
             f = a_R  -- The word associated to a
             g = product gens R -- The word Lt_1*...Lt_d
             f === product gens R
@@ -157,7 +157,40 @@ Node
 
 ///
 
+TEST ///
+d = 5;
+R = wordAlgebra(d);
+a = new Array from for i from 1 to d list i;
+f = a_R  
+g = product gens R 
+assert(f === product gens R)    
+///
 
+TEST ///
+R = wordAlgebra(2);
+f = ([1,2]_R  +  2 * [2,1]_R)
+assert (f == Lt_1 * Lt_2  +  2 * Lt_2 * Lt_1)   
+///
+
+TEST ///
+R = wordAlgebra(3);
+w = [1,2,3]_R + 2 * [3,2,1]_R; w // wordFormat
+assert ((w // wordString) == "2 [3, 2, 1] + [1, 2, 3]")  
+///
+
+TEST ///
+R = QQ[t];
+X = polyPath({t,t^2});
+assert(sig(X,2)@2 == {{1/2, 2/3} , {1/3, 1/2}})
+assert(sig(X,3)@3 == {{{1/6 , 1/4}, {1/6 , 4/15}}, {{1/12 , 2/15}, {1/10 , 1/6}}})
+///
+
+TEST ///
+R = QQ[t];
+X = polyPath({t,t^2});
+A = sig(X, 2)
+assert( tensorArray(A, 2) == A @ 2);
+///
 -------------------------------
 --TYPES
 -------------------------------
@@ -345,6 +378,24 @@ Node
         Path
 ///
 
+TEST ///
+R = QQ[t];
+X = polyPath({t,2*t^2,3*t^3})
+Y = polyPath({{({1},1)},{({2},2)},{({3},3)}})
+assert((getPieces X == getPieces Y) and (dim X == dim Y) and (getNumberOfPieces X == getNumberOfPieces Y))
+Z = X ** Y
+assert (getPieces Z_0 == {{{({1}, 1)}, {({2}, 2)}, {({3}, 3)}}})
+assert( (getPieces (Z ^ 2)) == (getPieces(Z ** Z)))
+assert( getPieces(Z) == getPieces(Z_{0, -1}))
+assert( getPieces(X^(-1)) == {{{({1}, -1), ({0}, 1)}, {({2}, 2), ({1}, -4), ({0}, 2)}, {({3}, -3), ({2}, 9), ({1}, -9), ({0}, 3)}}})
+///
+
+TEST ///
+X = pwLinPath(matrix({{1,0,0},{0,1,0},{0,0,1}}))
+Y = linPath({1,0,0}) ** linPath({0,1,0}) ** linPath({0,0,1})
+assert((getPieces X == getPieces Y) and (dim X == dim Y) and (getNumberOfPieces X == getNumberOfPieces Y))
+///
+
 
 -------------------------------
 --ALGEBRA
@@ -390,9 +441,9 @@ Node
             PP = apply(p, q -> sub(q, {x=>t, y=>t^2})); 
             Y = polyPath(PP) -- the transformed path in 3 dimensional space
         Text
-            Finally we compute the signature of the transformed path along the @TO signedVolume@ tensor of $\mathbb{R}^3$ and verify the formula in Theorem 2 above:
+            Finally we compute the signature of the transformed path along the @TO signedVolumeForm@ tensor of $\mathbb{R}^3$ and verify the formula in Theorem 2 above:
         Example
-            vol = signedVolume(wA3); vol // wordFormat -- consider the signed volume in R^3 and display it in word format
+            vol = signedVolumeForm(wA3); vol // wordFormat -- consider the signed volume in R^3 and display it in word format
             adw = adjointWord(vol, wA2, p); adw // wordFormat -- we compute its image through the induced homomorphism on algebras
             sig(Y, vol)  -- the signed volume of the transformed path
             sig(X, adw)  -- is given by evaluating at adw for the original path.
@@ -514,7 +565,7 @@ Node
         h = f >> g
     Description
         Text
-            We start on the mathematical definition, based on @HREF("#ref1","[1]")@ (where the operation is called {\em right half-shuffle}). Let 
+            We start with the mathematical definition, based on @HREF("#ref1","[1]")@ (where the operation is called {\em right half-shuffle}). Let 
             $T^{\geq 1}(\mathbb{R}^d)$ be the vector space spanned by the non empty words on $d$ letters. Then the half shuffle $>>$ is defined 
             recursively to be $$ w >> i := wi$$ for $w$ a word and $i$ a letter and $$ w >> vi := (w >> v + v >> w)\bullet i$$ for $w, v$ words 
             and $i$ a letter, where $\bullet$ is the contatenation product on words. 
@@ -677,7 +728,7 @@ Node
             It is also a convient way to evaluate linear combinations of tensor entries:
         Example
             A = CAxisTensor(3,R);
-            vol = signedVolume(R);
+            vol = signedVolumeForm(R);
             A @ vol -- the signed volume of the canonical axis path in 3 dimensions.
 
 Node
@@ -753,13 +804,12 @@ Node
             defined by $$
             P\mapsto \sum_{r\geq 0} \frac{1}{r!} P^{\otimes k}
             $$
-            Of particular interest is the image of tensors with $0$ constant term, and this method is implemented only for those.
+            If the constant term of the input is not $0$, the constant term of its exponential might not be a rational number
+            anymore. To avoid this cases, the method is only implemented for tensors with constant term equal to $0$.
         Example
             R = wordAlgebra(2);
             P = [1,2]_R + [1]_R
             tensorExp(P, 2)
-
-
     Caveat
         The method is implemented only for tensors with constant term $0$.
     References
@@ -767,22 +817,35 @@ Node
 
 Node
     Key
-        signedVolume
-        (signedVolume, NCPolynomialRing)
+        signedVolumeForm
+        (signedVolumeForm, NCPolynomialRing)
     Headline 
         The signed volume form of an algebra.
     Description
         Text
-            The signed volume of $\mathbb{R}^d$ is the tensor $$\frac{1}{d!}\sum_{\sigma} (-1)^{\operatorname{sign}(\sigma)} e_{\sigma(1)}^{*}\otimes \dots\otimes \sigma(d)^{*}$$
+            The {\em signed volume form} of $\mathbb{R}^d$ is the tensor $$\frac{1}{d!}\sum_{\sigma} (-1)^{\operatorname{sign}(\sigma)} e_{\sigma(1)}^{*}\otimes \dots\otimes e_{\sigma(d)}^{*}$$
             where the sum is taken over all permutations of ${1, \dots, d}$.
         Text
             This method computes the signed volume tensor in the dimension corresponding to the number of generators of the given @TO NCPolynomialRing@. The output is in the same ring.
         Example
-            R = wordAlgebra(3)
-            signedVolume(R) // wordFormat
+            d = 3;
+            R = wordAlgebra(d)
+            signedVolumeForm(R) // wordFormat
+        Text
+            The paper @HREF("#ref1","[1]")@ explores under what conditions the signed volume form computes (thorugh @TO inner@) the volume of the convex hull of a path. One instance where this is true is the case of canonical axis paths (see @TO CAxisTensor@).
+            For example, for $\mathtt{d}=3$ the convex hull of the canonical axis path in $\mathbb{R}^{\mathtt{d}}$ is a tetrahedron, whose volume is $\frac{1}{6}$. We verify this.
+        Example
+            X = linPath({1,0,0})**linPath({0,1,0})**linPath({0,0,1})
+            R = wordAlgebra(3) -- where the signature of X lives
+            v = signedVolumeForm(R); 
+            v @ sig(X, 3) 
+        Text
+            Since in $\mathtt{v}$ only decomposable tensors of rank $3$ appear it is enough to compute the signature of $\mathtt{X}$ at that level.
+
+
 
     References
-        @HREF {"https://doi.org/10.1007/978-3-031-38271-0_45", "Convex Hulls of Curves: Volumes and Signatures (doi.org/10.1007/978-3-031-38271-0_45)"}@
+        @LABEL("[1]","id" => "ref1")@ @HREF {"https://doi.org/10.1007/978-3-031-38271-0_45", "Convex Hulls of Curves: Volumes and Signatures (doi.org/10.1007/978-3-031-38271-0_45)"}@
 
 Node
     Key
@@ -805,7 +868,7 @@ Node
             For a key use example see @TO "Computing Path Varieties"@.
         Example
             A = wordAlgebra(2)
-            T = signedVolume(A)
+            T = signedVolumeForm(A)
             tensorParametrization(T)
 Node
     Key
@@ -823,6 +886,146 @@ Node
             antipode(f) //wordFormat
 ///
 
+TEST ///
+S = QQ[x,y]; 
+p = {x^2,x*y,y^2} -- A map of affine spaces, the degree 2 Veronese morphism R^2 -> R^3
+wA2 = wordAlgebra(2); -- signatures of paths in dimension 2 
+wA3 = wordAlgebra(3);
+R = QQ[t];
+X = polyPath({t,t^2}) -- A path in 2 dimensional space
+PP = apply(p, q -> sub(q, {x=>t, y=>t^2})); 
+Y = polyPath(PP)
+vol = signedVolumeForm(wA3); vol // wordFormat -- consider the signed volume in R^3 and display it in word format
+adw = adjointWord(vol, wA2, p); adw // wordFormat -- we compute its image through the induced homomorphism on algebras
+assert( sig(Y, vol) == sig(X, adw))
+///
+
+TEST ///
+R = wordAlgebra(2);
+f = ([1,2]_R ** [1,2]_R)
+assert (f == 2 * Lt_1 * Lt_2 * Lt_1 * Lt_2  +  4 * Lt_1 * Lt_1 * Lt_2 * Lt_2)  
+///
+
+TEST ///
+l1 = {getSymbol "a", getSymbol "b", getSymbol "c"};
+A = wordAlgebra(l1)
+assert( gens A == {Lt_a, Lt_b, Lt_c} )
+
+l2 = toList(1..5);
+B = wordAlgebra(l2)
+assert(gens B == {Lt_1, Lt_2, Lt_3, Lt_4, Lt_5})
+
+C = wordAlgebra(5);
+assert( {Lt_1, Lt_2, Lt_3, Lt_4, Lt_5} == gens C)
+
+assert(instance(1_(coefficientRing B), QQ))
+C = wordAlgebra(5, CoefficientRing => CC)
+assert(instance(1_(coefficientRing C), CC))
+///
+
+TEST ///
+R = wordAlgebra(5)
+c = [1]_R >> [2,3]_R
+assert(c == [2,1,3]_R + [1,2,3]_R)
+///
+
+TEST ///
+R = wordAlgebra(3);
+w = [1]_R
+v = [1,2,3]_R
+s = w ** v --shuffle product of w, v
+hsSymm = (w >> v) + (v >> w) --half-shuffle product symmetrization of w, v
+assert(s == hsSymm)
+///
+
+TEST ///
+R = wordAlgebra (3);
+a = [1]_R
+b = [2]_R
+assert(lie(a,b) == -1*[2,1]_R + [1,2]_R)
+///
+
+TEST ///
+R = wordAlgebra(2);
+assert(lieBasis([1,1,1,2], R) == [1,1,1,2]_R - 3 * [1,1,2,1]_R + 3 * [1,2,1,1]_R - [2,1,1,1]_R)
+assert(lieBasis([1,1,2,2], R) == [1,1,2,2]_R - 2 * [1,2,1,2]_R + 2 * [2,1,2,1]_R - [2,2,1,1]_R)
+assert(lieBasis([1,2,2,2], R) == [1,2,2,2]_R - 3 * [2,1,2,2]_R + 3 * [2,2,1,2]_R - [2,2,2,1]_R)
+assert(lieBasis({1,1,1,2}, R) == lieBasis([1,1,1,2], R))
+///
+
+TEST ///
+words = lyndonWords (2,3)
+R = wordAlgebra(2);
+assert(words == {[1], [1, 1, 2], [1, 2], [1, 2, 2], [2]})
+apply(words, i-> i_R)
+assert(apply(words, i-> i_R) == {Lt_1 , Lt_1^2 * Lt_2 , Lt_1 *  Lt_2 , Lt_1 * Lt_2^2  , Lt_2 })
+///
+
+TEST ///
+A3 = wordAlgebra(3);
+T = [3,2,1]_A3;
+f = toLyndonShuffle(T)
+var = new Array from apply(lyndonWords(3,3), i->x_i)
+R = QQ var;
+assert(sum(pairs f, (term,coef) -> coef * product(pairs term, (word,ex)-> x_word^ex)) == x_[1] * x_[2] * x_[3]  -  x_[1] * x_[2,3]  -  x_[1,2] * x_[3]  +  x_[1,2,3])
+assert(([1]_A3**[2]_A3**[3]_A3 - [1]_A3**[2,3]_A3 - [1,2]_A3**[3]_A3 + [1,2,3]_A3) == [3,2,1]_A3)
+///
+
+TEST ///
+R = wordAlgebra(3);
+t = 2*[1,2,3]_R + [2,3,1]_R + 4*[3,3,3,3]_R; 
+assert([1,2,3]_R @ t == 2)
+assert([3,3,3,3]_R @ t == 4)
+assert(([1,2,3]_R @ t) == (t @ [1,2,3]_R))
+///
+
+TEST ///
+R = wordAlgebra(3)
+A = CAxisTensor(3,R);
+vol = signedVolumeForm(R);
+assert(A @ vol == 1/6)
+///
+
+TEST ///
+M = matrix {{0,0,1,1}, {0,1,0,0}, {1,0,0,1}}
+A = wordAlgebra(4);
+B = wordAlgebra(3);
+F = matrixAction(M, A, B)
+assert(F([1]_A) == [3]_B and F([2]_A) == [2]_B and F([3]_A) == [1]_B and F([4]_A) == [1]_B + [3]_B)
+w = [1,2]_A + 2* [4]_A
+Mw = matrixAction(M, w, B)
+assert(F(w) == Mw)
+assert(M * w //wordString == Mw //wordString)
+///
+
+TEST ///
+R = wordAlgebra(2);
+P = [1,2]_R + [1]_R
+assert(tensorExp(P, 2) == [1,2]_R  +  1/2 * [1,1]_R)
+///
+
+TEST ///
+R = wordAlgebra(3)
+v = signedVolumeForm(R); 
+assert(v == -1/6 * [3, 2, 1]_R  +  1/6 * [3, 1, 2]_R  +  1/6 * [2, 3, 1]_R  -  1/6 * [2, 1, 3]_R  -  1/6 * [1, 3, 2]_R  +  1/6 * [1, 2, 3]_R)
+
+X = linPath({1,0,0})**linPath({0,1,0})**linPath({0,0,1})
+assert(v @ sig(X, 3)  == 1/6)
+///
+
+TEST ///
+A = wordAlgebra(2)
+T = signedVolumeForm(A)
+F = tensorParametrization(T)
+S = gens source F
+assert(F(S#0) == 1/2 and F(S#1) == -1/2)
+///
+
+TEST ///
+R = wordAlgebra(3)
+f = [1,2,3]_R + 2* [3,2]_R; 
+assert(antipode(f) == - [3, 2, 1]_R  +  2 * [2,3]_R)  
+///
 ----------------------------------
 --SIGNATURES
 ---------------------------------
@@ -937,4 +1140,40 @@ Node
         @HREF {"https://doi.org/10.1017/fms.2019.3", "Varieties Of Signature Tensors (doi.org/10.1017/fms.2019.3)"}@
 
 
+///
+
+TEST ///
+d = 4;
+R = QQ[t];
+X = polyPath(for i from 1 to d list t^i) -- the moment path in dimension d
+A = wordAlgebra(d) -- create the free associative algebra over d letters
+w = (new Array from (1..d))_A -- the word 1..d
+assert(sig(X, w) == 2/15)
+assert(sig(X, [1]_A) == 1)
+assert(sig(X,[2,3]_A) == 3/5)
+
+T = 1 + sig(X, 1, A) + sig(X, 2, A);
+S = T * T;
+Ma = matrix (S@2) -- the second component of S as a matrix
+Y = X ** X -- X concatenated with itself
+Mb = matrix (sig(Y, 2, A)@2) -- the signature matrix of Y
+assert(Ma == Mb)
+///
+
+TEST ///
+M = id_(QQ^3); -- identity matrix
+CAxisPath = pwLinPath(M) -- the canonical axis path in dimension d
+Cd2 = sig(CAxisPath, 2)
+R = wordAlgebra(3);
+Cd = CAxisTensor(2, R);
+assert ( Cd // wordString == Cd2 // wordString)
+///
+
+TEST ///
+R = wordAlgebra(3);
+Cd = CMonTensor(2, R);
+R=QQ[t];
+CMonPath = polyPath(for i from 1 to 3 list t^i) -- The canonical axis path in dimension d
+Cd2 = sig(CMonPath, 2);
+assert (Cd //wordString == Cd2 //wordString)
 ///
