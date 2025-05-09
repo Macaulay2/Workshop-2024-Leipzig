@@ -1177,3 +1177,19 @@ CMonPath = polyPath(for i from 1 to 3 list t^i) -- The canonical axis path in di
 Cd2 = sig(CMonPath, 2);
 assert (Cd //wordString == Cd2 //wordString)
 ///
+
+----------------------------------
+--SIGNATURE VARIETIES
+---------------------------------
+
+TEST ///
+d=3; k=3; m=2;
+R = QQ[a_(1,1)..a_(d,m)];
+Ma = transpose genericMatrix(R,m,d);
+CAx = CAxisTensor(k, A2);
+DAx = Ma * CAx; 
+parAx = tensorParametrization(DAx,CoefficientRing => QQ); --Parametrization of L_{3,3,2}
+I = ker parAx;
+assert (dim I == 6)
+assert (degree I == 90) --Variety has affine dimension 6 and degree 90
+///
