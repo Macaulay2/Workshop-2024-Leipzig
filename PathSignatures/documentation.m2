@@ -1183,16 +1183,16 @@ assert (Cd //wordString == Cd2 //wordString)
 ---------------------------------
 
 TEST ///
-d=2; k=3; m=3;
+d=2; k=3; m=2;
 R = QQ[a_(1,1)..a_(d,m)];
 Ma = transpose genericMatrix(R,m,d);
 A2 = wordAlgebra(m, CoefficientRing => R);
 CAx = CAxisTensor(k, A2);
 DAx = Ma * CAx; 
-parAx = tensorParametrization(DAx,CoefficientRing => QQ); --Parametrization of L_{2,3,3}
+parAx = tensorParametrization(DAx,CoefficientRing => QQ); --Parametrization of L_{2,3,2}
 I = ker parAx;
-assert (dim I == 5)
-assert (degree I == 4) --Variety has affine dimension 5 and degree 4 
+assert (dim I == 4)
+assert (degree I == 6) --Variety has affine dimension 4 and degree 6 
 ///
 
 TEST ///
