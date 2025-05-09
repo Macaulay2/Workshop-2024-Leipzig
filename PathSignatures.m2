@@ -136,7 +136,7 @@ Node
 
 Node
     Key
-        "Polynomial paths of degree d"
+        "Polynomial paths of degree m"
     Description
         Text
             We reproduce a computation from @HREF("#ref1","[1]")@.
