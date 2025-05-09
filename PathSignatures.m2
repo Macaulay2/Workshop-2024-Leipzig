@@ -36,7 +36,7 @@ export {
     "lie",
     "lieBasis",
     "tensorExp",
-    "toLyndonShuffle"
+    "lyndonShuffle"
     -- "type",
     -- "pieces",
     -- "dimension",

@@ -668,10 +668,10 @@ Node
             apply(words, i-> i_R)
 Node
     Key
-        toLyndonShuffle
-        (toLyndonShuffle, NCRingElement)
+        lyndonShuffle
+        (lyndonShuffle, NCRingElement)
     Usage
-        f = toLyndonShuffle(T)
+        f = lyndonShuffle(T)
     Inputs
         T : NCRingElement
         f : HashTable -- representing the shuffle polynomial in Lyndon words
@@ -684,7 +684,7 @@ Node
         Example
             A3 = wordAlgebra(3);
             T = [3,2,1]_A3;
-            f = toLyndonShuffle(T)
+            f = lyndonShuffle(T)
         Text
             The polynomial is represented as in @TO2 {"Macaulay2Doc::standardForm","standard form"}@, with the variable index replaced by the respective Lyndon word. One easily obtains an actual polynomial from this:
         Example
@@ -964,7 +964,7 @@ assert(apply(words, i-> i_R) == {Lt_1 , Lt_1^2 * Lt_2 , Lt_1 *  Lt_2 , Lt_1 * Lt
 TEST ///
 A3 = wordAlgebra(3);
 T = [3,2,1]_A3;
-f = toLyndonShuffle(T)
+f = lyndonShuffle(T)
 var = new Array from apply(lyndonWords(3,3), i->x_i)
 R = QQ var;
 assert(sum(pairs f, (term,coef) -> coef * product(pairs term, (word,ex)-> x_word^ex)) == x_[1] * x_[2] * x_[3]  -  x_[1] * x_[2,3]  -  x_[1,2] * x_[3]  +  x_[1,2,3])
