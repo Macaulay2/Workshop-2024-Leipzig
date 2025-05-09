@@ -150,8 +150,8 @@ Node
         Text
             We create a ring $\mathtt{R}$ with $\mathtt{d}\cdot\mathtt{m}$ variables, corresponding to the entries of a path. Then we create the free algebra $\mathtt{A}$ over $\mathtt{R}$ with $\mathtt{m}$ generators, where we can compute the $\mathtt{k}$-th level signature of the canonical monomial path in $\mathbb{R}^{\mathtt{m}}$.
         Example
-            R = CC[x_1..x_(d*m)]; --x_1, ..., x_(d*m) are the entries of the degree m paths in d-dimensinal space, seen as matrices
-            A = wordAlgebra(m, CoefficientRing => R); --Signatures in m-dimesnional space, where the signature of CMon lives.
+            R = CC[x_1..x_(d*m)]; --x_1, ..., x_(d*m) are the entries of the degree m paths in d-dimensional space, seen as matrices
+            A = wordAlgebra(m, CoefficientRing => R); --Signatures in m-dimensional space, where the signature of CMon lives.
             sigmaCMon = CMonTensor(k, A); sigmaCMon // wordFormat -- The 2nd level signature of CMon
         Text
             Next we create the @TO genericMatrix@ with $\mathtt{d}\times \mathtt{m}$ variables.
