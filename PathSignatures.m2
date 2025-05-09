@@ -131,7 +131,7 @@ Node
         Text
             @TO PathSignatures@ simplifies the computation of varieties coming from signature tensors. We showcase this in a number of examples:
     Subnodes
-        "Polynomial paths of degree d"
+        "Polynomial paths of degree m"
         "A family of paths on a cone"
 
 Node
