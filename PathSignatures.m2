@@ -129,8 +129,17 @@ Node
         "Computing Path Varieties"
     Description
         Text
-            @TO PathSignatures@ simplifies the computation of varieties coming from signature tensors. As an example, we reproduce a computation from @HREF("#ref1","[1]")@.
+            @TO PathSignatures@ simplifies the computation of varieties coming from signature tensors. We showcase this in a number of examples:
+    Subnodes
+        "Polynomial paths of degree d"
+        "A family of paths on a cone"
+
+Node
+    Key
+        "Polynomial paths of degree d"
+    Description
         Text
+            We reproduce a computation from @HREF("#ref1","[1]")@.
             We briefly recall the setting for this computation. We are interested in paths $X:[0,1]\rightarrow \mathbb{R}^\mathtt{d}$ whose coordinates are polynomials of degree $\mathtt{m}$. These can be 
             represented by a $\mathtt{d}\times \mathtt{m}$ matrix with real entries whose coordinates are determined by the expressions 
             $$ X_i(t) = x_{i,1}t+x_{i,2}t^2+\dots+ x_{i,m}t^m$$
@@ -172,6 +181,60 @@ Node
             This agrees with the result in Table 3 of @HREF("#ref1","[1]")@, where dimension and degree of the corresponding projective variety is computed.
     References
         @LABEL("[1]","id" => "ref1")@ Carlos Améndola, Peter Friz and Bernd Sturmfels, {\em Varieties Of Signature Tensors}, Forum of Mathematics, Sigma. 2019;7:e10. doi:10.1017/fms.2019.3"
+
+Node
+    Key
+        "A family of paths on a cone"
+    Description
+        Text
+            We consider the following family of polynomial paths of degree 4:
+        Example
+            S = QQ[a_1..a_6]
+            R = S[t]
+            u = a_1*t + a_2*t^2 + a_3*t^3;
+            v = a_4*t + a_5*t^2 + a_6*t^3;
+            X = polyPath({u^2 - v^2, 2*u*v, u^2 + v^2});
+        Text
+            Let us take a look at its signature matrix variety. We obtain its parametrization as follows:
+        Example
+            sigMatrix = sig(X,2);
+            m = tensorParametrization(sigMatrix);
+        Text
+            Let us use numericalImplicitization to obtain information about the dimension of the image.
+        Example
+            needsPackage "NumericalImplicitization";
+            Snum = CC[a_1..a_6];
+            Rnum = Snum[t];
+            unum = sub(u, Rnum);
+            vnum = sub(v, Rnum);
+            Xnum = polyPath({unum^2 - vnum^2, 2*unum*vnum, unum^2 + vnum^2});
+            sigMatrixnum = sig(Xnum,2);
+            mnum = tensorParametrization(sigMatrixnum,CoefficientRing => CC);
+            numericalImageDim(mnum,ideal 0_Snum)
+        Text
+            The universal variety has dimension 6, so we expect at least one additional relation. We use MultigradedImplicitization:
+        Example
+            needsPackage "MultigradedImplicitization";
+            I = ideal flatten values componentsOfKernel(2, m, Grading => matrix {toList(9:1)});
+            dim I
+            isPrime I
+            betti mingens I
+            degree I
+        Text
+            We conclude that our variety is cut out by one linear relation and 6 quadrics. Let us take a look at the linear relation:
+        Example
+            lin = select(flatten entries gens I, i-> (degree i == {1}))
+        Text
+            We recognize it as a shuffle polynomial in the letters $\mathtt{1},\mathtt{2},\mathtt{3}$. It corresponds to the constraint $X(1) - X(0) \in V(x^2 + y^2 - z^2)$ for paths in our family.
+        Text
+            Recall that the universal variety is cut out by the 2-minors of the symmetric part of the matrix. We check if the linear relation is the only additional one on our path family:
+        Example
+            Q = ring I;
+            A = matrix {{Q_7, Q_8, Q_6}, {Q_4, Q_1, Q_0}, {Q_3,Q_2, Q_5}}
+            univI = minors(2, A + transpose(A));
+            I == univI + ideal lin
+
+        
 ///
 
 
