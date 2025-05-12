@@ -852,24 +852,32 @@ Node
         tensorParametrization
         (tensorParametrization, NCRingElement)
         [tensorParametrization, CoefficientRing]
+        [tensorParametrization, VarWordTable]
     Headline
-        Constructs the polynomial map corresponding to a tensor.
+        Constructs the morphism that maps a word to its coefficient in the given tensor.
     Inputs
-        T : NCRingElement --The tensor encoding the parametrization
-        CoefficientRing => QQ --The target ring, and the coefficient ring of the domain polynomial ring
+        T : NCRingElement -- the tensor encoding the parametrization
+        CoefficientRing => QQ -- the coefficient ring of the domain polynomial ring
+        VarWordTable => null -- a hash table that assigns variables of a free polynomial ring to words. If provided, the ring is used as the domain of the map.
     Outputs
         m : RingMap -- The parametrization encoded by T
     Usage
-        m = tenrosParametrization(f)
+        m = tensorParametrization(f)
     Description
         Text
-            Takes a tensor $\mathtt{T}$, constructs a polynomial ring $\mathtt{R}$ over $\mathtt{CoefficientRing}$ with one variable for each word appearing in $\mathtt{T}$
-            and creates the map $\mathtt{m}: \mathtt{R}\rightarrow \mathtt{CoefficientRing}$ that sends each variable to the coefficient of the corresponding word in $\mathtt{T}$.  
-            For a key use example see @TO "Computing Path Varieties"@.
+            Given some $k$-algebra $A$, a tensor $f = \sum_{\mathtt{w} \in I} a_w \mathtt{w} \in A \langle\texttt{1},\ldots,\texttt{d}\rangle$ can be viewed as a morphism $\mathrm{Spec} \ A \to k^I$. This method constructs the associated map of coordinate rings, that is, the morphism
+            $k[b_w \ | \ w\in I] \to A$ that maps $b_\mathtt{w}$ to $a_\mathtt{w}$. Here $k$ is the $\texttt{baseRing}$ of $A$. If $\texttt{CoefficientRing}$ is provided, it replaces $k$. If $\texttt{VarWordTable}$ is provided, the map above is precomposed with the morphism induced by the assignments in the hash table.
         Example
-            A = wordAlgebra(2)
-            T = signedVolumeForm(A)
-            tensorParametrization(T)
+            R = QQ[a,b];
+            A2 = wordAlgebra(2, CoefficientRing => R);
+            T = a^2 * [1,1]_A2 + a * b * [1,2]_A2 + b^2 * [2,2]_A2
+            tensorParametrization(T); wordFormat T
+            S = QQ[x,y,z];
+            vwtable = hashTable({(x,[1,1]),(y,[1,2]),(z,[2,2])})
+            m = tensorParametrization(T, VarWordTable => vwtable)
+            kernel m
+        Text
+            For a key use example see @TO "Computing Path Varieties"@.
 Node
     Key
         (antipode, NCRingElement)

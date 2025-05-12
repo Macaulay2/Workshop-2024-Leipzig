@@ -36,7 +36,8 @@ export {
     "lie",
     "lieBasis",
     "tensorExp",
-    "lyndonShuffle"
+    "lyndonShuffle",
+    "VarWordTable"
     -- "type",
     -- "pieces",
     -- "dimension",
@@ -198,7 +199,9 @@ Node
             Let us take a look at its signature matrix variety. We obtain its parametrization as follows:
         Example
             sigMatrix = sig(X,2);
-            m = tensorParametrization(sigMatrix);
+            S = QQ[s_(1,1)..s_(3,3)]
+            vwtable = hashTable apply(gens S, i-> (i, new Array from last baseName i))
+            m = tensorParametrization(sigMatrix, VarWordTable => vwtable);
         Text
             Let us use numericalImplicitization to obtain information about the dimension of the image.
         Example
@@ -215,7 +218,7 @@ Node
             The universal variety has dimension 6, so we expect at least one additional relation. We use MultigradedImplicitization:
         Example
             needsPackage "MultigradedImplicitization";
-            I = ideal flatten values componentsOfKernel(2, m, Grading => matrix {toList(9:1)});
+            I = sub(ideal flatten values componentsOfKernel(2, m, Grading => matrix {toList(9:1)}), S);
             dim I
             isPrime I
             betti mingens I
@@ -229,8 +232,7 @@ Node
         Text
             Recall that the universal variety is cut out by the 2-minors of the symmetric part of the matrix. We check if the linear relation is the only additional one on our path family:
         Example
-            Q = ring I;
-            A = matrix {{Q_7, Q_8, Q_6}, {Q_4, Q_1, Q_0}, {Q_3,Q_2, Q_5}}
+            A = genericMatrix(S,3,3)
             univI = minors(2, A + transpose(A));
             I == univI + ideal lin
 

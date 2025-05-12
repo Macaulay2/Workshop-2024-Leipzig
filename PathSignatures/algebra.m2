@@ -30,15 +30,32 @@ Matrix * NCRingElement := (M, f) -> (
 
 -- tensorParametrization takes a tensor T, constructs a ring R with one variable for each word appearing in T 
 -- and creates the map that sends a variable to the coefficient of the corresponding word.
-tensorParametrization = method(Options=>{CoefficientRing => QQ})
+tensorParametrization = method(Options=>{CoefficientRing => null, VarWordTable => null})
 tensorParametrization(NCRingElement) := opts -> (f) -> (
     t := terms f;
     lc := t / leadCoefficient;
     lm := t / leadMonomial;
-    b := getSymbol("b");
-    varis := apply(lm, i -> b_(wordString i));
     bR := coefficientRing (class f);
-    R := opts.CoefficientRing monoid(new Array from varis);
+    bF := baseRing bR;
+    if (not opts.CoefficientRing === null ) then bF = opts.CoefficientRing;
+    if(opts.VarWordTable === null) then (
+        b := getSymbol("b");
+        varis := apply(lm, i -> b_(wordString i));
+        R := bF monoid(new Array from varis);
+    ) else (
+        vwtable := opts.VarWordTable;
+        words := apply(lm, i-> value(wordString i));
+        R = ring (product (keys vwtable));
+        if(instance(R,QuotientRing)) then error("Expected free polynomial ring.");
+        if(#gens R > length(words)) then error("More variables in ring than words in tensor");
+        scan(words, i-> (
+                if (not isMember(i,values vwtable)) then (
+                    print("Warning: No variable associated to word " | toString(i));
+                );
+            ) 
+        );
+        lc = apply(gens R, i-> inner(f, (vwtable#i)_(ring f)));
+    );
     return(map(bR,R,lc));
 )
 
