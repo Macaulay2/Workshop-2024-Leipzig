@@ -188,7 +188,7 @@ Node
         "A family of paths on a cone"
     Description
         Text
-            We consider the following family of polynomial paths of degree 4:
+            We consider the following family of polynomial paths of degree 6:
         Example
             S = QQ[a_1..a_6]
             R = S[t]
