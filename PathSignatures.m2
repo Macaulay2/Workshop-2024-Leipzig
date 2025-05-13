@@ -134,7 +134,7 @@ Node
     Subnodes
         "Polynomial paths of degree m"
         "A family of paths on a cone"
-
+        "The universal variety and toric coordinates"
 Node
     Key
         "Polynomial paths of degree m"
@@ -236,7 +236,94 @@ Node
             univI = minors(2, A + transpose(A));
             I == univI + ideal lin
 
-        
+Node
+    Key
+        "The universal variety and toric coordinates"
+    Description
+        Text
+            Recall that $K \langle \mathtt{1}, \ldots, \mathtt{d} \rangle$ is isomorphic to the free commutative algebra over the Lyndon words and if we grade each word by its length, the algebra homomorphism
+            $$\phi: K[\mathtt{w} \ | \ \mathtt{w} \ \mathrm{Lyndon}] \cong K \langle \mathtt{1}, \ldots, \mathtt{d} \rangle, \ \mathtt{w} \mapsto \mathtt{w}$$
+            is an isomorphism of graded vector spaces. The inverse $\phi^{-1}$ of this isomorphism is computed by @TO lyndonShuffle@.
+        Text
+            We view both vector spaces as infinite-dimensional affine spaces over $K$. Note that then points of $K\langle \mathtt{1}, \ldots, \mathtt{d}\rangle$ are one-to-one with elements of $K\langle \mathtt{1}, \ldots, \mathtt{d}\rangle^*$. The subset of those points of $K\langle \mathtt{1}, \ldots, \mathtt{d}\rangle$ that define shuffle algebra homomorphisms is Zariski closed. Projecting to the degree $k$ component, we obtain a subvariety of $(K^d)^{\otimes k}$, called the universal variety, $\mathcal U_{d,k}$. As the map $\phi$ is compatible with the projection, it induces a parametrization of $\mathcal U_{d,k}$: it is the image of the map
+            $$K[\mathtt{w} \ | \ \mathtt{w} \ \text{Lyndon of length } \leq k] \to K\langle \mathtt{1}, \ldots, \mathtt{d}\rangle_k = (K^d)^{\otimes k}$$
+            induced by $\phi$.
+        Text
+            As usual, we can compute the ideal that cuts out the image variety as the kernel of the corresponding ring map $$K[x_{\mathtt w} \ | \ \mathtt{w} \text{ of length } k] \to K[y_{\mathtt w} \ | \ \mathtt{w} \text{ Lyndon of length } \leq k].$$ This map can be computed via @TO lyndonShuffle@. Let us do this in the example $d=3, k=3$.
+        Example
+            words = toList apply((3:1)..(3:3), i -> new Array from i);
+            lwords = lyndonWords(3,3)
+            R = QQ new Array from apply(words, i->x_i);
+            Q = QQ new Array from (apply(lwords,i->y_i) | {Degrees => apply(lwords, i->length(i))});
+            A3 = wordAlgebra(3);
+            lpolyHT = apply(words, i -> lyndonShuffle(i_A3));
+            lpols = apply(lpolyHT, f -> sum(pairs f, (term,coef) -> coef * product(pairs term, (word,ex)-> y_word^ex)));
+            lpols_{0..4}
+            m = map(Q,R,lpols);
+        Text
+            Let us compute the kernel.
+        Example
+            I = ker m;
+            dim I
+            degree I
+            betti mingens I
+            (mingens I)_(0,0)
+        Text
+            This agrees with the result in Table 2 of @HREF("#ref1","[1]")@.
+        Text
+            As $\phi$ is an isomorphism of graded vector spaces, we see that the variety $\mc U_{d,k}$ is parametrized by the vector of degree $k$ monomials in Lyndon words after a linear coordinate change on $(K^d)^{\otimes k}$. We can use this to simplify the computation of the universal variety.
+        Example
+            mons = flatten entries basis(3,Q);
+            S = QQ[z_1..z_(length mons)];
+            m = map(Q,S,mons);
+            I = ker m;
+            dim I
+            degree I
+            betti mingens I
+        Text
+            Let us compute the matrix of the coordinate change for $d=2, k=4$.
+        Example
+            words = toList apply((4:1)..(4:2), i-> new Array from i);
+            lwords = lyndonWords(2,4);
+            R = QQ new Array from apply(words,i->x_i);
+            Q = QQ new Array from (apply(lwords,i->y_i) | {Degrees => apply(lwords, i->length(i))});
+            A2 = wordAlgebra(2);
+            lpolyHT = apply(words, i -> lyndonShuffle(i_A2));
+            lpols = apply(lpolyHT, f -> sum(pairs f, (term,coef) -> coef * product(pairs term, (word,ex)-> y_word^ex)));
+            mons = basis(4,Q)
+            M = sub(matrix apply(lpols, i -> (flatten entries (coefficients(i, Monomials => mons))#1) ),QQ)
+            M^(-1)
+        Text
+            Note that the coordinate change differs from the one described in Example 21 of @HREF("#ref2","[2]")@ as our toric parametrization does not arise from the exponential map on the Lie algebra. We can easily construct this coordinate change as well, by using @TO lieBasis@ and @TO tensorExp@:
+        Example
+            A2 = wordAlgebra(2, CoefficientRing => Q)
+            lbasis = apply(lwords, i -> lieBasis(i,A2));
+            lT = sum(0..length(lbasis)-1, i-> Q_i * lbasis_i);
+            gT = tensorExp(lT,4);
+            lpols = apply(words, i-> gT @ i_A2)
+            M = sub(matrix apply(lpols, i -> (flatten entries (coefficients(i, Monomials => mons))#1) ),QQ);
+            M^(-1)
+        Text
+            This is the matrix from Example 21 in @HREF("#ref2","[2]")@ up to scalars.
+        -- Text
+        --     Let us compute a path variety after toric coordinate change.
+        -- Example
+        --     S = QQ[a_(1,1)..a_(3,2)]
+        --     A2 = wordAlgebra(3, CoefficientRing => S)
+        --     T = CAxisTensor(4,A2)
+        --     A = genericMatrix(S,2,3)
+        --     m = tensorParametrization(A * T, VarWordTable => hashTable apply(gens R, i-> (i, last baseName i)))
+        --     cc = map(R,R,flatten entries (M^(-1) * (transpose basis(1,R))))
+        --     mcc = m * cc;
+        --     needsPackage "MultigradedImplicitization"
+        --     I = ideal componentOfKernel({2},source mcc,mcc)
+        --     J = ideal componentOfKernel({3},source mcc,mcc)
+        --     dim (I+J)
+        --     isPrime (I+J)
+    References
+        @LABEL("[1]","id" => "ref1")@ Carlos Améndola, Peter Friz and Bernd Sturmfels, {\em Varieties Of Signature Tensors}, Forum of Mathematics, Sigma. 2019;7:e10. doi:10.1017/fms.2019.3"
+
+        @LABEL("[2]","id" => "ref2")@ Galuppi, Francesco. "The rough Veronese variety." Linear algebra and its applications 583 (2019): 282-299.
 ///
 
 
