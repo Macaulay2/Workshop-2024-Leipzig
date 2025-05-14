@@ -122,7 +122,7 @@ beginDocumentation()
             Y = X ** X
             sig(X, signedVolumeForm(A2))
     References
-        @LABEL("[1]","id" => "ref1")@ Carlos Améndola, Peter Friz and Bernd Sturmfels, {\em Varieties Of Signature Tensors}, Forum of Mathematics, Sigma. 2019;7:e10. doi:10.1017/fms.2019.3"
+        @LABEL("[1]","id" => "ref1")@ Améndola, C., Friz, P., & Sturmfels, B. (2019, January). Varieties of signature tensors. In Forum of Mathematics, Sigma (Vol. 7, p. e10). Cambridge University Press.
             
            
 Node
@@ -181,7 +181,7 @@ Node
         Text
             This agrees with the result in Table 3 of @HREF("#ref1","[1]")@, where dimension and degree of the corresponding projective variety is computed.
     References
-        @LABEL("[1]","id" => "ref1")@ Carlos Améndola, Peter Friz and Bernd Sturmfels, {\em Varieties Of Signature Tensors}, Forum of Mathematics, Sigma. 2019;7:e10. doi:10.1017/fms.2019.3"
+        @LABEL("[1]","id" => "ref1")@ Améndola, C., Friz, P., & Sturmfels, B. (2019, January). Varieties of signature tensors. In Forum of Mathematics, Sigma (Vol. 7, p. e10). Cambridge University Press.
 
 Node
     Key
@@ -321,9 +321,9 @@ Node
         --     dim (I+J)
         --     isPrime (I+J)
     References
-        @LABEL("[1]","id" => "ref1")@ Carlos Améndola, Peter Friz and Bernd Sturmfels, {\em Varieties Of Signature Tensors}, Forum of Mathematics, Sigma. 2019;7:e10. doi:10.1017/fms.2019.3"
+        @LABEL("[1]","id" => "ref1")@ Améndola, C., Friz, P., & Sturmfels, B. (2019, January). Varieties of signature tensors. In Forum of Mathematics, Sigma (Vol. 7, p. e10). Cambridge University Press.
 
-        @LABEL("[2]","id" => "ref2")@ Galuppi, Francesco. "The rough Veronese variety." Linear algebra and its applications 583 (2019): 282-299.
+        @LABEL("[2]","id" => "ref2")@ Galuppi, F. (2019). The rough Veronese variety. Linear algebra and its applications, 583, 282-299.
 ///
 
 
