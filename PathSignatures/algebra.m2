@@ -279,21 +279,10 @@ lieBasis(Array, NCPolynomialRing) := (w,R) -> (
 
 lieBasis(List, NCPolynomialRing) := (l, R) -> lieBasis (new Array from l, R);
 
--- auxiliary functions for tensorExp
-expTermCoef = (t) -> (
-    m := max t;
-    counts := new MutableList from (m : 0);
-    for i from 0 to length(t)-1 do(
-       if(t#i > 0) then counts#(t#i - 1) = counts#(t#i - 1) + 1;
-    );
-    counts = toList(counts);
-    facs := apply(counts, i -> i!);
-    binom := product(facs);
-    return(1/binom);
-);
+
 
 expTerm = (tl,l) -> (
-    expTermCoef(l)*product(l,i->(tl_i))
+    return(1/(length(l))!)*product(l,i->(tl_i))
 )
 
 -- Given a tensor p with constant term 0, tensorExp(p,k) returns the k-th level component of exp(p)

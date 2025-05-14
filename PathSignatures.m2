@@ -271,7 +271,7 @@ Node
         Text
             This agrees with the result in Table 2 of @HREF("#ref1","[1]")@.
         Text
-            As $\phi$ is an isomorphism of graded vector spaces, we see that the variety $\mc U_{d,k}$ is parametrized by the vector of degree $k$ monomials in Lyndon words after a linear coordinate change on $(K^d)^{\otimes k}$. We can use this to simplify the computation of the universal variety.
+            As $\phi$ is an isomorphism of graded vector spaces, we see that the variety $\mathcal U_{d,k}$ is parametrized by the vector of degree $k$ monomials in Lyndon words after a linear coordinate change on $(K^d)^{\otimes k}$. We can use this to simplify the computation of the universal variety.
         Example
             mons = flatten entries basis(3,Q);
             S = QQ[z_1..z_(length mons)];
@@ -304,7 +304,7 @@ Node
             M = sub(matrix apply(lpols, i -> (flatten entries (coefficients(i, Monomials => mons))#1) ),QQ);
             M^(-1)
         Text
-            This is the matrix from Example 21 in @HREF("#ref2","[2]")@ up to scalars.
+            This is the matrix from Example 21 in @HREF("#ref2","[2]")@. Note that while we obtained the coordinate change by inverting the map that sends a word to its coefficient in the exponential (which is a linear combination of Lyndon word monomials), in @HREF("#ref2","[2]")@ the coordinate change is obtained directly without computing the exponential. Both strategies yield the same result by Lemma 18 in loc. cit..
         -- Text
         --     Let us compute a path variety after toric coordinate change.
         -- Example
