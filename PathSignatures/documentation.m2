@@ -43,7 +43,7 @@ Node
         ambient
         (ambient, NCPolynomialRing)
     Headline
-        eported from the NCALgebra package.
+        exported from the NCALgebra package.
 
 Node
     Key
@@ -138,7 +138,7 @@ Node
         L = tensorArray(s)
     Description
         Text
-            Returns the $k$-level component of a tensor as multi-dimensioal array, represented by a nested @TO List@.
+            Returns the $k$-level component of a tensor as multi-dimensional array, represented by a nested @TO List@.
         Example
             R = QQ[t];
             X = polyPath({t,t^2});
@@ -370,7 +370,7 @@ Node
         pwLinPath(pwlMatrix)
     Description
         Text
-            Creates a piecewise lienar @TO Path@ whose increments are the columns of the given matrix.
+            Creates a piecewise linear @TO Path@ whose increments are the columns of the given matrix.
         Example
             M = id_(QQ^3)
             pwLinPath(M)
@@ -434,7 +434,7 @@ Node
             wA2 = wordAlgebra(2); -- signatures of paths in dimension 2 
             wA3 = wordAlgebra(3); -- signatures of paths in dimension 3
         Text
-            Then we define a path in the domain space and explicitely compute its image under the polynomial map above:
+            Then we define a path in the domain space and explicitly compute its image under the polynomial map above:
         Example
             R = QQ[t];
             X = polyPath({t,t^2}) -- A path in 2 dimensional space
@@ -503,7 +503,7 @@ Node
         Text
             In this package, tensors are represented as elements of free associative algebras, using the package @TO2 {"NCAlgebra :: NCAlgebra", "NCAlgebra"}@.
             More precisely, the free associative algebra on the alphabet $\{\texttt 1,...,\texttt d\}$ is isomorphic to the tensor algebra $T(\mathbb R^d)$ via the algebra homomorphism induced by $\texttt i \mapsto e_i$. This allows us to interpret tensors as non-commutative polynomials, or equivalently, linear combinations of words.
-            Given an alphabet $l$, the free assocative algebra over it can be obtained by using @TO wordAlgebra@, where the letter corresponding to $x \in l$ is represented by $\texttt{Lt}_x$.
+            Given an alphabet $l$, the free associative algebra over it can be obtained by using @TO wordAlgebra@, where the letter corresponding to $x \in l$ is represented by $\texttt{Lt}_x$.
         Example
             d = 5;
             l1 = {getSymbol "a", getSymbol "b", getSymbol "c"};
@@ -568,7 +568,7 @@ Node
             We start with the mathematical definition, based on @HREF("#ref1","[1]")@ (where the operation is called {\em right half-shuffle}). Let 
             $T^{\geq 1}(\mathbb{R}^d)$ be the vector space spanned by the non empty words on $d$ letters. Then the half shuffle $>>$ is defined 
             recursively to be $$ w >> i := wi$$ for $w$ a word and $i$ a letter and $$ w >> vi := (w >> v + v >> w)\bullet i$$ for $w, v$ words 
-            and $i$ a letter, where $\bullet$ is the contatenation product on words. 
+            and $i$ a letter, where $\bullet$ is the concatenation product on words. 
         Text
             As stated in the reference, the @TO shuffle@ on non empty words can be seen as a symmetrization of the half-shuffle. As a usage example, we verify this in a particular instance.
         Example
@@ -623,7 +623,7 @@ Node
     Description
         Text
             A word $l$ on the alphabet $\{1,\dots, d\}$ is a {\em Lyndon word} if it is strictly smaller, in lexicographic order, than all of its rotations.
-            To any Lyndon word we can associate an iteretaed Lie braketing $b(l)\in T(\mathbb{R}^d)$ defined iteratively as follows. If $l$ is a letter $i\in \{1,\dots, d\}$
+            To any Lyndon word we can associate an iterated Lie braketing $b(l)\in T(\mathbb{R}^d)$ defined iteratively as follows. If $l$ is a letter $i\in \{1,\dots, d\}$
             we simply define $$ b(i) := e_i$$
             where as ever $e_i$ is the $i-th$ vector in the canonical basis of $\mathbb{R}^d$. For the length of $l$ greater than 1 we define $$
             b(I) := [b(I_1), b(I_2)]$$
