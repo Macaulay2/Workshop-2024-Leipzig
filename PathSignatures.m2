@@ -243,12 +243,19 @@ Node
         Text
             Recall that $K \langle \mathtt{1}, \ldots, \mathtt{d} \rangle$ is isomorphic to the free commutative algebra over the Lyndon words and if we grade each word by its length, the algebra homomorphism
             $$\phi: K[\mathtt{w} \ | \ \mathtt{w} \ \mathrm{Lyndon}] \cong K \langle \mathtt{1}, \ldots, \mathtt{d} \rangle, \ \mathtt{w} \mapsto \mathtt{w}$$
-            is an isomorphism of graded vector spaces. The inverse $\phi^{-1}$ of this isomorphism is computed by @TO lyndonShuffle@.
+            is an isomorphism of graded vector spaces. The inverse $\psi$ of this isomorphism is computed by @TO lyndonShuffle@. Dually, we have the isomorphism of graded vector spaces
+            $$\psi^*: K[\mathtt{w} \ | \ \mathtt{w} \ \mathrm{Lyndon}]^* \cong K \langle \mathtt{1}, \ldots, \mathtt{d} \rangle^*, \ \alpha \mapsto \alpha \circ \psi.$$
         Text
-            We view both vector spaces as infinite-dimensional affine spaces over $K$. Note that then points of $K\langle \mathtt{1}, \ldots, \mathtt{d}\rangle$ are one-to-one with elements of $K\langle \mathtt{1}, \ldots, \mathtt{d}\rangle^*$. The subset of those points of $K\langle \mathtt{1}, \ldots, \mathtt{d}\rangle$ that define shuffle algebra homomorphisms is Zariski closed. Projecting to the degree $k$ component, we obtain a subvariety of $(K^d)^{\otimes k}$, called the universal variety, $\mathcal U_{d,k}$. As the map $\phi$ is compatible with the projection, it induces a parametrization of $\mathcal U_{d,k}$: it is the image of the map
-            $$K[\mathtt{w} \ | \ \mathtt{w} \ \text{Lyndon of length } \leq k] \to K\langle \mathtt{1}, \ldots, \mathtt{d}\rangle_k = (K^d)^{\otimes k}$$
-            induced by $\phi$.
-        Text
+            We view the two vector spaces $K\langle \mathtt{1}, \ldots, \mathtt{d}\rangle^*$ and $K[\mathtt{w} \ | \ \mathtt{w} \ \mathrm{Lyndon}]^*$ as infinite-dimensional affine spaces. We are interested in the subset $\mathcal U_d$ of those points of $K\langle \mathtt{1}, \ldots, \mathtt{d}\rangle^*$ that define shuffle algebra homomorphisms. This is a Zariski closed set. As $\psi$ is an algebra homomorphism, they correspond to the points of $K[\mathtt{w} \ | \ \mathtt{w} \ \mathrm{Lyndon}]^*$ under $\psi^*$ that define algebra homomorphisms; these are parametrized by the points of the vector space $K^{\mathcal L}$, where $\mathcal L$ is the set of Lyndon words, via the map
+            $$\eta: K^{\mathcal L} \to K[\mathtt{w} \ | \ \mathtt{w} \ \mathrm{Lyndon}]^*, \ x \mapsto ev_x.$$
+            In particular, $\mathcal U_d$ is parametrized by $\psi^* \circ \eta, \ x \mapsto (\mathtt{w} \mapsto \psi(\mathtt{w})(x))$.
+        
+            Projecting $\mathcal U_d$ to the degree $k$ component, we obtain a subvariety of $((K^d)^{\otimes k})^* \cong (K^d)^{\otimes k}$, called the universal variety, $\mathcal U_{d,k}$. 
+            
+            As the map $\psi$ is compatible with the projection, $\psi^* \circ \eta$ restricts to a parametrization of $\mathcal U_{d,k}$: it is the image of the induced morphism
+            $$K^{\mathcal L_k} \to (K\langle \mathtt{1}, \ldots, \mathtt{d}\rangle_k)^* \cong (K^d)^{\otimes k}, \ x \mapsto (\psi(\mathtt{w})(x) \cdot \mathtt{w})$$
+            where $\mathcal L_k$ is the set of Lyndon words of length at most $k$.
+
             As usual, we can compute the ideal that cuts out the image variety as the kernel of the corresponding ring map $$K[x_{\mathtt w} \ | \ \mathtt{w} \text{ of length } k] \to K[y_{\mathtt w} \ | \ \mathtt{w} \text{ Lyndon of length } \leq k].$$ This map can be computed via @TO lyndonShuffle@. Let us do this in the example $d=3, k=3$.
         Example
             words = toList apply((3:1)..(3:3), i -> new Array from i);
