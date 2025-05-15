@@ -37,7 +37,7 @@ sig(Path,ZZ,NCRing) := (X, h, R) -> (
 )
 
 --The k-th level signatures of the path, 
---automtically created the output word algebra
+--automatically created the output word algebra
 sig(Path,ZZ) := (X,h) ->
 (
     R := wordAlgebra(X.dimension, CoefficientRing => X.bR);

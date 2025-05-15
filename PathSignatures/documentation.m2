@@ -623,11 +623,11 @@ Node
     Description
         Text
             A word $l$ on the alphabet $\{1,\dots, d\}$ is a {\em Lyndon word} if it is strictly smaller, in lexicographic order, than all of its rotations.
-            To any Lyndon word we can associate an iterated Lie braketing $b(l)\in T(\mathbb{R}^d)$ defined iteratively as follows. If $l$ is a letter $i\in \{1,\dots, d\}$
+            To any Lyndon word we can associate an iterated Lie bracketing $b(l)\in T(\mathbb{R}^d)$ defined iteratively as follows. If $l$ is a letter $i\in \{1,\dots, d\}$
             we simply define $$ b(i) := e_i$$
             where as ever $e_i$ is the $i-th$ vector in the canonical basis of $\mathbb{R}^d$. For the length of $l$ greater than 1 we define $$
             b(I) := [b(I_1), b(I_2)]$$
-            where $I_1, I_2$ are such that their concatenation $I_1 I_2$ is $I$ and $I_2$ is the longest Lyndon word appering as a proper right factor 
+            where $I_1, I_2$ are such that their concatenation $I_1 I_2$ is $I$ and $I_2$ is the longest Lyndon word appearing as a proper right factor 
             of $I$. 
         Text
             This method computes $b(l)$ for a given Lyndon word. To illustrate its usage, we replicate Example 4.9 of the reference paper.
@@ -725,7 +725,7 @@ Node
             [3,3,3,3]_R @ t
             ([1,2,3]_R @ t) == (t @ [1,2,3]_R)
         Text
-            It is also a convient way to evaluate linear combinations of tensor entries:
+            It is also a convenient way to evaluate linear combinations of tensor entries:
         Example
             A = CAxisTensor(3,R);
             vol = signedVolumeForm(R);
@@ -832,7 +832,7 @@ Node
             R = wordAlgebra(d)
             signedVolumeForm(R) // wordFormat
         Text
-            The paper @HREF("#ref1","[1]")@ explores under what conditions the signed volume form computes (thorugh @TO inner@) the volume of the convex hull of a path. One instance where this is true is the case of canonical axis paths (see @TO CAxisTensor@).
+            The paper @HREF("#ref1","[1]")@ explores under what conditions the signed volume form computes (through @TO inner@) the volume of the convex hull of a path. One instance where this is true is the case of canonical axis paths (see @TO CAxisTensor@).
             For example, for $\mathtt{d}=3$ the convex hull of the canonical axis path in $\mathbb{R}^{\mathtt{d}}$ is a tetrahedron, whose volume is $\frac{1}{6}$. We verify this.
         Example
             X = linPath({1,0,0})**linPath({0,1,0})**linPath({0,0,1})
