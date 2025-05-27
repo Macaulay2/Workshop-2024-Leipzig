@@ -41,10 +41,10 @@ polyPath List := Path => (polyPathList) -> (
     if (instance(product(polyPathList), RingElement)) then (
         tR := class product(polyPathList);
         if(#gens(tR) != 1) then error("Expected a vector of polynomials in one variable.");
-        baseR := coefficientRing (tR); --Consider taking this as input
+        baseR := coefficientRing (tR);
         P := new Path from{
             bR => baseR,
-            pieces => {apply(polyPathList,i-> listForm (i*1_baseR))},
+            pieces => {apply(polyPathList,i-> listForm (i*1_baseR - sub(i, {tR_0 => 0})))},
             dimension => length polyPathList,
             numberOfPieces => 1
         };
