@@ -441,9 +441,9 @@ Node
             PP = apply(p, q -> sub(q, {x=>t, y=>t^2})); 
             Y = polyPath(PP) -- the transformed path in 3 dimensional space
         Text
-            Finally we compute the signature of the transformed path along the @TO signedVolumeForm@ tensor of $\mathbb{R}^3$ and verify the formula in Theorem 2 above:
+            Finally we compute the signature of the transformed path along the @TO sgnVolTensor@ tensor of $\mathbb{R}^3$ and verify the formula in Theorem 2 above:
         Example
-            vol = signedVolumeForm(wA3); vol // wordFormat -- consider the signed volume in R^3 and display it in word format
+            vol = sgnVolTensor(wA3); vol // wordFormat -- consider the signed volume in R^3 and display it in word format
             adw = adjointWord(vol, wA2, p); adw // wordFormat -- we compute its image through the induced homomorphism on algebras
             sig(Y, vol)  -- the signed volume of the transformed path
             sig(X, adw)  -- is given by evaluating at adw for the original path.
@@ -728,7 +728,7 @@ Node
             It is also a convenient way to evaluate linear combinations of tensor entries:
         Example
             A = CAxisTensor(3,R);
-            vol = signedVolumeForm(R);
+            vol = sgnVolTensor(R);
             A @ vol -- the signed volume of the canonical axis path in 3 dimensions.
 
 Node
@@ -817,8 +817,8 @@ Node
 
 Node
     Key
-        signedVolumeForm
-        (signedVolumeForm, NCPolynomialRing)
+        sgnVolTensor
+        (sgnVolTensor, NCPolynomialRing)
     Headline 
         The signed volume form of an algebra.
     Description
@@ -830,14 +830,14 @@ Node
         Example
             d = 3;
             R = wordAlgebra(d)
-            signedVolumeForm(R) // wordFormat
+            sgnVolTensor(R) // wordFormat
         Text
             The paper @HREF("#ref1","[1]")@ explores under what conditions the signed volume form computes (through @TO inner@) the volume of the convex hull of a path. One instance where this is true is the case of canonical axis paths (see @TO CAxisTensor@).
             For example, for $\mathtt{d}=3$ the convex hull of the canonical axis path in $\mathbb{R}^{\mathtt{d}}$ is a tetrahedron, whose volume is $\frac{1}{6}$. We verify this.
         Example
             X = linPath({1,0,0})**linPath({0,1,0})**linPath({0,0,1})
             R = wordAlgebra(3) -- where the signature of X lives
-            v = signedVolumeForm(R); 
+            v = sgnVolTensor(R); 
             v @ sig(X, 3) 
         Text
             Since in $\mathtt{v}$ only decomposable tensors of rank $3$ appear it is enough to compute the signature of $\mathtt{X}$ at that level.
@@ -903,7 +903,7 @@ R = QQ[t];
 X = polyPath({t,t^2}) -- A path in 2 dimensional space
 PP = apply(p, q -> sub(q, {x=>t, y=>t^2})); 
 Y = polyPath(PP)
-vol = signedVolumeForm(wA3); vol // wordFormat -- consider the signed volume in R^3 and display it in word format
+vol = sgnVolTensor(wA3); vol // wordFormat -- consider the signed volume in R^3 and display it in word format
 adw = adjointWord(vol, wA2, p); adw // wordFormat -- we compute its image through the induced homomorphism on algebras
 assert( sig(Y, vol) == sig(X, adw))
 ///
@@ -990,7 +990,7 @@ assert(([1,2,3]_R @ t) == (t @ [1,2,3]_R))
 TEST ///
 R = wordAlgebra(3)
 A = CAxisTensor(3,R);
-vol = signedVolumeForm(R);
+vol = sgnVolTensor(R);
 assert(A @ vol == 1/6)
 ///
 
@@ -1014,7 +1014,7 @@ assert(tensorExp(P, 2) == [1,2]_R  +  1/2 * [1,1]_R)
 
 TEST ///
 R = wordAlgebra(3)
-v = signedVolumeForm(R); 
+v = sgnVolTensor(R); 
 assert(v == -1/6 * [3, 2, 1]_R  +  1/6 * [3, 1, 2]_R  +  1/6 * [2, 3, 1]_R  -  1/6 * [2, 1, 3]_R  -  1/6 * [1, 3, 2]_R  +  1/6 * [1, 2, 3]_R)
 
 X = linPath({1,0,0})**linPath({0,1,0})**linPath({0,0,1})
@@ -1023,7 +1023,7 @@ assert(v @ sig(X, 3)  == 1/6)
 
 TEST ///
 A = wordAlgebra(2)
-T = signedVolumeForm(A)
+T = sgnVolTensor(A)
 F = tensorParametrization(T)
 S = gens source F
 assert(F(S#0) == 1/2 and F(S#1) == -1/2)

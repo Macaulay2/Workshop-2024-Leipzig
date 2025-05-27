@@ -19,7 +19,7 @@ export {
     "CMonTensor",
     "tensorParametrization",
     "wordAlgebra",
-    "signedVolumeForm",
+    "sgnVolTensor",
     "shuffle",
     "halfshuffle",
     "wordFormat",
@@ -104,7 +104,7 @@ beginDocumentation()
             A2 = wordAlgebra(2)
             [1,2]_A2 -- the word 12.
         Text
-            To evaluate the signature of $\mathtt{X}$ at a tensor $\mathtt{w}$, use @TO sig@. The following computes the @ITALIC "signed volume"@ of the path; also see @TO signedVolumeForm@.
+            To evaluate the signature of $\mathtt{X}$ at a tensor $\mathtt{w}$, use @TO sig@. The following computes the @ITALIC "signed volume"@ of the path; also see @TO sgnVolTensor@.
         Example
             sig(X,[1,2]_A2-[2,1]_A2)
         Text
@@ -120,7 +120,7 @@ beginDocumentation()
             R = S[t]
             X = polyPath({a*t+b*t^2,c*t^3})
             Y = X ** X
-            sig(X, signedVolumeForm(A2))
+            sig(X, sgnVolTensor(A2))
     References
         @LABEL("[1]","id" => "ref1")@ Améndola, C., Friz, P., & Sturmfels, B. (2019, January). Varieties of signature tensors. In Forum of Mathematics, Sigma (Vol. 7, p. e10). Cambridge University Press.
             

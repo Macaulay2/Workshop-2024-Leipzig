@@ -157,8 +157,8 @@ NCRingElement @ NCRingElement := (f,m) -> inner(f,m);
 
 
 -- returns the word in an NC ring that corresponds to the signed volume under the signature
-signedVolumeForm = method();
-signedVolumeForm NCPolynomialRing := (R) -> (
+sgnVolTensor = method();
+sgnVolTensor NCPolynomialRing := (R) -> (
     perms := permutations(toList(1..length(gens R)));
     (1/(length(gens R))!) * sum(perms,i-> sign(permutation i) * (new Array from i)_R)
 );
