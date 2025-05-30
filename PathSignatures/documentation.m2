@@ -792,28 +792,49 @@ Node
         tensorExp
         (tensorExp, NCRingElement,ZZ)
     Headline
-        Compute the exponential of a tensor.
+        Compute a component of the exponential of a tensor.
     Description
         Text
-            Let $T^n(\mathbb{R}^d)$ denote the tensor algebra on $\mathbb{R}^d$ truncated at $n$. $$
-            T^n(\mathbb{R}^d):= \bigoplus_{k=0}^{n} \left(\mathbb{R}^d\right)^{\otimes k}
+            Let $T((\mathbb{R}^d))$ denote the dual of the tensor algebra on $\mathbb{R}^d$, i.e., the space $\prod_k (\mathbb{R}^d)^{\otimes k}$. Given $x \in T(\mathbb{R}^d)$ its exponential is
+            $$\exp(x) := \sum_{k \geq 0} \frac{1}{k!} x^{\otimes k} \in T((\mathbb{R}^d)).
             $$
-            Then the tensor exponential is a map $$
-            \mathtt{tensorExp} : T^n(\mathbb{R}^d)\rightarrow T^n(\mathbb{R}^d)
-            $$
-            defined by $$
-            P\mapsto \sum_{r\geq 0} \frac{1}{r!} P^{\otimes k}
-            $$
-            If the constant term of the input is not $0$, the constant term of its exponential might not be a rational number
-            anymore. To avoid this cases, the method is only implemented for tensors with constant term equal to $0$.
+            $\texttt{tensorExp(x,k)}$ computes the degree $k$ component of $\exp(x)$.
+
+            If the constant term of the input is not $0$, the exponential can not be expressed with algebraic coefficients. To avoid this case, the method is only implemented for tensors with constant term equal to $0$.
         Example
             R = wordAlgebra(2);
-            P = [1,2]_R + [1]_R
-            tensorExp(P, 2)
+            x = [1]_R + [1,2]_R
+            tensorExp(x, 2)
     Caveat
         The method is implemented only for tensors with constant term $0$.
-    References
-         @HREF {"https://doi.org/10.1017/fms.2019.3", "Varieties Of Signature Tensors (doi.org/10.1017/fms.2019.3)"}@
+    SeeAlso
+        lieBasis
+        tensorLog
+    -- References
+    --      @HREF {"https://doi.org/10.1017/fms.2019.3", "Varieties Of Signature Tensors (doi.org/10.1017/fms.2019.3)"}@
+
+Node
+    Key
+        tensorLog
+        (tensorLog, NCRingElement,ZZ)
+    Headline
+        Compute a component of the logarithm of a tensor.
+    Description
+        Text
+            Let $T((\mathbb{R}^d))$ denote the dual of the tensor algebra on $\mathbb{R}^d$, i.e., the space $\prod_k (\mathbb{R}^d)^{\otimes k}$. Given $x \in T(\mathbb{R}^d)$ with constant term $1$, its logarithm is
+            $$\log(x) := - \sum_{k \geq 0} \frac{1}{k} (1-x)^{\otimes k} \in T((\mathbb{R}^d)).
+            $$
+            $\texttt{tensorLog(x,k)}$ computes the degree $k$ component of $\log(x)$.
+        Example
+            A2 = wordAlgebra(2);
+            x = 1 + [1]_A2 + 1/2 * [1,1]_A2 + 1/6 * [1,1,1]_A2;
+            sum(0..3, i -> tensorLog(x, i))
+    Caveat
+        The method is implemented only for tensors with constant term $1$.
+    SeeAlso
+        tensorExp
+    -- References
+    --      @HREF {"https://doi.org/10.1017/fms.2019.3", "Varieties Of Signature Tensors (doi.org/10.1017/fms.2019.3)"}@
 
 Node
     Key

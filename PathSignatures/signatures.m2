@@ -119,8 +119,7 @@ polySigGen (List, List, Ring) := RingElement => (l,w, baseR) ->(
     k:= length w;
     x := getSymbol("x");
     R := baseR monoid([x_1..x_k]);
-    s := getSymbol("s");
-    S := baseR monoid([s]);
+    S := baseR monoid([ value("s" | toString(random(1000)))]);
     X := apply(l, i-> sum(0..length(i)-1, j -> ((i#j)#1)_S * (S_0)^((i#j)#0#0)));
 
     resd := product for i from 1 to k list (

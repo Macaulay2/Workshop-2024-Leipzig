@@ -36,6 +36,7 @@ export {
     "lie",
     "lieBasis",
     "tensorExp",
+    "tensorLog",
     "lyndonShuffle",
     "VarWordTable"
     -- "type",

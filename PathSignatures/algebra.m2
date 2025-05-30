@@ -288,10 +288,26 @@ expTerm = (tl,l) -> (
 -- Given a tensor p with constant term 0, tensorExp(p,k) returns the k-th level component of exp(p)
 tensorExp = method();
 tensorExp (NCRingElement, ZZ) := (p,k) -> (
+    if(k==0) then return 1;
     if(length (select(terms p, j-> degree j == 0)) > 0) then error("tensorExp expects a nc polynomial with constant term 0.");
     s := {1} | toList apply(1..k, i-> sum(select(terms p, j->((degree j) == i))));
     comp := unique apply(compositions k, i->delete(0,i));
     t := sum(apply(comp, i-> expTerm(s,i)));
+    return(t);
+)
+
+logTerm = (tl,l) -> (
+    return(1/(length(l)))*product(l,i->(tl_i))
+)
+
+-- Given a tensor p with constant term 1, tensorLog(p,k) returns the k-th level component of log(p)
+tensorLog = method();
+tensorLog (NCRingElement, ZZ) := (p,k) -> (
+    if(select(terms p, j-> degree j == 0)!= {1}) then error("tensorLog expects a nc polynomial with constant term 1.");
+    lp := - p + 1;
+    s := {1} | toList apply(1..k, i-> sum(select(terms lp, j->((degree j) == i))));
+    comp := unique apply(compositions k, i->delete(0,i));
+    t := - sum(apply(comp, i-> logTerm(s,i)));
     return(t);
 )
 
