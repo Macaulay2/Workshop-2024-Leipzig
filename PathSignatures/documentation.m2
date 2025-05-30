@@ -841,27 +841,26 @@ Node
         sgnVolTensor
         (sgnVolTensor, NCPolynomialRing)
     Headline 
-        The signed volume form of an algebra.
+        The signed volume tensor in a free associative algebra.
     Description
         Text
-            The {\em signed volume form} of $\mathbb{R}^d$ is the tensor $$\frac{1}{d!}\sum_{\sigma} (-1)^{\operatorname{sign}(\sigma)} e_{\sigma(1)}^{*}\otimes \dots\otimes e_{\sigma(d)}^{*}$$
-            where the sum is taken over all permutations of ${1, \dots, d}$.
+            Given a free associative algebra $K \langle \mathtt{1}, \dots, \mathtt{d} \rangle$ over a field $K$, the {\em signed volume tensor} is
+            $$\frac{1}{d!}\sum_{\sigma} (-1)^{\operatorname{sign}(\sigma)} \mathtt{\sigma(1)}\dots \mathtt{\sigma(d)}$$
+            where the sum is taken over all permutations of ${1, \dots, d}$. Under the isomorphism $\mathbb R \langle \mathtt{1}, \dots, \mathtt{d} \rangle \to T(\mathbb{R}^d), \ \mathtt{i} \mapsto e_i^*$ it corresponds to the determinant $e_1^* \wedge \dots \wedge e_d^*$.
         Text
-            This method computes the signed volume tensor in the dimension corresponding to the number of generators of the given @TO NCPolynomialRing@. The output is in the same ring.
+            This method computes the signed volume tensor of the given @TO NCPolynomialRing@. The output is in the same ring.
         Example
             d = 3;
             R = wordAlgebra(d)
             sgnVolTensor(R) // wordFormat
         Text
-            The paper @HREF("#ref1","[1]")@ explores under what conditions the signed volume form computes (through @TO inner@) the volume of the convex hull of a path. One instance where this is true is the case of canonical axis paths (see @TO CAxisTensor@).
+            The paper @HREF("#ref1","[1]")@ explores under what conditions the value of the signature at the signed volume tensor computes the volume of the convex hull of a path. One instance where this is true is the case of canonical axis paths (see @TO CAxisTensor@).
             For example, for $\mathtt{d}=3$ the convex hull of the canonical axis path in $\mathbb{R}^{\mathtt{d}}$ is a tetrahedron, whose volume is $\frac{1}{6}$. We verify this.
         Example
             X = linPath({1,0,0})**linPath({0,1,0})**linPath({0,0,1})
             R = wordAlgebra(3) -- where the signature of X lives
             v = sgnVolTensor(R); 
-            v @ sig(X, 3) 
-        Text
-            Since in $\mathtt{v}$ only decomposable tensors of rank $3$ appear it is enough to compute the signature of $\mathtt{X}$ at that level.
+            sig(X, v) -- computes the signature of X at the signed volume tensor
 
 
 
