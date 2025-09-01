@@ -1,3 +1,4 @@
+needsPackage "Probability"
 needsPackage "GraphicalModels"
 
 
@@ -112,16 +113,42 @@ BfsPathGen = (G, V) -> (
     return pathtable
     )
 
----
 -- G = digraph {{1, {2,3,4,5,6,7,8,9}}, {2, {3,4,5,6,7,8,9}}, {3, {4,5,6,7,8,9}}, {4,{5,6,7,8,9}}, {5, {6,7,8,9}}, {6, {7,8,9}}, {7, {8,9}}, {8, {9}}}
 
--- sum(apply(1000, x -> (elapsedTiming(pathGen(G)))#0))
--- sum(apply(1000, x -> (elapsedTiming(BfsPathGen(G)))#0))
--- how about testing when each of the pathgen is faster and allTreks calls the programs accordingly=
+-- sum(apply(1000, x -> (elapsedTiming(pathGen(G, V)))#0))
+-- sum(apply(1000, x -> (elapsedTiming(BfsPathGen(G, V)))#0))
 
--- from my testting Bfs is better in non-sparse situations while normal is faster in sparse graphs
--- none of them have propper loop protection (for cyclic graphs) at the moment 
----
+
+
+-- testfunction  when each of the pathgens is faster; aim: allTreks calls the programs accordingly
+pathgenruntime = (n) -> (
+    probs = apply(11, i -> i/10);
+    timelist = new MutableList from {};
+    for p in probs do(
+	P := bernoulliDistribution(p);
+	E := for e in subsets(1..n, 2) list if random(P) == 1 then e else continue;
+	G = digraph(toList(1..n), E);
+	V = vertices(G);
+	tmatrix = sum(apply(5, x -> (elapsedTiming(pathGen(G, V)))#0));
+	tbfs = sum(apply(5, x -> (elapsedTiming(BfsPathGen(G, V)))#0));
+	if tbfs < tmatrix then timelist##timelist = p;
+	);
+    X = toList(timelist)
+    )
+
+-- n = 15;
+-- pathgenruntime(n)
+
+-- n = 15 then timelist = {3/10, 5/10, 6/10, 7/10, 8/10, 9/10, 1}
+-- n = 16 then timelist = {2/10, 3/10, 5/10, 6/10, 7/10, 8/10, 9/10, 1}
+-- n = 17 then timelist = {2/10, 3/10, 5/10, 6/10, 7/10, 8/10, 9/10, 1}
+-- n = 18 then timelist = {2/10, 4/10, 5/10, 6/10, 7/10, 8/10, 9/10, 1} (takes 1-2 minutes)
+
+
+-- from this testing, Bfs is faster for all p >= 1/2 (i.e.  Bfs is faster in non-sparse situations while normal is faster in sparse graphs)
+-- thus if E >= 1/2 * V(V-1)/2 = V(V-1)/4 BfsPathGen is faster
+-- so if E >= V(V-1)/4 call Bfs, otherwise pathgen
+
 
 
 
