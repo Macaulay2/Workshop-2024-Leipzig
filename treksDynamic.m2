@@ -117,6 +117,7 @@ BfsPathGen = (G, V) -> (
 
 -- sum(apply(1000, x -> (elapsedTiming(pathGen(G)))#0))
 -- sum(apply(1000, x -> (elapsedTiming(BfsPathGen(G)))#0))
+-- how about testing when each of the pathgen is faster and allTreks calls the programs accordingly=
 
 -- from my testting Bfs is better in non-sparse situations while normal is faster in sparse graphs
 -- none of them have propper loop protection (for cyclic graphs) at the moment 
@@ -124,7 +125,7 @@ BfsPathGen = (G, V) -> (
 
 
 
--- for application need (top, path1, path2) where top is source of both paths -> tensor endpoint1 => endpont2 => top => all treks connecting them
+-- for application need (top, path1, path2) where top is source of both paths -> tensor endpoint1 => endpoint2 => top => all treks connecting them
 allTreks = (G) -> (
     V = vertices (G);
     paths = pathGen(G, V);
