@@ -35,7 +35,7 @@ is intended to fill this gap.
 
 An accompanying 
 article which provides the theoretical background will be available on the arxiv. The implemented 
-functionalities include the computation of :math:`{\tt connectionMatrices}` of :math:`D`-ideals for elimination 
+functionalities include the computation of :math:`{\tt pfaffianSystem}` of :math:`D`-ideals for elimination 
 term orders on the Weyl algebra with respect to positive weight vectors. In particular, this 
 required the implementation of the :math:`{\tt normalForm}` algorithm over the rational Weyl algebra. 
 We also implemented the :math:`{\tt gaugeTransformation}` for carrying out changes of basis over the field of 
@@ -65,7 +65,7 @@ You should see M2 building the examples in the documentation which should look s
 .. code-block:: macaulay2
 
      -- making example results for "normalForm"            -- .557581s elapsed
-     -- making example results for "connectionMatrices"    -- .573788s elapsed
+     -- making example results for "pfaffianSystem"        -- .573788s elapsed
      -- making example results for "gaugeTransform"        -- .578373s elapsed
 
     o1 = ConnectionMatrices
@@ -85,7 +85,7 @@ your favorite :math:`{D}`-ideals.
     
     o4 : Ideal of D
 
-    i5 : (connectionMatrices I) # 0
+    i5 : (pfaffianSystem I) # 0
 
     o5 = | 0 1      |
          | 0 (-1)/x |
@@ -122,7 +122,7 @@ Working with the rational Weyl algebra
 Computing and displaying :math:`D`-ideals in connection form
 ######################################################
 
-* `connectionMatrices <https://mahrud.github.io/LearnM2/packages/#ConnectionMatrices::connectionMatrices>`_ -- computes the connection matrices of a :math:`D_n`-ideal :math:`I` for a chosen basis
+* `pfaffianSystem <https://mahrud.github.io/LearnM2/packages/#ConnectionMatrices::pfaffianSystem>`_ -- computes the connection matrices of a :math:`D_n`-ideal :math:`I` for a chosen basis
 * `connectionMatrix <https://mahrud.github.io/LearnM2/packages/#ConnectionMatrices::connectionMatrix>`_ -- computes the connection matrix
 
 Changing basis of a system of connection matrices
