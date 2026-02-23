@@ -123,7 +123,7 @@ Computing and displaying :math:`D`-ideals in connection form
 ######################################################
 
 * `pfaffianSystem <https://mahrud.github.io/LearnM2/packages/#ConnectionMatrices::pfaffianSystem>`_ -- computes the connection matrices of a :math:`D_n`-ideal :math:`I` for a chosen basis
-* `connectionMatrix <https://mahrud.github.io/LearnM2/packages/#ConnectionMatrices::connectionMatrix>`_ -- computes the connection matrix
+* `connectionForm <https://mahrud.github.io/LearnM2/packages/#ConnectionMatrices::connectionForm>`_ -- computes the connection matrix
 
 Changing basis of a system of connection matrices
 #################################################
